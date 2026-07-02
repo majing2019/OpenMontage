@@ -1,5 +1,5 @@
 import React from "react";
-import { loadFont } from "@remotion/google-fonts/SpaceGrotesk";
+const FALLBACK_FONT = `'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', -apple-system, sans-serif`;
 import {
   AbsoluteFill,
   Audio,
@@ -28,10 +28,7 @@ import { CaptionOverlay } from "./components/CaptionOverlay";
 
 const FPS = 30;
 
-const { fontFamily } = loadFont("normal", {
-  weights: ["400", "500", "700"],
-  subsets: ["latin"],
-});
+const fontFamily = FALLBACK_FONT;
 
 const toneGradient = (tone: CinematicTone) => {
   switch (tone) {

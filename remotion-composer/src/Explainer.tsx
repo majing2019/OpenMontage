@@ -10,7 +10,8 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { loadFont } from "@remotion/google-fonts/SpaceGrotesk";
+// Use system font stack for Chinese support (Google Fonts blocked in some regions)
+const FALLBACK_FONT = `'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', 'Hiragino Sans GB', -apple-system, sans-serif`;
 
 // Resolve asset path — handle URLs, absolute paths (Windows/Unix), and public/ relative paths
 function resolveAsset(src: string): string {
@@ -50,10 +51,7 @@ import type { ParticleType } from "./components/ParticleOverlay";
 import { resolveTheme, type ThemeConfig, DEFAULT_THEME } from "./Root";
 
 // Load Space Grotesk font for cinematic typography
-const { fontFamily } = loadFont("normal", {
-  weights: ["400", "700"],
-  subsets: ["latin"],
-});
+const fontFamily = FALLBACK_FONT;
 
 // ---------------------------------------------------------------------------
 // Animated Background — Gradient Mesh + Floating Orbs

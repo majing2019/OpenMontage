@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/preview_manifest",
+  "title": "Preview Manifest",
+  "description": "Character anchor images and scene sample images produced by the preview stage. Once approved, character and scene descriptions are locked for the generate stage.",
+  "type": "object",
+  "required": [
+    "version",
+    "character_anchors",
+    "scene_samples",
+    "prompt_templates"
+  ],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "character_anchors": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Character anchor (three-view) images and locked descriptions",
+      "items": {
+        "type": "object",
+        "required": ["character_name", "image_path", "anchor_description"],
+        "properties": {
+          "character_name": {
+            "type": "string",
+            "description": "Character registry key"
+          },
+          "image_path": {
+            "type": "string",
+            "description": "File path to the character anchor image (three-view sheet)"
+          },
+          "anchor_description": {
+            "type": "string",
+            "description": "The locked character description used for consistent generation"
+          },
+          "views": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["front", "side", "back"]
+            },
+            "description": "Views included in the anchor image"
+          },
+          "approved": {
+            "type": "boolean",
+            "description": "Whether the user approved this character anchor"
+          }
+        }
+      }
+    },
+    "scene_samples": {
+      "type": "array",
+      "description": "Scene sample (定妆) images",
+      "items": {
+        "type": "object",
+        "required": ["scene_name", "image_path", "template_prefix"],
+        "properties": {
+          "scene_name": {
+            "type": "string",
+            "description": "Scene registry key"
+          },
+          "image_path": {
+            "type": "string",
+            "description": "File path to the scene sample image"
+          },
+          "template_prefix": {
+            "type": "string",
+            "description": "The locked scene template prefix for consistent generation"
+          },
+          "characters_included": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Character names shown in this scene sample"
+          },
+          "approved": {
+            "type": "boolean",
+            "description": "Whether the user approved this scene sample"
+          }
+        }
+      }
+    },
+    "prompt_templates": {
+      "type": "object",
+      "description": "Locked prompt templates combining style_lock + character_anchor + scene_template patterns",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "Template pattern string where {style}, {character}, {scene} are placeholders"
+          },
+          "example_filled": {
+            "type": "string",
+            "description": "One example of the template filled with actual values"
+          }
+        }
+      }
+    },
+    "style_lock": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Style keywords carried forward from style_decision (immutable)"
+    },
+    "image_prompt_prefix": {
+      "type": "string",
+      "description": "Image prompt prefix from style_decision (immutable)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/shot_list",
+  "title": "Shot List",
+  "description": "Complete panel-by-panel shot plan for comic-story pipeline. Produced by shot-plan stage, consumed by preview and generate stages.",
+  "type": "object",
+  "required": [
+    "version",
+    "art_style",
+    "panels",
+    "character_registry",
+    "scene_registry",
+    "ip_outro"
+  ],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "art_style": {
+      "type": "string",
+      "description": "Name of the locked art style preset or custom style"
+    },
+    "style_lock": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Style keywords carried forward from style_decision"
+    },
+    "panels": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Ordered list of panels (shots) for the comic",
+      "items": {
+        "type": "object",
+        "required": [
+          "panel_number",
+          "duration_seconds",
+          "visual_description",
+          "character_anchors"
+        ],
+        "properties": {
+          "panel_number": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "1-based sequential panel number"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Display duration for this panel in seconds"
+          },
+          "visual_description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Seedream image generation prompt for this panel"
+          },
+          "character_anchors": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Character anchor descriptions for characters appearing in this panel"
+          },
+          "scene_template": {
+            "type": "string",
+            "description": "Scene template prefix from scene_registry for this panel's setting"
+          },
+          "scene_texts": {
+            "type": "array",
+            "description": "Text that is part of the scene itself (signs, screens, etc.)",
+            "items": {
+              "type": "object",
+              "required": ["content", "carrier", "length", "method"],
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "description": "The text content to appear in the scene"
+                },
+                "carrier": {
+                  "type": "string",
+                  "description": "What carries the text (e.g., wooden sign, phone screen, book cover)"
+                },
+                "length": {
+                  "type": "integer",
+                  "description": "Character count of the text content"
+                },
+                "method": {
+                  "type": "string",
+                  "enum": ["ai_draw", "post_only"],
+                  "description": "ai_draw: Seedream renders the text directly. post_only: PIL overlay in caption stage."
+                }
+              }
+            }
+          },
+          "text_overlay": {
+            "type": "object",
+            "description": "Narrative text overlaid on top of the image (hook, dialogue, narration)",
+            "properties": {
+              "content": {
+                "type": "string",
+                "description": "The text to overlay on the image"
+              },
+              "position": {
+                "type": "string",
+                "enum": ["center_top", "speech_bubble", "corner", "bottom", "emphasis", "narration"],
+                "description": "Where to place the text overlay on the panel"
+              },
+              "style": {
+                "type": "string",
+                "enum": ["bold_title", "body", "whisper", "impact", "narration"],
+                "description": "Typographic style for the overlay text"
+              },
+              "font_size": {
+                "type": ["string", "integer"],
+                "description": "Font size in pixels"
+              },
+              "color": {
+                "type": "string",
+                "description": "Hex color for the text"
+              },
+              "stroke": {
+                "type": "string",
+                "description": "Hex color for text stroke/outline"
+              }
+            }
+          }
+        }
+      }
+    },
+    "character_registry": {
+      "type": "object",
+      "description": "All characters appearing in the comic, keyed by character name",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["anchor_description"],
+        "properties": {
+          "anchor_description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Fixed visual description used verbatim in every prompt containing this character"
+          },
+          "role": {
+            "type": "string",
+            "description": "Character role in the story (protagonist, antagonist, supporting, etc.)"
+          },
+          "emotion_range": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Emotions this character displays across panels"
+          },
+          "panels": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "description": "Panel numbers where this character appears"
+          }
+        }
+      }
+    },
+    "scene_registry": {
+      "type": "object",
+      "description": "All unique scenes/settings in the comic, keyed by scene name",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["template_prefix"],
+        "properties": {
+          "template_prefix": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Fixed scene description prefix used verbatim in every prompt for this scene"
+          },
+          "description": {
+            "type": "string",
+            "description": "Full scene description"
+          },
+          "panels": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "description": "Panel numbers where this scene appears"
+          }
+        }
+      }
+    },
+    "ip_outro": {
+      "type": "object",
+      "description": "Personal IP ending panel configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "character_description": {
+          "type": "string",
+          "description": "Visual description of the storyteller character for the outro"
+        },
+        "signature_text": {
+          "type": "string",
+          "description": "Signature phrase or tagline for the outro"
+        },
+        "cta_text": {
+          "type": "string",
+          "description": "Call-to-action text (e.g., '关注我看更多')"
+        },
+        "brand_colors": {
+          "type": "object",
+          "properties": {
+            "primary": { "type": "string" },
+            "secondary": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "panels": {
+          "type": "array",
+          "items": { "type": "integer" },
+          "description": "Panel numbers for the IP outro panels"
+        }
+      }
+    },
+    "total_panels": {
+      "type": "integer",
+      "description": "Total number of panels including IP outro"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

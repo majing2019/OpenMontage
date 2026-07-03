@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/style_decision",
+  "title": "Style Decision",
+  "description": "Locked visual style parameters for the comic-story pipeline. Produced by style-pick stage, consumed by all downstream stages.",
+  "type": "object",
+  "required": [
+    "version",
+    "mode",
+    "style_lock",
+    "image_prompt_prefix",
+    "consistency_anchors"
+  ],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "mode": {
+      "type": "string",
+      "enum": ["preset", "reference_image", "reference_video"],
+      "description": "How the style was chosen: preset name, reference image(s), or reference video"
+    },
+    "preset_name": {
+      "type": "string",
+      "description": "Name of the selected preset (only when mode=preset)"
+    },
+    "style_lock": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3,
+      "description": "Locked style keywords appended to every Seedream prompt. Immutable after style-pick."
+    },
+    "image_prompt_prefix": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Natural language style prefix prepended to every image generation prompt"
+    },
+    "image_negative_prompt": {
+      "type": "string",
+      "description": "Negative prompt keywords to exclude from all image generation"
+    },
+    "consistency_anchors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Consistency rules for maintaining visual coherence across panels"
+    },
+    "reference_analysis": {
+      "description": "Extracted style parameters from reference images or video",
+      "type": "object",
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": ["single_image", "multi_image", "video"]
+        },
+        "color_palette": {
+          "type": "object",
+          "properties": {
+            "primary": { "type": "array", "items": { "type": "string" } },
+            "accent": { "type": "array", "items": { "type": "string" } },
+            "background": { "type": "string" },
+            "text": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "lighting": { "type": "string" },
+        "texture": { "type": "string" },
+        "composition": { "type": "string" },
+        "line_style": { "type": "string" },
+        "source_paths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Paths to reference images or extracted video frames"
+        },
+        "test_render_path": {
+          "type": "string",
+          "description": "Path to the style test image generated for user confirmation"
+        },
+        "video_analysis_brief": {
+          "type": "object",
+          "description": "5-dimension structured analysis from video reference (from EP_STATE.reference_video_analysis)",
+          "properties": {
+            "subject": { "type": "string" },
+            "subject_motion": { "type": "string" },
+            "scene": { "type": "string" },
+            "spatial_framing": { "type": "string" },
+            "camera": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "color_palette": {
+      "type": "object",
+      "properties": {
+        "primary": { "type": "array", "items": { "type": "string" } },
+        "accent": { "type": "array", "items": { "type": "string" } },
+        "background": { "type": "string" },
+        "text": { "type": "string" },
+        "muted": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "mood": { "type": "string" },
+    "custom_preset_saved_as": {
+      "type": "string",
+      "description": "Name under which this style was saved as a custom preset (if saved)"
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

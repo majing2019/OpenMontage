@@ -1,0 +1,59 @@
+identity:
+  name: "Warm Illustration"
+  category: comic
+  mood: warm, healing, slice-of-life, gentle
+  pace: moderate
+  best_for: "亲情、治愈、日常、温暖瞬间"
+
+visual_language:
+  color_palette:
+    primary: ["#E8D5B7", "#D4A574"]       # 米色、浅橙
+    accent: ["#8B5E3C", "#C17F59"]        # 深棕、焦糖
+    background: "#FFF8F0"                  # 暖白
+    text: "#4A3728"                        # 深棕文字
+    muted: "#D4C4B0"                       # 浅驼
+  composition: 居中构图，暖色调笼罩，人物与背景融合度高
+  texture: 柔和手绘质感，水彩边缘，笔触可见但不突兀
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.6
+
+motion:
+  transitions:
+    - fade
+    - dissolve
+  animation_style: gentle-fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 6
+    transition_duration_seconds: 0.5
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+  ducking_threshold_db: -20
+
+asset_generation:
+  image_prompt_prefix: "温暖插画风格, 柔和色调, 手绘质感, 日式生活插画, 温馨氛围, 柔和线条, 柔和自然光, 午后暖阳"
+  image_negative_prompt: "photorealistic, 3D render, photograph, realistic photo"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+  diagram_style: "none"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"

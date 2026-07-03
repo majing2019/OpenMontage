@@ -13,7 +13,7 @@
         "name": { "type": "string" },
         "category": {
           "type": "string",
-          "enum": ["motion-graphics", "whiteboard", "cinematic", "minimalist", "retro", "custom"]
+          "enum": ["motion-graphics", "whiteboard", "cinematic", "minimalist", "retro", "comic", "anime-illustration", "custom"]
         },
         "mood": { "type": "string" },
         "pace": {

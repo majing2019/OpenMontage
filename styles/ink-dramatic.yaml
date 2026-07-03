@@ -1,0 +1,60 @@
+identity:
+  name: "Ink Dramatic"
+  category: comic
+  mood: intense, impactful, dramatic, powerful
+  pace: deliberate
+  best_for: "反转、冲击、深度、力量感"
+
+visual_language:
+  color_palette:
+    primary: ["#000000", "#333333"]       # 黑、深灰
+    accent: ["#CC0000", "#990000"]        # 少量红色点缀
+    background: "#F5F0EB"                  # 宣纸白
+    text: "#111111"                        # 近黑文字
+    muted: "#888888"                       # 灰
+  composition: 大面积留白与浓墨对比，视觉焦点集中，极简有力
+  texture: 水墨晕染，干笔飞白，版画质感，东方美学
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 900
+    line_height: 1.2
+  body:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.5
+
+motion:
+  transitions:
+    - cut
+    - fade
+  animation_style: dramatic-cut
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 7
+    transition_duration_seconds: 0.5
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+  ducking_threshold_db: -20
+
+asset_generation:
+  image_prompt_prefix: "黑白水墨风格, 强烈对比, 极简色彩, 版画质感, 视觉冲击, 东方美学, 强烈明暗对比, 像木版画"
+  image_negative_prompt: "photorealistic, 3D render, photograph, realistic photo, colorful, bright pastel"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+  diagram_style: "none"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"
+  - "水墨风格中红色点缀仅用于关键强调，不可滥用"

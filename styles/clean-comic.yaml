@@ -1,0 +1,60 @@
+identity:
+  name: "Clean Comic"
+  category: comic
+  mood: light, humorous, modern, playful
+  pace: fast
+  best_for: "搞笑、社死、段子、打工人日常"
+
+visual_language:
+  color_palette:
+    primary: ["#FFFFFF", "#F5F5F5"]       # 白色、浅灰
+    accent: ["#FF4444", "#44AA44", "#4488FF"]  # 红、绿、蓝点缀
+    background: "#FFFFFF"
+    text: "#222222"
+    muted: "#CCCCCC"
+  composition: 清晰前景，简洁背景，人物占画面主体，留白充足
+  texture: 干净线条，无杂色，平涂色块，边线清晰
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 900
+    line_height: 1.1
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.4
+
+motion:
+  transitions:
+    - cut
+    - slide
+  animation_style: snappy-cut
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 5
+    transition_duration_seconds: 0.3
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+  ducking_threshold_db: -20
+
+asset_generation:
+  image_prompt_prefix: "现代漫画风格, 干净的线条, 明亮的色彩, 简笔画, 幽默感, 表情夸张, 均匀明亮光线"
+  image_negative_prompt: "photorealistic, 3D render, photograph, realistic photo, watercolor, oil painting"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+  diagram_style: "none"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"
+  - "搞笑漫画的表情必须夸张且清晰可辨"

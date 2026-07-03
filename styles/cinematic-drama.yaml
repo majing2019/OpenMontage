@@ -1,0 +1,60 @@
+identity:
+  name: "Cinematic Drama"
+  category: comic
+  mood: tense, suspenseful, dramatic, intense
+  pace: deliberate
+  best_for: "悬疑、反转、紧张、深度故事"
+
+visual_language:
+  color_palette:
+    primary: ["#1A1A2E", "#16213E"]       # 深蓝
+    accent: ["#C62828", "#FF6F00"]        # 暗红、深橙
+    background: "#0D0D1A"                  # 近黑
+    text: "#E8E8E8"                        # 浅灰文字
+    muted: "#4A4A5A"                       # 暗灰
+  composition: 大面积暗调，光源集中，人物在光影中，景深明显
+  texture: 精细笔触，高细节渲染，暗部有噪点质感
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 300
+    line_height: 1.5
+
+motion:
+  transitions:
+    - fade
+    - cut
+  animation_style: dramatic-reveal
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 8
+    transition_duration_seconds: 0.8
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+  ducking_threshold_db: -20
+
+asset_generation:
+  image_prompt_prefix: "电影感插画, 高对比度, 戏剧性光影, 暗调画面, 氛围感, 细节丰富, 侧光逆光, 明暗对比强烈"
+  image_negative_prompt: "photorealistic, 3D render, photograph, realistic photo, bright, cheerful"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+  diagram_style: "none"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"
+  - "暗调画面中文字需要更亮的颜色和更粗的描边以保证可读性"

@@ -17,6 +17,7 @@ import yaml
 import jsonschema
 
 STYLES_DIR = Path(__file__).resolve().parent
+CUSTOM_DIR = STYLES_DIR / "custom"
 SCHEMA_PATH = (
     Path(__file__).resolve().parent.parent
     / "schemas"
@@ -39,11 +40,17 @@ def load_playbook(name: str, styles_dir: Optional[Path] = None) -> dict[str, Any
 
     Returns:
         Validated playbook dict.
+
+    Raises:
+        FileNotFoundError: If playbook is not found in styles_dir or styles/custom/.
     """
     styles_dir = styles_dir or STYLES_DIR
     path = styles_dir / f"{name}.yaml"
     if not path.exists():
-        raise FileNotFoundError(f"Playbook not found: {path}")
+        # Fallback to custom/ subdirectory
+        path = CUSTOM_DIR / f"{name}.yaml"
+    if not path.exists():
+        raise FileNotFoundError(f"Playbook not found: {styles_dir / f'{name}.yaml'} or {CUSTOM_DIR / f'{name}.yaml'}")
 
     with open(path) as f:
         playbook = yaml.safe_load(f)
@@ -59,13 +66,23 @@ def validate_playbook(playbook: dict) -> None:
 
 
 def list_playbooks(styles_dir: Optional[Path] = None) -> list[str]:
-    """List all available playbook names."""
+    """List all available playbook names.
+
+    Scans both the main styles/ directory and styles/custom/ for playbook files.
+    Custom playbooks may shadow built-in ones by name.
+    """
     styles_dir = styles_dir or STYLES_DIR
-    return [
+    names = [
         p.stem
         for p in styles_dir.glob("*.yaml")
         if p.stem != "__pycache__"
     ]
+    # Also scan custom/ subdirectory
+    if CUSTOM_DIR.exists():
+        for p in CUSTOM_DIR.glob("*.yaml"):
+            if p.stem not in names:
+                names.append(p.stem)
+    return names
 
 
 # ---------------------------------------------------------------------------

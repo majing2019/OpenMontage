@@ -20,6 +20,8 @@ from schemas.artifacts import ARTIFACT_NAMES, validate_artifact
 ALL_KNOWN_STAGES = frozenset([
     "research", "proposal", "idea", "script", "scene_plan",
     "assets", "edit", "compose", "publish",
+    # comic-story pipeline stages
+    "ideate", "style_pick", "shot_plan", "preview", "generate", "caption",
 ])
 
 # Backward-compatible alias — existing code / tests that import STAGES still work.
@@ -37,6 +39,13 @@ CANONICAL_STAGE_ARTIFACTS = {
     "edit": "edit_decisions",
     "compose": "render_report",
     "publish": "publish_log",
+    # comic-story pipeline stages
+    "ideate": "story_seed",
+    "style_pick": "style_decision",
+    "shot_plan": "shot_list",
+    "preview": "preview_manifest",
+    "generate": "asset_manifest",
+    "caption": "captioned_assets",
 }
 
 # Additional artifacts that may be produced alongside canonical ones.

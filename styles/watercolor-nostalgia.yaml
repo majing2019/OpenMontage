@@ -1,0 +1,59 @@
+identity:
+  name: "Watercolor Nostalgia"
+  category: comic
+  mood: nostalgic, wistful, gentle, emotional
+  pace: slow
+  best_for: "时光、回忆、感动、青春纪念"
+
+visual_language:
+  color_palette:
+    primary: ["#D4C5A9", "#BFA882"]       # 褪色暖色
+    accent: ["#8B7355", "#A67B5B"]        # 复古棕
+    background: "#F5EFE0"                  # 旧纸色
+    text: "#5C4A32"                        # 深棕文字
+    muted: "#C9B99A"                       # 浅米
+  composition: 柔焦边缘，画面有"记忆"感，时光流逝的意境
+  texture: 水彩晕染边缘，淡彩笔触，像褪了色的老照片
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 600
+    line_height: 1.3
+  body:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.6
+
+motion:
+  transitions:
+    - fade
+    - dissolve
+  animation_style: dreamy-fade
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 8
+    transition_duration_seconds: 1.0
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+  ducking_threshold_db: -20
+
+asset_generation:
+  image_prompt_prefix: "水彩插画, 怀旧色调, 梦幻质感, 柔和笔触, 时光感, 温暖回忆, 梦幻柔光, 纱帘阳光"
+  image_negative_prompt: "photorealistic, 3D render, photograph, realistic photo, sharp lines, vibrant"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+  diagram_style: "none"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"

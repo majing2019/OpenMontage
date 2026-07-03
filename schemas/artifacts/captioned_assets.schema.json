@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/captioned_assets",
+  "title": "Captioned Assets",
+  "description": "Panel images with text overlays applied. Produced by the caption stage, consumed by the compose stage.",
+  "type": "object",
+  "required": [
+    "version",
+    "panels",
+    "text_overlay_summary"
+  ],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "panels": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Captioned panel images",
+      "items": {
+        "type": "object",
+        "required": ["panel_number", "image_path"],
+        "properties": {
+          "panel_number": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "1-based panel number"
+          },
+          "image_path": {
+            "type": "string",
+            "description": "File path to the captioned image (with text overlays applied)"
+          },
+          "source_image_path": {
+            "type": "string",
+            "description": "File path to the original uncaptioned image"
+          },
+          "text_overlays_applied": {
+            "type": "array",
+            "description": "Text overlays applied to this panel",
+            "items": {
+              "type": "object",
+              "properties": {
+                "content": { "type": "string" },
+                "position": { "type": "string" },
+                "style": { "type": "string" },
+                "font_size": { "type": ["string", "integer"] },
+                "color": { "type": "string" },
+                "stroke": { "type": "string" }
+              }
+            }
+          },
+          "scene_text_fixups": {
+            "type": "array",
+            "description": "Scene text corrections applied (ai_draw texts that needed PIL fix)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "original_content": { "type": "string" },
+                "fixup_method": {
+                  "type": "string",
+                  "enum": ["pil_overlay", "pil_perspective"],
+                  "description": "How the text was fixed: simple overlay or perspective-matched overlay"
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Why the fix was needed (e.g., 'AI generated garbled text')"
+                }
+              }
+            }
+          },
+          "contrast_ratio": {
+            "type": "number",
+            "description": "Measured contrast ratio for text on background (≥ 4.5:1 required)"
+          }
+        }
+      }
+    },
+    "text_overlay_summary": {
+      "type": "object",
+      "description": "Summary of all text overlay operations",
+      "properties": {
+        "total_panels": { "type": "integer" },
+        "panels_with_text_overlay": { "type": "integer" },
+        "panels_with_scene_text_fixup": { "type": "integer" },
+        "all_pass_contrast_check": { "type": "boolean" },
+        "typography_rules_followed": { "type": "boolean" }
+      }
+    },
+    "typography_rules": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Typography rules from comic-typography.md that were applied"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

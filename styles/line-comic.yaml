@@ -1,0 +1,98 @@
+identity:
+  name: "Line Comic"
+  category: comic
+  mood: humorous, relatable, expressive, everyday
+  pace: fast
+  best_for: "段子、日常吐槽、打工人、社死、社交媒体条漫、情绪漫画"
+
+visual_language:
+  color_palette:
+    primary: ["#000000", "#333333"]
+    accent: ["#000000"]
+    background: "#FFFFFF"
+    text: "#000000"
+    muted: "#999999"
+  composition: 角色居中，白底无背景细节，留白充足，表情是绝对视觉焦点，漫画分格可用
+  texture: 纯黑白线稿，无上色无渐变，线条干净清晰，简笔画风格，粗线条勾边，无阴影无纹理
+
+# ── Style Lock（生图 prompt 关键词）──
+style_lock:
+  - "黑白线条漫画"
+  - "纯线稿无上色"
+  - "简笔画风格"
+  - "简洁干净线条"
+  - "白色背景无背景细节"
+  - "表情夸张生动"
+  - "黑色墨线"
+  - "网络条漫风格"
+  - "极简角色设计"
+  - "漫画分格"
+  - "粗线条勾边"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 900
+    line_height: 1.1
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.4
+  # Caption overlay conventions
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#FFFFFF"
+    stroke: "#000000"
+    stroke_width: 2
+    band_color: "rgba(0, 0, 0, 0.63)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方，无间隙"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 8
+    transition_duration_seconds: 0.5
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+# ── 视频合成约定 ──
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1080×1080 原图 → 缩放到 720×720 → 紧贴 caption 暗条上方 → 整体垂直居中于 720×1280 白色画布"
+  transition: "xfade=fade, duration=0.5s"
+  padding_color: "#FFFFFF"
+
+asset_generation:
+  image_resolution: "1024×1024"  # 正方形 1:1，绝不生成竖屏
+  image_prompt_prefix: "黑白线条漫画, 纯线稿无上色, 简笔画风格, 简洁干净线条, 白色背景无背景细节, 表情夸张生动, 黑色墨线, 网络条漫风格, 极简角色设计, 漫画分格, 粗线条勾边"
+  image_negative_prompt: "color, colored, watercolor, oil painting, photorealistic, 3D render, photograph, gradient, shading, shadow, texture, background detail, realistic proportions, anime, cartoon color"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"
+  - "黑白线稿风格中画面必须无彩色、无渐变、无阴影"
+  - "背景保持纯白，不添加多余场景细节"
+  - "生图必须正方形 1:1（1024×1024），绝不生成 720×1280"
+  - "caption 字号固定 36px，文字长了暗条变高，绝不缩小字号"
+  - "caption 暗条紧贴图片下边，图+暗条整体垂直居中"
+  - "caption 阶段直接输出 720×1280，compose 阶段无需 resize"
+  - "AI 已画的 scene_text（对话气泡、手机消息等）不重复叠加"

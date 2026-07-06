@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "openmontage/artifacts/shot_list",
   "title": "Shot List",
-  "description": "Complete panel-by-panel shot plan for comic-story pipeline. Produced by shot-plan stage, consumed by preview and generate stages.",
+  "description": "Complete panel-by-panel shot plan for comic-story pipeline. Produced by shot-plan stage, consumed by preview and generate stages. Supports per-panel expression, pose, camera angle, and atmosphere variation for natural image diversity.",
   "type": "object",
   "required": [
     "version",
@@ -49,16 +49,50 @@
           "visual_description": {
             "type": "string",
             "minLength": 1,
-            "description": "Seedream image generation prompt for this panel"
+            "description": "Panel-specific action/scene description (what's unique to THIS panel)"
           },
           "character_anchors": {
             "type": "array",
             "items": { "type": "string" },
-            "description": "Character anchor descriptions for characters appearing in this panel"
+            "description": "Character names appearing in this panel (keys into character_registry)"
           },
           "scene_template": {
             "type": "string",
-            "description": "Scene template prefix from scene_registry for this panel's setting"
+            "description": "Scene name key into scene_registry for this panel's setting"
+          },
+          "camera_angle": {
+            "type": "string",
+            "description": "Camera angle for this panel — varies per panel even within the same scene. Examples: '中景平视，从厨房门口看向操作台', '近景俯角，聚焦人物手部动作', '中景侧角，从窗户方向逆光拍摄'"
+          },
+          "atmosphere": {
+            "type": "string",
+            "description": "Lighting and mood atmosphere for this panel — driven by the beat's emotion. Examples: '午后阳光透过纱帘，温暖宁静', '黄昏暖黄灯光，空气中飘着尘埃', '阴天白光灯，冷清安静'"
+          },
+          "expression": {
+            "type": "object",
+            "description": "Per-character expression and pose for this panel. Keyed by character name (matching character_registry keys).",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["emotion", "facial_expression", "body_language"],
+              "properties": {
+                "emotion": {
+                  "type": "string",
+                  "description": "The emotional beat for this character in this panel (操心, 惊讶, 开心, 悲伤, 尴尬, 释然, 决心, etc.)"
+                },
+                "facial_expression": {
+                  "type": "string",
+                  "description": "Specific facial cues: eyebrows, eyes, mouth, cheeks. Must vary from other panels."
+                },
+                "body_language": {
+                  "type": "string",
+                  "description": "Pose, gestures, body orientation, what hands are doing."
+                },
+                "action": {
+                  "type": "string",
+                  "description": "What the character is actively doing in this moment."
+                }
+              }
+            }
           },
           "scene_texts": {
             "type": "array",
@@ -124,24 +158,28 @@
     },
     "character_registry": {
       "type": "object",
-      "description": "All characters appearing in the comic, keyed by character name",
+      "description": "All characters appearing in the comic, keyed by character name. Each character has immutable core_traits and a per-panel expression is designed separately per panel.",
       "additionalProperties": {
         "type": "object",
-        "required": ["anchor_description"],
+        "required": ["core_traits", "role"],
         "properties": {
-          "anchor_description": {
+          "core_traits": {
             "type": "string",
             "minLength": 1,
-            "description": "Fixed visual description used verbatim in every prompt containing this character"
+            "description": "IMMUTABLE physical identity description used verbatim in every prompt. Covers: age, face shape, facial features, hair, body type, clothing, skin, signature accessories. Does NOT include expression or emotion — those vary per panel."
           },
           "role": {
             "type": "string",
             "description": "Character role in the story (protagonist, antagonist, supporting, etc.)"
           },
+          "reference_image_path": {
+            "type": "string",
+            "description": "Path to the character's three-view reference image generated in the preview stage. Passed as reference_image to Seedream in the generate stage."
+          },
           "emotion_range": {
             "type": "array",
             "items": { "type": "string" },
-            "description": "Emotions this character displays across panels"
+            "description": "Emotions this character displays across all panels (for variety planning)"
           },
           "panels": {
             "type": "array",
@@ -153,19 +191,35 @@
     },
     "scene_registry": {
       "type": "object",
-      "description": "All unique scenes/settings in the comic, keyed by scene name",
+      "description": "All unique scenes/settings in the comic, keyed by scene name. Each scene has a master description library with camera angles and atmosphere variants.",
       "additionalProperties": {
         "type": "object",
-        "required": ["template_prefix"],
+        "required": ["master_description", "camera_angles", "atmosphere_variants"],
         "properties": {
-          "template_prefix": {
+          "master_description": {
             "type": "string",
             "minLength": 1,
-            "description": "Fixed scene description prefix used verbatim in every prompt for this scene"
+            "description": "Core scene description — the fixed elements that make this scene recognizable (room layout, furniture, color scheme, key props). Used in every prompt for this scene."
+          },
+          "camera_angles": {
+            "type": "array",
+            "minItems": 2,
+            "items": { "type": "string" },
+            "description": "Library of camera angles for this scene. Different panels in the same scene pick different angles for variety. Min 2 required."
+          },
+          "atmosphere_variants": {
+            "type": "array",
+            "minItems": 2,
+            "items": { "type": "string" },
+            "description": "Library of lighting/atmosphere variants for this scene. Different panels pick different atmospheres based on the beat's emotion. Min 2 required."
+          },
+          "reference_image_path": {
+            "type": "string",
+            "description": "Path to the scene sample image generated in the preview stage (for human confirmation only — NOT passed as reference_image to Seedream)"
           },
           "description": {
             "type": "string",
-            "description": "Full scene description"
+            "description": "Human-readable scene description for context"
           },
           "panels": {
             "type": "array",

@@ -2,7 +2,7 @@
 
 ## When to Use
 
-You are the **Executive Producer (EP)** for a comic-story production — transforming text snippets, jokes, or video references into a complete image-sequence comic for Douyin/Xiaohongshu. The output is a **PNG image sequence** (not video). Users can post as image carousels or assemble into video themselves.
+You are the **Executive Producer (EP)** for a comic-story production — transforming text snippets, jokes, or video references into a complete comic video for Douyin/Xiaohongshu. The output is a **vertical MP4 slideshow video** (720×1280, 9:16) with fade transitions between panels, composed via FFmpeg xfade. No audio.
 
 This pipeline has no audio (no TTS, no music, no SFX). All audio fields in the playbook are set to "none".
 
@@ -16,7 +16,7 @@ You orchestrate 7 stages serially with quality gates focused on **character cons
 | Skills | All 7 director skills + `meta/reviewer` + `meta/checkpoint-protocol` | Stage execution |
 | Skills | `creative/character-consistency`, `creative/comic-typography`, `creative/personal-ip` | Comic-specific knowledge |
 | Schemas | All artifact schemas | Validation |
-| Playbook | Active comic playbook (5 presets + custom) | Style constraints |
+| Playbook | Active comic playbook (6 presets + custom) | Style constraints |
 | Tools | `story_factory`, `image_selector`, `video_analyzer`, `transcript_fetcher` | Generation capabilities |
 
 ## Cumulative State
@@ -29,7 +29,7 @@ EP_STATE:
   budget_total_usd: <configured, default $1.00>
   budget_spent_usd: 0.0
   budget_remaining_usd: <budget_total - budget_spent>
-  output_format: "image_sequence"  # FIXED — always image sequence, never video
+  output_format: "video_slideshow"  # FFmpeg xfade slideshow, 720x1280 MP4
 
   # Comic-specific state
   style_decision: null          # style-pick: locked style parameters
@@ -149,12 +149,13 @@ CHECK: Typography quality
 
 ### After COMPOSE stage:
 ```
-CHECK: Final image sequence
-  - All images valid (exist, readable, no corruption)
-  - Resolution identical across all panels
+CHECK: Final video output
+  - All captioned images valid (exist, readable, no corruption)
+  - All images resized to 720×1280 consistently
   - IP outro is the last panel
-  - File naming: panel_01.png, panel_02.png, ... (sequential)
-  - Total panel count matches shot_list panel count
+  - FFmpeg xfade executed without errors
+  - Output final.mp4: h264, 720×1280, 30fps
+  - Video duration within ±1s of expected (Σ durations - (N-1) × 0.5s)
 ```
 
 ## Quality Gates Summary
@@ -167,7 +168,7 @@ CHECK: Final image sequence
 | G4 | preview | Character/scene images, user approval | Revise |
 | G5 | generate | Image existence, style consistency, budget | Revise |
 | G6 | caption | Text contrast, typography rules, readability | Revise |
-| G7 | compose | Image integrity, resolution, IP outro, naming | Revise |
+| G7 | compose | Image integrity, FFmpeg xfade video, resolution, IP outro | Revise |
 | FINAL | all | Character consistency, style unity, typography, IP branding | Send-back |
 
 ## Execution Limits
@@ -189,5 +190,5 @@ CHECK: Final image sequence
 - **Garbled AI text**: Seedream ≤5 char text is reliable; beyond that, always use post_only + PIL overlay. Don't hope for the best.
 - **Text over faces**: Comic typography must respect safe zones. Text goes in designated areas, never over character expressions.
 - **Missing IP outro**: The last panel must include the personal IP branding. Forgetting it breaks the creator's brand consistency.
-- **Treating this as a video pipeline**: comic-story produces image sequences, not video. No audio, no motion, no video_compose. The output is PNG files.
+- **Treating this as a full video pipeline**: comic-story produces a simple slideshow video (FFmpeg xfade), not a Remotion/HyperFrames composition. No audio, no motion graphics, no video_compose tool. The output is an MP4 slideshow.
 - **Skipping preview**: Preview is the critical quality gate. Generating all panels without confirmed character/scene anchors wastes budget and produces inconsistent results.

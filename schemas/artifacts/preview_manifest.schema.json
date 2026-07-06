@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "openmontage/artifacts/preview_manifest",
   "title": "Preview Manifest",
-  "description": "Character anchor images and scene sample images produced by the preview stage. Once approved, character and scene descriptions are locked for the generate stage.",
+  "description": "Character reference images, expression headshots, and scene sample images produced by the preview stage. Character reference images and expression headshots are passed as reference_image to Seedream in the generate stage. Scene images are for human confirmation only.",
   "type": "object",
   "required": [
     "version",
@@ -15,22 +15,49 @@
     "character_anchors": {
       "type": "array",
       "minItems": 1,
-      "description": "Character anchor (three-view) images and locked descriptions",
+      "description": "Character reference images, expression headshots, and locked core_traits. Reference images anchor identity; expression headshots anchor both identity AND specific emotions in the generate stage.",
       "items": {
         "type": "object",
-        "required": ["character_name", "image_path", "anchor_description"],
+        "required": ["character_name", "reference_image_path", "core_traits", "expression_headshots"],
         "properties": {
           "character_name": {
             "type": "string",
             "description": "Character registry key"
           },
-          "image_path": {
+          "reference_image_path": {
             "type": "string",
-            "description": "File path to the character anchor image (three-view sheet)"
+            "description": "File path to the character's neutral full-body reference image (front-view standing, neutral expression, light-gray background). Used as fallback reference_image when no matching expression headshot exists."
           },
-          "anchor_description": {
+          "core_traits": {
             "type": "string",
-            "description": "The locked character description used for consistent generation"
+            "description": "IMMUTABLE physical identity description (age, face, hair, body, clothing, accessories). Copied verbatim into every prompt. Does NOT include expression or emotion."
+          },
+          "expression_headshots": {
+            "type": "array",
+            "minItems": 1,
+            "description": "Expression headshots with composite reference images for each unique emotion this character displays across panels. Each composite (headshot + full-body side-by-side) anchors both identity AND the target expression for Seedream. The composite is passed as reference_image in the generate stage.",
+            "items": {
+              "type": "object",
+              "required": ["emotion", "headshot_path", "composite_reference_path", "facial_expression"],
+              "properties": {
+                "emotion": {
+                  "type": "string",
+                  "description": "The emotion label (e.g. 操心, 惊讶, 开心, 悲伤, 尴尬, 释然, 决心). Matches panel.expression[character].emotion."
+                },
+                "headshot_path": {
+                  "type": "string",
+                  "description": "File path to the expression headshot image (close-up face showing this emotion, light-gray background)."
+                },
+                "composite_reference_path": {
+                  "type": "string",
+                  "description": "File path to the composite reference image (headshot + neutral full-body side-by-side, 1024×1024). THIS is the image passed as image_path to image_selector in the generate stage."
+                },
+                "facial_expression": {
+                  "type": "string",
+                  "description": "The facial expression description used to generate this headshot (from the expression variation library)"
+                }
+              }
+            }
           },
           "views": {
             "type": "array",
@@ -38,33 +65,43 @@
               "type": "string",
               "enum": ["front", "side", "back"]
             },
-            "description": "Views included in the anchor image"
+            "description": "Views included in the reference image"
+          },
+          "usage": {
+            "type": "string",
+            "enum": ["reference_image"],
+            "description": "How this image is used in the generate stage. Always 'reference_image' — passed to Seedream for identity anchoring."
           },
           "approved": {
             "type": "boolean",
-            "description": "Whether the user approved this character anchor"
+            "description": "Whether the user approved this character's visual identity and expression headshots"
           }
         }
       }
     },
     "scene_samples": {
       "type": "array",
-      "description": "Scene sample (定妆) images",
+      "description": "Scene sample images for HUMAN CONFIRMATION ONLY. NOT passed as reference images to Seedream — scene variety comes from text descriptions (master_description + camera_angle + atmosphere).",
       "items": {
         "type": "object",
-        "required": ["scene_name", "image_path", "template_prefix"],
+        "required": ["scene_name", "reference_image_path", "master_description"],
         "properties": {
           "scene_name": {
             "type": "string",
             "description": "Scene registry key"
           },
-          "image_path": {
+          "reference_image_path": {
             "type": "string",
-            "description": "File path to the scene sample image"
+            "description": "File path to the scene sample image. For human confirmation only — NOT passed as reference_image to Seedream."
           },
-          "template_prefix": {
+          "master_description": {
             "type": "string",
-            "description": "The locked scene template prefix for consistent generation"
+            "description": "Core scene description with fixed elements (room layout, furniture, color scheme, key props). Used in every prompt for this scene."
+          },
+          "usage": {
+            "type": "string",
+            "enum": ["human_confirmation_only"],
+            "description": "How this image is used in the generate stage. Always 'human_confirmation_only' — scene images are NOT passed to Seedream as they constrain composition and cause identical backgrounds."
           },
           "characters_included": {
             "type": "array",
@@ -73,25 +110,39 @@
           },
           "approved": {
             "type": "boolean",
-            "description": "Whether the user approved this scene sample"
+            "description": "Whether the user approved this scene's visual setting"
           }
         }
       }
     },
     "prompt_templates": {
       "type": "object",
-      "description": "Locked prompt templates combining style_lock + character_anchor + scene_template patterns",
+      "description": "Locked prompt templates for the generate stage. Character template uses reference_image + varied expression. Scene template uses text-only description variation.",
       "additionalProperties": {
         "type": "object",
         "properties": {
           "pattern": {
             "type": "string",
-            "description": "Template pattern string where {style}, {character}, {scene} are placeholders"
+            "description": "Template pattern string using {image_prompt_prefix}, {master_description}, {camera_angle}, {atmosphere}, {core_traits}, {expression}, {visual_description}, {style_lock}"
           },
           "example_filled": {
             "type": "string",
             "description": "One example of the template filled with actual values"
           }
+        }
+      }
+    },
+    "reference_image_strategy": {
+      "type": "object",
+      "description": "Documents the reference image strategy for the generate stage",
+      "properties": {
+        "character_images": {
+          "type": "string",
+          "description": "Expression headshots are passed as image_path to Seedream — anchors both character identity AND target expression. Neutral full-body reference used as fallback when no matching headshot exists."
+        },
+        "scene_images": {
+          "type": "string",
+          "description": "NOT passed as reference_image — human confirmation only. Scene variety comes from text descriptions (master_description + camera_angle + atmosphere)."
         }
       }
     },

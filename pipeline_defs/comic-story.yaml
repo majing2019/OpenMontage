@@ -2,10 +2,10 @@ name: comic-story
 version: "1.0"
 description: >
   Comic story pipeline: transforms text snippets, jokes, or video references into a complete
-  image-sequence comic for Douyin/Xiaohongshu. Produces PNG panels — not video — so users can
-  post as image carousels or assemble into video themselves. Key differentiators: built-in
-  character consistency (three-view anchoring), comic typography (text overlay with style rules),
-  and personal IP outro.
+  comic video for Douyin/Xiaohongshu. Produces a vertical MP4 slideshow (720×1280, 9:16) with
+  fade transitions between captioned panels, composed via FFmpeg xfade. No audio.
+  Key differentiators: built-in character consistency (three-view anchoring), comic typography
+  (text overlay with style rules), and personal IP outro.
 category: comic
 stability: beta
 default_checkpoint_policy: guided
@@ -46,6 +46,7 @@ compatible_playbooks:
   recommended:
     - warm-illustration
     - clean-comic
+    - line-comic
   also_works:
     - cinematic-drama
     - watercolor-nostalgia
@@ -138,14 +139,19 @@ stages:
     human_approval_default: true
     review_focus:
       - Every character_registry entry has an anchor image
+      - Every character has expression headshots for ALL unique emotions from shot_list
+      - Expression headshots are close-up face shots (大头照), not full-body
+      - Composite reference images generated (headshot + full-body side-by-side) for each emotion
       - Every scene_registry entry has a scene sample image
-      - User confirmed characters look correct and scenes match
+      - User confirmed characters look correct, expressions are natural, scenes match
       - Character and scene descriptions are locked after approval
     success_criteria:
       - Schema-valid preview_manifest artifact
       - All character anchor images generated
+      - All expression headshots generated (one per unique emotion per character)
+      - All composite reference images generated (headshot + full-body side-by-side)
       - All scene sample images generated
-      - User approved all characters and scenes
+      - User approved all characters, expressions, and scenes
 
   - name: generate
     skill: pipelines/comic-story/generate-director
@@ -160,16 +166,18 @@ stages:
     tools_available:
       - image_selector
     checkpoint_required: true
-    human_approval_default: false
+    human_approval_default: true
     review_focus:
       - All panel images exist and are readable
       - All images use the same style_lock keywords
       - Budget ≤ 90% of configured budget
+      - Composite reference images (headshot + full-body) used as reference_image for character panels
       - Character anchors and scene templates from preview are used verbatim
     success_criteria:
       - Schema-valid asset_manifest artifact
       - All panel images generated with locked style
       - No character or scene description deviations from preview
+      - Composite reference match rate recorded in asset_manifest
 
   - name: caption
     skill: pipelines/comic-story/caption-director
@@ -201,17 +209,21 @@ stages:
       - shot_list
     produces:
       - render_report
-    tools_available: []
+    tools_available:
+      - ffmpeg
     checkpoint_required: true
-    human_approval_default: false
+    human_approval_default: true
     review_focus:
       - All captioned images are valid (exist, readable, no corruption)
-      - All images have identical resolution
+      - All images resized to 720×1280 consistently
+      - FFmpeg xfade video composition executed without errors
+      - Output final.mp4: h264 codec, 720×1280 resolution, 30fps
+      - Video duration within ±1s of expected
       - IP outro is the last panel
-      - File naming follows panel_XX.png sequential order
       - Total panel count matches shot_list panel count
     success_criteria:
       - Schema-valid render_report artifact
-      - Final image sequence output to projects/<name>/renders/panel_*.png
+      - Final video output to projects/<name>/renders/final.mp4
+      - Video is h264, 720×1280, 30fps, with fade transitions
       - Resolution consistency verified across all panels
       - IP outro present in final panel

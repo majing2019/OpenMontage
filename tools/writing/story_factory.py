@@ -3,6 +3,9 @@
 Generates structured story seeds with 5-beat narratives, character archetypes,
 visual suggestions, and style keywords ready for Seedream image generation.
 
+Includes a lightweight `pitch` mode that produces 5-8 one-sentence story ideas
+for a fast brainstorming round before committing to a full seed.
+
 Zero external dependencies — pure local computation.
 """
 
@@ -178,8 +181,8 @@ class StoryFactory(BaseTool):
         "properties": {
             "mode": {
                 "type": "string",
-                "enum": ["emotion_matrix", "what_if", "daily_catch", "random", "batch", "from_text", "from_video"],
-                "description": "Generation mode. from_text: analyze text → story seeds. from_video: analyze video → story seeds.",
+                "enum": ["emotion_matrix", "what_if", "daily_catch", "random", "batch", "from_text", "from_video", "pitch"],
+                "description": "Generation mode. pitch: lightweight one-sentence story ideas for brainstorming. from_text: analyze text → story seeds. from_video: analyze video → story seeds.",
             },
             "emotion": {
                 "type": "string",
@@ -284,11 +287,28 @@ class StoryFactory(BaseTool):
                 seeds = self._gen_from_text(inputs, count, rng, target_duration, char_count)
             elif mode == "from_video":
                 seeds = self._gen_from_video(inputs, count, rng, target_duration, char_count)
+            elif mode == "pitch":
+                seeds = self._gen_pitch(inputs, count, rng)
+                # Pitch mode returns lightweight loglines, not full seeds.
+                # Wrap them to match the expected output structure.
+                result = ToolResult(
+                    success=True,
+                    data={
+                        "pitches": seeds,
+                        "generation_mode": "pitch",
+                        "total": len(seeds),
+                        "hint": "User picks one pitch → re-run with mode='from_text' using the chosen logline as text_content to develop the full story_seed.",
+                    },
+                    duration_seconds=round(time.time() - start, 3),
+                    cost_usd=0.0,
+                    seed=seed_val,
+                )
+                return result
             else:
                 return ToolResult(
                     success=False,
                     error=f"Unknown mode: {mode}. "
-                          f"Valid modes: emotion_matrix, what_if, daily_catch, random, batch, from_text, from_video",
+                          f"Valid modes: emotion_matrix, what_if, daily_catch, random, batch, from_text, from_video, pitch",
                 )
         except Exception as exc:
             return ToolResult(success=False, error=f"Story generation failed: {exc}")
@@ -416,6 +436,74 @@ class StoryFactory(BaseTool):
                 all_seeds.extend(self._gen_random(batch_inputs, c, rng, duration, char_count))
 
         return all_seeds[:count]
+
+    # ── pitch mode ───────────────────────────────────────────────────
+    def _gen_pitch(
+        self, inputs, count: int, rng
+    ) -> list[dict]:
+        """Generate lightweight one-sentence story pitches for brainstorming.
+
+        Each pitch is a single sentence that captures the core story hook.
+        No full 5-beat structure — just enough for the user to gauge interest.
+        """
+        text_content = inputs.get("text_content", "")
+        emotion = inputs.get("emotion")
+        scene = inputs.get("scene")
+
+        # Ensure we generate at least 5 pitches for a good selection
+        actual_count = max(count, 5)
+
+        if text_content:
+            # from_text path: analyze → what-if transform → one-sentence loglines
+            analysis = analyze_text(text_content)
+            source = analysis.core_concept
+        elif emotion or scene:
+            # emotion_matrix path: use matrix seeds as inspiration
+            source = None
+        else:
+            # random path: mix daily observations + random seeds
+            source = None
+
+        pitches = []
+        if source:
+            # Generate pitches via what-if transformations
+            whatif_results = transform(source, rules=None, rng=rng)
+            for wr in whatif_results:
+                emotion_guess = EMOTIONS[rng.randint(0, len(EMOTIONS) - 1)]
+                style_key = EMOTION_STYLE_MAP.get(emotion_guess, "warm_illustration")
+                pitches.append({
+                    "logline": wr.transformed_concept,
+                    "emotion": emotion_guess,
+                    "pattern_hint": wr.pattern_suggestion,
+                    "twist_type": wr.rule_name,
+                    "style_hint": style_key,
+                    "seedream_keywords": STYLE_PRESETS.get(style_key, STYLE_PRESETS["warm_illustration"])["seedream_keywords"],
+                })
+
+        # Pad with random matrix seeds to reach actual_count
+        while len(pitches) < actual_count:
+            matrix_seed = get_random_seed(emotion, scene, rng)
+            if not matrix_seed:
+                continue
+            emo = rng.choice(EMOTIONS)
+            style_key = EMOTION_STYLE_MAP.get(emo, "warm_illustration")
+            pitches.append({
+                "logline": matrix_seed.logline,
+                "emotion": emo,
+                "pattern_hint": matrix_seed.pattern_name if matrix_seed.pattern_name else "日常英雄",
+                "twist_type": _twist_type_from_emotion(emo),
+                "style_hint": style_key,
+                "seedream_keywords": STYLE_PRESETS.get(style_key, STYLE_PRESETS["warm_illustration"])["seedream_keywords"],
+            })
+
+        # Deduplicate by logline
+        seen: set[str] = set()
+        unique: list[dict] = []
+        for p in pitches:
+            if p["logline"] not in seen:
+                seen.add(p["logline"])
+                unique.append(p)
+        return unique[:actual_count]
 
     # ── from_text / from_video modes ────────────────────────────────────
 
@@ -756,3 +844,18 @@ def _short_title(text: str, max_len: int = 15) -> str:
         if c in "，。、；！？" and i > 3:
             return text[:i]
     return text[:max_len] + "…"
+
+
+def _twist_type_from_emotion(emotion: str) -> str:
+    """Map an emotion to a likely twist type for pitch labeling."""
+    mapping = {
+        "惊讶": "反转倒置",
+        "感动": "视角翻转",
+        "好笑": "类型转换",
+        "紧张": "代价升级",
+        "温暖": "视角翻转",
+        "心酸": "时间跳跃",
+        "愤怒": "代价升级",
+        "治愈": "视角翻转",
+    }
+    return mapping.get(emotion, "视角翻转")

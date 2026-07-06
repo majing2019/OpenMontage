@@ -2,137 +2,147 @@
 
 ## When To Use
 
-You are the **Caption Director** for the comic-story pipeline. Your job is to overlay text onto the generated panel images — both narrative text (`text_overlay`) and scene text corrections (`scene_texts` with `post_only` or garbled `ai_draw` text).
+You are the **Caption Director** for the comic-story pipeline. Your job is to overlay narrative caption text onto panel images AND resize them to the final video resolution (720×1280) in one step.
 
-This stage requires **user approval** because text placement and readability directly affect the final product quality.
+This stage requires **user approval** because text readability directly affects the final product.
+
+## Core Convention: Caption Stage = Final Resolution
+
+The caption stage produces **720×1280** images ready for video composition. No further resizing happens downstream.
 
 ## Reference Inputs
 
-- `skills/creative/comic-typography.md` — **MANDATORY READ**: Text overlay positions, font/size/safe-zone rules
-- `schemas/artifacts/shot_list.schema.json` — Panel text definitions
-- `schemas/artifacts/preview_manifest.schema.json` — Panel images (source)
+- `skills/creative/comic-typography.md` — Text overlay positions, font rules, safe zones
+- `schemas/artifacts/shot_list.schema.json` — Panel `text_overlay` definitions
+- `schemas/artifacts/style_decision.json` — Color palette context
 
 ## Prerequisites
 
 | Layer | Resource | Purpose |
 |-------|----------|---------|
-| Artifact | `shot_list` | Panel text_overlay and scene_texts definitions |
-| Artifact | `asset_manifest` | Panel image paths |
-| Artifact | `style_decision` | Color palette for text styling |
-| Skill | `creative/comic-typography.md` | Typography rules and safe zones |
+| Artifact | `shot_list` | Panel text_overlay content per panel |
+| Artifact | `asset_manifest` | Panel image paths (1080×1080 source) |
+| Skill | `creative/comic-typography.md` | Typography rules |
+
+## Hard Rules
+
+### Rule 1: Uniform Caption Style
+
+ALL panels use the **exact same** caption style — position, font, font size, color. The only thing that varies is the text content.
+
+| Property | Value |
+|----------|-------|
+| Font | PingFang SC Regular (macOS system font, index 3 in PingFang.ttc) |
+| Font size | **36px fixed** — never shrinks for long text |
+| Text color | `#FFFFFF` (white) |
+| Stroke | `#000000` (black), 2px width |
+| Band color | Semi-transparent black, alpha=160 (~63% opacity) |
+| Band position | Right below the image, no gap |
+| Text alignment | Centered horizontally within band |
+| Text padding | 20px from top of band |
+
+### Rule 2: Band Grows, Font Never Shrinks
+
+- Short text (1 line): band is ~86px tall (line height + 40px padding)
+- Medium text (2 lines): band is ~130px tall
+- Long text (3+ lines): band grows accordingly
+- **Never reduce font size.** The 36px font is the minimum for mobile readability.
+
+### Rule 3: Image + Band Centered Vertically
+
+The 1080×1080 source image is scaled to 720×720 and placed above the caption band (no gap). The entire image+band block is centered vertically in the 720×1280 canvas. White padding (255,255,255) fills the remaining space — this matches all comic art styles (line-comic, clean-comic, warm-illustration).
+
+### Rule 4: No Scene Text Overlays
+
+Scene texts (speech bubbles, phone screens, inner monologues) are **already drawn by the AI** during the generate stage. Do NOT overlay them again with PIL. Only apply `text_overlay` (narration caption).
 
 ## Process
 
-### 1. Read Typography Rules (MANDATORY)
+### 1. For Each Panel
 
-Read `comic-typography.md` before processing any text. Key rules:
-- **Safe zones**: Text must not overlap character facial expressions
-- **Position mapping**: Each `text_overlay.position` maps to specific pixel coordinates
-- **Font sizes**: Minimum sizes for readability on mobile
-- **Color and stroke**: Ensure contrast ≥ 4.5:1 against the image background
-- **Diverse styles**: bold_title, body, whisper, impact, narration each have distinct styling
+```python
+TARGET_W, TARGET_H = 720, 1280
+FONT_SIZE = 36
+BAND_ALPHA = 160
+MARGIN_X = 60
+BAND_SIDE_PAD = 20  # inner padding above/below text
 
-### 2. Process Each Panel
+# Load and scale source
+img = Image.open("panel_XX.png")  # 1080×1080
+scale = TARGET_W / img.width
+new_h = int(img.height * scale)
+img_resized = img.resize((TARGET_W, new_h), Image.LANCZOS)
 
-For each panel in order:
+# Measure text to determine band height
+content = shot_list.panels[i].text_overlay.content  # skip if empty
+if content:
+    font = ImageFont.truetype(PINGFANG_TTC, 36, index=3)
+    lines = wrap_text(content, font, max_width=TARGET_W - 120)
+    line_h = measure_line_height(font)
+    band_h = line_h * len(lines) + BAND_SIDE_PAD * 2
+else:
+    band_h = 0
 
-#### A. Text Overlay Processing (`text_overlay`)
+# Center image+band vertically
+img_y = (1280 - (new_h + band_h)) // 2
+band_y = img_y + new_h
 
-From `shot_list.panels[i].text_overlay`:
+# Create white canvas
+canvas = Image.new("RGBA", (720, 1280), (255, 255, 255, 255))
+canvas.paste(img_resized, (0, img_y))
 
-1. **Position calculation**: Map the `position` field to pixel coordinates
-   - `center_top`: Top center, below safe zone
-   - `speech_bubble`: Above or near the speaking character's head
-   - `corner`: Bottom-left or bottom-right corner
-   - `bottom`: Bottom center, above safe zone
-   - `emphasis`: Center of frame, large impact text
-   - `narration`: Top or bottom band, serif font, muted color
+# Draw caption band and text
+if content:
+    band = Image.new("RGBA", (720, band_h), (0, 0, 0, 160))
+    canvas.paste(band, (0, band_y))
 
-2. **Style application**: Map `style` to font properties
-   - `bold_title`: Large, bold, white with black stroke
-   - `body`: Medium, regular weight
-   - `whisper`: Small, light, italic-like, muted color
-   - `impact`: Very large, bold, red/yellow accent
-   - `narration`: Medium, serif, semi-transparent background band
+    draw = ImageDraw.Draw(canvas)
+    text_y = band_y + BAND_SIDE_PAD
+    for i, line in enumerate(lines):
+        line_y = text_y + i * line_h
+        # Center each line
+        lw = draw.textbbox((0, 0), line, font=font)[2] - draw.textbbox((0, 0), line, font=font)[0]
+        line_x = (720 - lw) // 2
+        draw_text_with_stroke(draw, line, (line_x, line_y), font, "#FFF", "#000", 2)
 
-3. **Render with PIL**:
-   - Open panel image
-   - Apply text with specified font, size, color, stroke
-   - Check contrast ratio (text color vs. background at text position)
-   - Save captioned image to: `projects/<name>/assets/images/captioned_panel_{panel_number:02d}.png`
-
-#### B. Scene Text Processing (`scene_texts`)
-
-For each scene_text in the panel:
-
-**`ai_draw` method — check readability**:
-1. Open the generated panel image
-2. Check if the AI-rendered text is clear and correct
-3. If **clear and correct**: keep as-is, no PIL overlay needed
-4. If **garbled or incorrect**: apply PIL overlay as fixup (same as post_only)
-   - Record in `scene_text_fixups` with reason
-
-**`post_only` method — PIL overlay**:
-1. Calculate position based on `carrier` description
-   - Phone screen: center of device area
-   - Sign: at the sign location
-   - Chat interface: inside the chat bubble area
-2. Render text with PIL using appropriate font and size
-3. For angled/tilted text (e.g., slanted signs): use PIL perspective transform to match the angle
-4. Apply to the panel image
-
-### 3. Present Captioned Panels for Review
-
-Show each captioned panel to the user. For each panel:
-
-- Display the image with all text overlays applied
-- Highlight: text position, font size, color, stroke
-- Ask: "文字位置、大小、可读性 OK 吗？"
-- If user requests changes: adjust position, size, or color and re-apply (max 3 revisions per panel)
-
-### 4. Build Captioned Assets Manifest
-
-```yaml
-captioned_assets:
-  version: "1.0"
-  panels:
-    - panel_number: 1
-      image_path: "projects/<name>/assets/images/captioned_panel_01.png"
-      source_image_path: "projects/<name>/assets/images/panel_01.png"
-      text_overlays_applied:
-        - content: "加班第一天"
-          position: center_top
-          style: bold_title
-          font_size: "60"
-          color: "#FFFFFF"
-          stroke: "#000000"
-      scene_text_fixups: []
-      contrast_ratio: 8.5
-  text_overlay_summary:
-    total_panels: N
-    panels_with_text_overlay: M
-    panels_with_scene_text_fixup: K
-    all_pass_contrast_check: true
-    typography_rules_followed: true
-  typography_rules: [...from comic-typography.md]
+# Save
+canvas.convert("RGB").save("captioned_panel_XX.png", "PNG")
 ```
 
-### 5. Quality Gate
+### 2. Text Wrapping: Break at Sentences
 
-- [ ] All captioned images exist and are readable
-- [ ] Text contrast ratio ≥ 4.5:1 (WCAG AA) for all overlays
-- [ ] Text positions follow `comic-typography.md` rules
-- [ ] No text overlaps character facial expressions (safe zones respected)
-- [ ] `ai_draw` text checked: clear text kept, garbled text replaced with PIL
-- [ ] `post_only` text rendered correctly with PIL
-- [ ] User has approved the typography quality
+Prefer breaking at sentence-ending punctuation so each line is a complete phrase:
+
+```
+Break AFTER: 。！？…—
+Break AFTER: ，；：、(fallback)
+Otherwise: break at character boundary
+```
+
+### 3. Panel 13 (IP Outro)
+
+The last panel has an **empty** `text_overlay.content`. Skip the caption band entirely — the IP outro (character + signature + CTA) is already drawn in the image by the generate stage.
+
+### 4. Output
+
+Save to: `projects/<name>/assets/images/captioned_panel_{panel_number:02d}.png`
+
+All outputs are **720×1280 RGB PNG** — ready for FFmpeg composition without further processing.
+
+## Quality Gate
+
+- [ ] All captioned images exist at 720×1280
+- [ ] Font size is exactly 36px on every panel (check visually)
+- [ ] Band is flush against image bottom, no gap
+- [ ] Image+band block is vertically centered
+- [ ] Text does not overlap character facial expressions
+- [ ] No duplicate text (scene_texts NOT overlaid)
+- [ ] Panel 13 has no caption band
 - [ ] `captioned_assets` artifact is schema-valid
 
 ## Common Pitfalls
 
-- **Text too small**: Mobile viewers need larger text. Minimum 40px for body text, 60px for titles.
-- **Poor contrast**: White text on bright backgrounds, or dark text on dark backgrounds. Always check contrast ratio.
-- **Text over faces**: The most common mistake. Always position text in designated safe zones AWAY from character expressions.
-- **Missing PIL perspective**: Angled signs need perspective-matched text. Flat text on a tilted surface looks obviously wrong.
-- **Skipping the readability check on ai_draw text**: Seedream sometimes produces garbled characters even for short text. Always check.
-- **Inconsistent styling**: Use the same font family and color scheme across all panels unless the story specifically calls for a change.
+- **Shrinking font for long text**: Never do this. Grow the band instead.
+- **Double-overlaying scene text**: AI already drew speech bubbles, phone messages, etc. Only overlay `text_overlay`.
+- **Stretching images**: Scale preserving aspect ratio, fill empty space with white.
+- **Inconsistent band height**: Band height varies by text length but all other properties (font, color, padding) are identical.

@@ -1,0 +1,89 @@
+identity:
+  name: "Pixel Art"
+  category: comic
+  mood: retro, geeky, playful, nostalgic
+  pace: fast
+  best_for: "游戏梗、互联网文化、二次元、极客幽默、像素美学"
+
+visual_language:
+  color_palette:
+    primary: ["#2C2C2C", "#4A4A4A"]
+    accent: ["#FF004D", "#00E436", "#FFA800", "#29ADFF", "#FF77A8"]
+    background: "#C0C0C0"
+    text: "#1A1A2E"
+    muted: "#8B8B8B"
+  composition: 像素格子组成角色和场景，8-bit 限定色盘，锯齿边缘，像 Game Boy 卡带封面
+  texture: 像素锯齿边缘，限定色盘无渐变，像素格子清晰可见，纯色块
+
+style_lock:
+  - "像素艺术风格"
+  - "8-bit限定色盘"
+  - "像素锯齿边缘"
+  - "纯色块无渐变"
+  - "像素格子清晰"
+  - "复古游戏画面"
+  - "极简像素角色"
+  - "Game Boy配色"
+  - "像素漫画"
+
+typography:
+  headings:
+    font: "Courier New"
+    weight: 700
+    line_height: 1.1
+  body:
+    font: "Courier New"
+    weight: 400
+    line_height: 1.4
+  caption:
+    font: "Courier New"
+    font_size: 32
+    color: "#1A1A2E"
+    stroke: "#C0C0C0"
+    stroke_width: 2
+    band_color: "rgba(192, 192, 192, 0.85)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方，无间隙"
+
+motion:
+  transitions:
+    - cut
+  animation_style: cut
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 5
+    transition_duration_seconds: 0.2
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280 → 整体占满画布"
+  transition: "xfade=fade, duration=0.2s"
+  padding_color: "#C0C0C0"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "像素艺术风格, 8-bit限定色盘, 像素锯齿边缘, 纯色块无渐变, 像素格子清晰, 复古游戏画面, 极简像素角色, Game Boy配色, 像素漫画"
+  image_negative_prompt: "photorealistic, 3D render, photograph, smooth lines, gradient, realistic anatomy, watercolor, oil painting, anti-aliasing, vector art"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"
+  - "画面必须有可见像素锯齿边缘"
+  - "颜色必须限定在 8-bit 色盘范围内"
+  - "不可出现渐变或抗锯齿"

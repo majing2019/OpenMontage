@@ -1,0 +1,84 @@
+identity:
+  name: "Pop Art"
+  category: comic
+  mood: bold, satirical, loud, irreverent
+  pace: fast
+  best_for: "讽刺吐槽、态度表达、反讽幽默、互联网嘴替、流行文化梗"
+
+visual_language:
+  color_palette:
+    primary: ["#FFD700", "#FF0000", "#0066FF"]
+    accent: ["#FF1493", "#00FF00", "#FF6600"]
+    background: "#FFFFFF"
+    text: "#000000"
+    muted: "#CCCCCC"
+  composition: 高饱和原色碰撞，粗黑轮廓线，Ben-Day 网点背景，拟声词爆炸效果字
+  texture: 粗黑轮廓线勾边，网点纸纹理，大面积平涂色块，像 Roy Lichtenstein 的漫画
+
+style_lock:
+  - "波普艺术风格"
+  - "粗黑轮廓线勾边"
+  - "高饱和原色碰撞"
+  - "Ben-Day网点纹理"
+  - "大面积平涂色块"
+  - "爆炸效果字"
+  - "讽刺漫画质感"
+  - "流行文化符号"
+  - "鲜艳夺目"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 900
+    line_height: 1.1
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.4
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#000000"
+    stroke: "#FFD700"
+    stroke_width: 2
+    band_color: "rgba(255, 255, 255, 0.90)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - cut
+  animation_style: cut
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 5
+    transition_duration_seconds: 0.3
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.3s"
+  padding_color: "#FFFFFF"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "波普艺术风格, 粗黑轮廓线勾边, 高饱和原色碰撞, Ben-Day网点纹理, 大面积平涂色块, 爆炸效果字, 讽刺漫画质感"
+  image_negative_prompt: "photorealistic, 3D render, photograph, soft, watercolor, gradient shading, muted, subtle"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "色彩必须高饱和原色碰撞"
+  - "轮廓线必须粗黑"
+  - "文字叠加不得遮挡角色面部表情"

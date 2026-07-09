@@ -1,0 +1,83 @@
+identity:
+  name: "Op Art"
+  category: comic
+  mood: hypnotic, dizzying, optical, psychedelic
+  pace: fast
+  best_for: "视觉陷阱、晕眩叙事、迷幻体验、打破平面、视错觉游戏"
+
+visual_language:
+  color_palette:
+    primary: ["#000000", "#FFFFFF"]
+    accent: ["#FF0000", "#0066FF", "#FFCC00"]
+    background: "#FFFFFF"
+    text: "#000000"
+    muted: "#999999"
+  composition: 黑白条纹和几何方格制造视错觉，画面似乎在震动和移动
+  texture: 瓦萨雷利式的欧普艺术，黑白条纹产生波动感，几何方格在视网膜上跳舞
+
+style_lock:
+  - "欧普艺术风格"
+  - "黑白条纹波动"
+  - "视错觉几何"
+  - "画面似乎在震动"
+  - "瓦萨雷利美学"
+  - "视网膜跳舞"
+  - "迷幻几何"
+  - "打破二维平面"
+  - "视觉陷阱"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 900
+    line_height: 1.1
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.4
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#000000"
+    stroke: "#FFFFFF"
+    stroke_width: 2
+    band_color: "rgba(255, 255, 255, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - cut
+  animation_style: cut
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 5
+    transition_duration_seconds: 0.3
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.3s"
+  padding_color: "#FFFFFF"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "欧普艺术风格, 黑白条纹波动, 视错觉几何方格, 画面似乎在震动, 瓦萨雷利式美学, 视网膜上跳舞的图案, 迷幻几何"
+  image_negative_prompt: "natural, organic, still, calm, photorealistic, landscape, soft, gentle"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有视错觉几何图案"
+  - "必须有黑白条纹或方格波动感"
+  - "文字叠加不得遮挡角色面部表情"

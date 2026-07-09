@@ -13,11 +13,22 @@ You have three modes:
 
 - `EP_STATE.reference_video_analysis` — 5-dimension analysis from ideate stage (if video input)
 - `styles/warm-illustration.yaml` — Warm illustration preset
+- `styles/warm-storybook.yaml` — Warm storybook preset (暖调故事感)
 - `styles/clean-comic.yaml` — Clean comic preset
+- `styles/korean-webtoon.yaml` — Korean webtoon preset (韩式网漫)
+- `styles/literary-illustration.yaml` — Literary illustration preset (轻文艺插画)
 - `styles/line-comic.yaml` — Line comic preset (黑白线条漫画)
+- `styles/classic-manga.yaml` — Classic manga preset (日系经典漫画)
 - `styles/cinematic-drama.yaml` — Cinematic drama preset
+- `styles/cel-animation.yaml` — Cel animation preset (赛璐璐动画)
 - `styles/watercolor-nostalgia.yaml` — Watercolor nostalgia preset
+- `styles/new-chinese-ink.yaml` — New Chinese ink preset (新中式水墨)
 - `styles/ink-dramatic.yaml` — Ink dramatic preset
+- `styles/doodle-journal.yaml` — Doodle journal preset (涂鸦手账)
+- `styles/rough-print.yaml` — Rough print preset (粗粝版画)
+- `styles/collage-papercut.yaml` — Collage papercut preset (拼贴剪纸)
+- `styles/vintage-lianhuanhua.yaml` — Vintage lianhuanhua preset (小人书怀旧)
+- `styles/pixel-art.yaml` — Pixel art preset (像素风)
 - `skills/creative/character-consistency.md` — Character design context for style compatibility
 
 ## Prerequisites
@@ -45,16 +56,98 @@ This gives the user a grounded starting point rather than starting from zero.
 
 ### 2. Present Style Options
 
-Show all available styles:
+Show all available styles grouped by emotional direction. With 65 built-in styles across 15 categories, guide the user to a shortlist based on their story's mood:
 
 ```
-BUILT-IN PRESETS
-├── 🎨 Warm Illustration — 温暖手绘 (亲情、治愈、日常)
+温度感 — 烟火气、治愈、怀旧、柔软
+├── 🏠 Warm Illustration — 温暖手绘 (亲情、治愈、日常)
+├── 🏠 Warm Storybook — 暖调故事感 (烟火气、打工人、人间冷暖)
+├── 📚 Vintage Lianhuanhua — 小人书怀旧 (年代叙事、童年回忆)
+├── 🎨 Watercolor Nostalgia — 水彩怀旧 (时光、回忆、感动)
+├── 🖍️ Pastel Chalk — 粉彩粉笔 (温柔叙事、少女心、柔软日常)
+├── 🧵 Embroidery — 刺绣风 (手工温度、外婆的故事、节日温情)
+└── 📰 American Sunday Funnies — 美式星期天漫画 (温馨段子、家庭趣事)
+
+精致感 — 潮流、文艺、动画感、清爽
+├── ✨ Korean Webtoon — 韩式网漫 (年轻化、社交传播、都市故事)
+├── 📖 Literary Illustration — 轻文艺插画 (情感叙事、深夜独白)
+├── 🎬 Cel Animation — 赛璐璐动画 (青春故事、电影感、高颜值)
 ├── 💬 Clean Comic — 现代漫画风 (搞笑、社死、段子)
+├── 🇪🇺 Ligne Claire — 欧式清线漫画 (冒险、科普、清爽叙事)
+└── 🔷 Vector Flat — 扁平矢量 (职场吐槽、知识科普、现代生活)
+
+东方古典 — 中国风、日本美学、东方传统
+├── 🎋 New Chinese Ink — 新中式水墨 (中国故事、幽默讽刺)
+├── 🖌️ Gongbi — 工笔画 (古典故事、精致美学)
+├── ⛰️ Shan Shui — 山水画风 (天地辽阔、哲学叙事)
+├── 🖊️ Ink Dramatic — 水墨黑白 (反转、冲击、深度)
+├── 🎴 Ukiyo-e — 浮世绘 (古典故事、诗意叙事、日式美学)
+├── ✂️ Chinese Papercut — 中国剪纸 (民俗故事、节庆吉祥)
+└── 🎭 Shadow Puppet — 皮影戏 (民间故事、光影叙事)
+
+戏剧感 — 反差、冲击、张力、暗调
+├── 📺 Classic Manga — 日系经典漫画 (夸张表情、戏剧反转)
 ├── ✏️ Line Comic — 黑白线条漫画 (段子、吐槽、条漫)
 ├── 🎬 Cinematic Drama — 电影感暗调 (悬疑、反转、紧张)
-├── 🎨 Watercolor Nostalgia — 水彩怀旧 (时光、回忆、感动)
-└── 🖊️ Ink Dramatic — 水墨黑白 (反转、冲击、深度)
+├── 💀 Charcoal — 碳笔速写 (情感爆发、内心独白)
+└── 🎭 Expressionist — 表现主义 (愤怒宣泄、焦虑共鸣、反精致)
+
+手工感 — 笔触、纹理、创作痕迹
+├── ✏️ Doodle Journal — 涂鸦手账 (日记体、朋友圈吐槽)
+├── 🔪 Rough Print — 粗粝版画 (独立创作、态度表达)
+├── ✂️ Collage Papercut — 拼贴剪纸 (创意表达、手工感)
+├── 🖨️ Risograph — Riso印刷 (独立杂志感、小众审美)
+├── ✏️ Pencil Sketch — 铅笔素描 (心情独白、草稿美学)
+├── 📄 Origami Paper — 折纸风 (创意故事、几何美学)
+└── 🖤 Scratchboard — 刮板画 (黑白反转、高对比、精细线描)
+
+氛围暗调 — 霓虹、未来、夜色、故障
+├── 🌃 Neon Noir — 霓虹暗调 (都市夜话、赛博朋克)
+├── 🟣 Synthwave — 合成波复古 (80年代怀旧、复古科技)
+├── 🌊 Vaporwave — 蒸汽波 (千禧年互联网、消费主义讽刺)
+└── 📺 Glitch Art — 故障艺术 (数字崩溃、赛博故障美学)
+
+波普与设计 — 视觉冲击、风格化、几何美学
+├── 🎯 Pop Art — 波普艺术 (讽刺吐槽、反讽幽默、流行文化)
+├── 🌸 Art Nouveau — 新艺术运动·穆夏风 (浪漫故事、唯美表达)
+├── 🔲 Duotone — 双色调 (态度表达、品牌感、强对比)
+├── 🔴 Constructivism — 构成主义 (态度宣言、革命性表达)
+├── 🔷 Bauhaus — 包豪斯 (功能美学、理性叙事、几何纯粹)
+├── 🟥 De Stijl — 风格派·蒙德里安 (秩序美学、纯粹和谐)
+├── 🎨 Fauvism — 野兽派 (自由表达、狂野色彩、打破规则)
+└── 🪟 Stained Glass — 彩绘玻璃 (神圣叙事、光与色彩)
+
+萌系与极简 — 可爱、幽默、自黑、低面
+├── 🐣 Chibi Q — Q版超萌 (萌系段子、可爱日常)
+├── 🚶 Stick Figure — 火柴人 (极简吐槽、自黑幽默)
+├── 🕹️ Pixel Art — 像素风 (游戏梗、互联网文化)
+└── 💎 Low Poly — 低多边形 (游戏化叙事、3D几何美学)
+
+艺术流派 — 从印象派到超现实
+├── 🌅 Impressionism — 印象派 (光影叙事、瞬间美好)
+├── 🌻 Van Gogh Style — 梵高风格 (燃烧情感、漩涡笔触)
+├── 🌀 Surrealism — 超现实主义 (梦境叙事、荒诞寓言)
+└── 🔷 Cubism — 立体主义 (多视角叙事、几何解体)
+
+朋克谱系 — 蒸汽、柴油、太阳
+├── ⚙️ Steam Punk — 蒸汽朋克 (奇幻冒险、维多利亚机械)
+├── 🏭 Diesel Punk — 柴油朋克 (工业战火、钢板铆接)
+└── 🌿 Solar Punk — 太阳朋克 (环保希望、绿色乌托邦)
+
+机甲与科技 — 机械、科幻、工程
+├── 🤖 Mecha — 机甲风 (机器人故事、钢铁美学)
+└── 📐 Blueprint — 蓝图 (技术科普、工程图纸美学)
+
+民间与世界 — 异域民俗、手工传统
+├── 🕌 Persian Miniature — 波斯细密画 (传奇故事、诗意叙事)
+├── 🪷 Madhubani — 印度民间画 (自然与生命、异域民俗)
+└── 🦴 Cave Art — 岩画风 (寓言故事、原始叙事、神话感)
+
+神秘与游戏 — 塔罗、镶嵌、少女、街头
+├── 🔮 Tarot — 塔罗牌 (命运叙事、象征寓言、神秘学)
+├── 🧩 Mosaic — 马赛克镶嵌 (永恒叙事、碎片拼合之美)
+├── 🌸 Shoujo Manga — 少女漫画 (恋爱故事、少女心)
+└── 🎨 Street Art — 街头涂鸦 (城市声音、反叛态度)
 
 CUSTOM PRESETS (if any in styles/custom/)
 └── [list custom presets with test_render.png thumbnails]

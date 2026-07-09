@@ -1,0 +1,84 @@
+identity:
+  name: "Impressionism"
+  category: comic
+  mood: luminous, fleeting, atmospheric, sensory
+  pace: slow
+  best_for: "光影叙事、瞬间美好、自然与光、朦胧记忆、印象派美学"
+
+visual_language:
+  color_palette:
+    primary: ["#8BB8D0", "#D4A8C0", "#C8D8A0"]
+    accent: ["#FFD700", "#FF8C5A", "#6BB8B0"]
+    background: "#F5F0E8"
+    text: "#4A5A6A"
+    muted: "#C0C8D0"
+  composition: 光斑和色彩笔触模糊了轮廓，阳光透过树叶的光点洒落，水面波光粼粼
+  texture: 莫奈式的短促色彩笔触，光线分解为纯色斑点，景物在光照中融化
+
+style_lock:
+  - "印象派风格"
+  - "短促色彩笔触"
+  - "光线分解色斑"
+  - "光斑洒落"
+  - "莫奈式笔触"
+  - "轮廓融化于光"
+  - "波光粼粼"
+  - "瞬间的光影"
+  - "印象派油画质感"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.3
+  body:
+    font: Noto Serif SC
+    weight: 300
+    line_height: 1.6
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#4A5A6A"
+    stroke: "#F5F0E8"
+    stroke_width: 3
+    band_color: "rgba(245, 240, 232, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: dreamy-fade
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 9
+    transition_duration_seconds: 1.0
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=1.0s"
+  padding_color: "#F5F0E8"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "印象派风格, 短促色彩笔触, 光线分解为色斑, 光斑洒落, 莫奈式笔触, 轮廓融化于光, 波光粼粼的瞬间光影"
+  image_negative_prompt: "sharp, detailed, photorealistic, smooth, flat, clean lines, dark, ink, solid colors"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "笔触必须是短促色彩斑点"
+  - "轮廓必须有融化于光的朦胧感"
+  - "文字叠加不得遮挡角色面部表情"

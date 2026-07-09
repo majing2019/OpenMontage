@@ -1,0 +1,84 @@
+identity:
+  name: "Neon Noir"
+  category: comic
+  mood: edgy, futuristic, cool, atmospheric
+  pace: moderate
+  best_for: "都市夜话、赛博朋克、暗调故事、科技梗、深夜情绪"
+
+visual_language:
+  color_palette:
+    primary: ["#0A0A1A", "#12122A"]
+    accent: ["#FF00FF", "#00FFFF", "#FF3366", "#00FF88"]
+    background: "#080818"
+    text: "#E0E0FF"
+    muted: "#4A4A6A"
+  composition: 暗蓝夜空底色，霓虹灯管般的光线勾勒，暗部大面积沉浸，亮部霓虹灼眼
+  texture: 霓虹光晕扩散，湿漉漉的街道反光，荧光管线条，像 Blade Runner 的一帧
+
+style_lock:
+  - "霓虹暗调风格"
+  - "赛博朋克质感"
+  - "霓虹光晕扩散"
+  - "暗蓝夜空底色"
+  - "荧光管线条"
+  - "湿润街道反光"
+  - "高科技低生活"
+  - "深夜都市感"
+  - "冷峻未来风"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 300
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#E0E0FF"
+    stroke: "#0A0A1A"
+    stroke_width: 3
+    band_color: "rgba(10, 10, 26, 0.88)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 7
+    transition_duration_seconds: 0.5
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.5s"
+  padding_color: "#080818"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "霓虹暗调风格, 赛博朋克质感, 霓虹光晕扩散, 暗蓝夜空底色, 荧光管线条, 湿润街道反光感, 高科技低生活, 深夜都市感"
+  image_negative_prompt: "daylight, bright, warm, natural, rural, historical, watercolor, oil painting, white background"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "底色必须暗蓝黑色调"
+  - "必须有霓虹发光元素"
+  - "文字叠加不得遮挡角色面部表情"

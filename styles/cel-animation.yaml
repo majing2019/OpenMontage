@@ -1,0 +1,89 @@
+identity:
+  name: "Cel Animation"
+  category: comic
+  mood: vibrant, cinematic, lively, polished
+  pace: fast
+  best_for: "青春故事、动画感、高颜值角色、电影感画面、活力向内容"
+
+visual_language:
+  color_palette:
+    primary: ["#E8E8E8", "#FFFFFF"]
+    accent: ["#E8563A", "#4A90D9", "#F5C842", "#7BC47F"]
+    background: "#F0F4FF"
+    text: "#1C1C2E"
+    muted: "#B8C0D0"
+  composition: 干净勾线加高饱和纯色平涂，像新海诚或吉卜力的一帧定格，场景有动画感的浅景深
+  texture: 赛璐璐动画风格勾线利落，色块平涂无笔触，场景有柔和高斯模糊背景，光线有镜头光晕
+
+style_lock:
+  - "赛璐璐动画风格"
+  - "干净勾线利落"
+  - "高饱和纯色平涂"
+  - "动画场景浅景深"
+  - "镜头光晕效果"
+  - "电影感画面"
+  - "色块分明无笔触"
+  - "动画角色设计"
+  - "柔和背景模糊"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#1C1C2E"
+    stroke: "#FFFFFF"
+    stroke_width: 3
+    band_color: "rgba(255, 255, 255, 0.90)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方，无间隙"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 6
+    transition_duration_seconds: 0.4
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280 → 整体占满画布"
+  transition: "xfade=fade, duration=0.4s"
+  padding_color: "#F0F4FF"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "赛璐璐动画风格, 干净勾线利落, 高饱和纯色平涂, 动画场景浅景深, 镜头光晕效果, 电影感画面, 色块分明无笔触, 动画角色设计, 柔和背景模糊"
+  image_negative_prompt: "photorealistic, 3D render, photograph, rough sketch, watercolor, oil painting, textured brush strokes, sketchy lines"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"
+  - "色块必须平涂无笔触纹理"
+  - "线条必须利落干净，不可有毛边"
+  - "背景必须有动画感的浅景深模糊"

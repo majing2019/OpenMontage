@@ -1,0 +1,84 @@
+identity:
+  name: "Stained Glass"
+  category: comic
+  mood: sacred, radiant, colorful, transcendent
+  pace: slow
+  best_for: "神圣叙事、光与色彩、灵魂故事、精神之旅、彩色光辉"
+
+visual_language:
+  color_palette:
+    primary: ["#1A1A2E", "#2A2A4E"]
+    accent: ["#FF0000", "#0066FF", "#FFCC00", "#00CC66", "#FF6600", "#9933CC"]
+    background: "#0A0A1A"
+    text: "#FFEECC"
+    muted: "#4A4A6A"
+  composition: 黑色铅条分隔出彩色玻璃块，光线从背后穿透，教堂玫瑰窗般的神圣构图
+  texture: 铅条黑色框架，半透明彩色玻璃，光线穿透的辉光，碎玻璃拼合
+
+style_lock:
+  - "彩绘玻璃风格"
+  - "黑色铅条分隔"
+  - "半透明彩色玻璃"
+  - "光线穿透辉光"
+  - "教堂玫瑰窗"
+  - "碎玻璃拼合"
+  - "神圣发光质感"
+  - "中世紀藝術"
+  - "彩色玻璃漫画"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#FFEECC"
+    stroke: "#0A0A1A"
+    stroke_width: 3
+    band_color: "rgba(10, 10, 26, 0.88)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: gentle-fade
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 8
+    transition_duration_seconds: 0.8
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.8s"
+  padding_color: "#0A0A1A"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "彩绘玻璃风格, 黑色铅条分隔, 半透明彩色玻璃, 光线穿透辉光, 教堂玫瑰窗, 碎玻璃拼合, 神圣发光质感, 中世紀藝術"
+  image_negative_prompt: "photorealistic, 3D render, opaque, flat, matte, modern, plain, smooth surface"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有黑色铅条分隔线"
+  - "必须有光线穿透玻璃的辉光"
+  - "文字叠加不得遮挡角色面部表情"

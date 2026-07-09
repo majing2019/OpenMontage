@@ -45,12 +45,110 @@ required_skills:
 compatible_playbooks:
   recommended:
     - warm-illustration
+    - warm-storybook
     - clean-comic
+    - korean-webtoon
     - line-comic
+    - classic-manga
   also_works:
-    - cinematic-drama
+    # 温度感 — 烟火气、治愈、怀旧、柔软
     - watercolor-nostalgia
+    - pastel-chalk
+    - embroidery
+    - american-sunday-funnies
+    - vintage-lianhuanhua
+    # 精致感 — 潮流、文艺、动画感、清爽
+    - cel-animation
+    - ligne-claire
+    - literary-illustration
+    - vector-flat
+    - anime-ghibli
+    # 东方古典 — 中国风、日本美学
+    - new-chinese-ink
+    - gongbi
+    - shan-shui
     - ink-dramatic
+    - ukiyo-e
+    - chinese-papercut
+    - shadow-puppet
+    # 戏剧感 — 反差、冲击、张力、暗调
+    - cinematic-drama
+    - charcoal
+    - expressionist
+    # 手工感 — 笔触、纹理、创作痕迹
+    - doodle-journal
+    - rough-print
+    - collage-papercut
+    - risograph
+    - pencil-sketch
+    - origami-paper
+    - scratchboard
+    # 氛围暗调 — 霓虹、未来、夜色
+    - neon-noir
+    - synthwave
+    - vaporwave
+    - glitch-art
+    # 波普与设计 — 视觉冲击、风格化
+    - pop-art
+    - art-nouveau
+    - duotone
+    - constructivism
+    - bauhaus
+    - de-stijl
+    - fauvism
+    - stained-glass
+    # 萌系与极简 — 可爱、幽默、自黑
+    - chibi-q
+    - stick-figure
+    - pixel-art
+    - low-poly
+    # 艺术流派 — 从印象派到超现实
+    - impressionism
+    - van-gogh
+    - surrealism
+    - cubism
+    # 朋克谱系 — 蒸汽、柴油、太阳
+    - steam-punk
+    - dieselpunk
+    - solar-punk
+    # 机甲与科技
+    - mecha
+    - blueprint
+    # 民间与世界 — 异域风情
+    - persian-miniature
+    - madhubani
+    - cave-art
+    # 神秘与游戏
+    - tarot
+    - mosaic
+    - shoujo-manga
+    - street-art
+    # 艺术流派补充
+    - pointillism
+    - pre-raphaelite
+    - baroque
+    - dada
+    - op-art
+    # 世界传统艺术
+    - thangka
+    - aboriginal-dot
+    - celtic-illumination
+    - batik
+    # 漫画分支
+    - underground-comix
+    - superhero-comic
+    - manhua
+    # 纸艺手工补充
+    - quilling
+    - cross-stitch
+    # 摄影与成像
+    - cyanotype
+    # 美学与空间
+    - liminal-space
+    - y2k
+    - brutalism
+    - dark-academia
+    - wireframe
   custom_allowed: true
 
 stages:
@@ -217,7 +315,7 @@ stages:
       - All captioned images are valid (exist, readable, no corruption)
       - All images resized to 720×1280 consistently
       - FFmpeg xfade video composition executed without errors
-      - Output final.mp4: h264 codec, 720×1280 resolution, 30fps
+      - "Output final.mp4: h264 codec, 720×1280 resolution, 30fps"
       - Video duration within ±1s of expected
       - IP outro is the last panel
       - Total panel count matches shot_list panel count

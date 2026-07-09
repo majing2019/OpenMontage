@@ -64,6 +64,14 @@ from tools.base_tool import (
     ToolTier,
 )
 
+# Bypass system proxy for Volcengine Ark domains — macOS Clash/V2Ray proxy
+# (127.0.0.1:7897) causes SSL handshake failures with these endpoints.
+_VOLCENGINE_NO_PROXY_HOSTS = "ark.cn-beijing.volces.com,ark-acg-cn-beijing.tos-cn-beijing.volces.com"
+for _k in ("NO_PROXY", "no_proxy"):
+    _existing = os.environ.get(_k, "")
+    if _VOLCENGINE_NO_PROXY_HOSTS not in _existing:
+        os.environ[_k] = f"{_VOLCENGINE_NO_PROXY_HOSTS},{_existing}" if _existing else _VOLCENGINE_NO_PROXY_HOSTS
+
 # Volcengine Ark API endpoints
 _SUBMIT_URL = "https://ark.cn-beijing.volces.com/api/v3/contents/generations/tasks"
 _POLL_URL = "https://ark.cn-beijing.volces.com/api/v3/contents/generations/tasks/{task_id}"

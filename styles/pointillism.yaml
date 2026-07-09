@@ -1,0 +1,82 @@
+identity:
+  name: "Pointillism"
+  category: comic
+  mood: methodical, luminous, optical, meditative
+  pace: slow
+  best_for: "色彩分解、科学叙事、耐心美学、治愈点点、独一无二的画面"
+
+visual_language:
+  color_palette:
+    primary: ["#4A90B8", "#D4A8C0", "#8B9D6B"]
+    accent: ["#FF6600", "#FFCC00", "#C43A31"]
+    background: "#F5F0E8"
+    text: "#3A3A4A"
+    muted: "#C0B8B0"
+  composition: 数万纯色小点密集排列在画面上，邻近色点在人眼中混合成新色
+  texture: 修拉式的纯色点彩，每个点都是独立的纯色，远看融合近看是彩色微粒
+
+style_lock:
+  - "点彩派风格"
+  - "纯色小点密集排列"
+  - "修拉点彩技法"
+  - "远看融合近看点"
+  - "色彩光学混合"
+  - "彩色微粒质感"
+  - "耐心细致的点"
+  - "发光的光色效果"
+  - "新印象派点彩"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.3
+  body:
+    font: Noto Serif SC
+    weight: 300
+    line_height: 1.6
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#3A3A4A"
+    stroke: "#F5F0E8"
+    stroke_width: 3
+    band_color: "rgba(245, 240, 232, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: gentle-fade
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 9
+    transition_duration_seconds: 0.8
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.8s"
+  padding_color: "#F5F0E8"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "点彩派风格, 纯色小点密集排列, 修拉点彩技法, 色彩光学混合, 彩色微粒质感, 远看融合近看独立色点"
+  image_negative_prompt: "smooth, blended, gradient, continuous lines, photorealistic, brush strokes"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有可见的独立色点"
+  - "文字叠加不得遮挡角色面部表情"

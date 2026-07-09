@@ -1,0 +1,83 @@
+identity:
+  name: "Celtic Illumination"
+  category: comic
+  mood: mystical, intricate, ancient, enchanting
+  pace: slow
+  best_for: "凯尔特传说、魔法叙事、古老智慧、错综复杂的美、经卷故事"
+
+visual_language:
+  color_palette:
+    primary: ["#2E8B57", "#1A4A6B", "#8B4513"]
+    accent: ["#FFD700", "#C43A31", "#4A90B8"]
+    background: "#F5EDD8"
+    text: "#2A1A0A"
+    muted: "#A0B080"
+  composition: 错综交织的凯尔特绳结纹样，首字母放大装饰，动植物缠绕边框
+  texture: 牛皮纸底色上的泥金装饰，交织缠绕的绳结无边无际，像凯尔经的一页
+
+style_lock:
+  - "凯尔特经卷风格"
+  - "交织缠绕绳结"
+  - "泥金装饰"
+  - "首字母放大装饰"
+  - "动植物缠绕边框"
+  - "牛皮纸底色"
+  - "凯尔经美学"
+  - "古老魔法质感"
+  - "无穷绳结纹样"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#2A1A0A"
+    stroke: "#F5EDD8"
+    stroke_width: 3
+    band_color: "rgba(245, 237, 216, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: gentle-fade
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 8
+    transition_duration_seconds: 0.8
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.8s"
+  padding_color: "#F5EDD8"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "凯尔特经卷风格, 交织缠绕绳结纹样, 泥金装饰, 首字母放大装饰, 动植物缠绕边框, 牛皮纸底色, 凯尔经美学, 古老魔法质感"
+  image_negative_prompt: "minimal, simple, modern, clean, straight, photorealistic, empty space"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有交织缠绕的绳结纹样"
+  - "必须有泥金或金色装饰元素"
+  - "文字叠加不得遮挡角色面部表情"

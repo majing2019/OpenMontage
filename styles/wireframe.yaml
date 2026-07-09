@@ -1,0 +1,83 @@
+identity:
+  name: "Wireframe"
+  category: comic
+  mood: cyber, digital-native, geometric, see-through
+  pace: fast
+  best_for: "赛博空间、数据叙事、透明结构、虚拟现实、Tron美学"
+
+visual_language:
+  color_palette:
+    primary: ["#00FFFF", "#0066FF"]
+    accent: ["#FF00FF", "#00FF88", "#FFCC00"]
+    background: "#000011"
+    text: "#00FFFF"
+    muted: "#003366"
+  composition: 发光网格线和线框组成一切，物体只有轮廓无表面，像Tron的赛博空间
+  texture: 霓虹发光网格线，透明线框结构，黑暗中悬浮的发光几何
+
+style_lock:
+  - "线框风格"
+  - "发光霓虹网格线"
+  - "透明线框结构"
+  - "无表面只有轮廓"
+  - "Tron赛博空间"
+  - "黑暗中悬浮"
+  - "发光几何体"
+  - "数字原生美学"
+  - "虚拟现实网格"
+
+typography:
+  headings:
+    font: "Courier New"
+    weight: 700
+    line_height: 1.1
+  body:
+    font: "Courier New"
+    weight: 400
+    line_height: 1.4
+  caption:
+    font: "Courier New"
+    font_size: 32
+    color: "#00FFFF"
+    stroke: "#000011"
+    stroke_width: 2
+    band_color: "rgba(0, 0, 17, 0.88)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - cut
+  animation_style: cut
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 5
+    transition_duration_seconds: 0.3
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.3s"
+  padding_color: "#000011"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "线框风格, 发光霓虹网格线, 透明线框结构, 无表面只有轮廓, Tron赛博空间美学, 黑暗中悬浮的发光几何体"
+  image_negative_prompt: "solid, opaque, organic, natural, photorealistic, filled, textured, rough"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须是发光线框和网格线构成"
+  - "物体必须透明无表面"
+  - "文字叠加不得遮挡角色面部表情"

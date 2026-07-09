@@ -1,0 +1,84 @@
+identity:
+  name: "Ligne Claire"
+  category: comic
+  mood: clean, adventurous, clear, intellectual
+  pace: moderate
+  best_for: "冒险故事、知识科普、旅行游记、清爽叙事、老少皆宜"
+
+visual_language:
+  color_palette:
+    primary: ["#FFFFFF", "#F0F0F0"]
+    accent: ["#E8563A", "#4A90D9", "#F5C842", "#7BC47F", "#8B7355"]
+    background: "#FFFFFF"
+    text: "#1A1A1A"
+    muted: "#D0D0D0"
+  composition: 等宽均匀黑线勾边，平涂纯色块填充，无阴影无网点，每个物体都有清晰轮廓
+  texture: 均匀黑线如钢笔勾勒，纯色平涂无笔触，像《丁丁历险记》一样的干净世界
+
+style_lock:
+  - "欧式清线漫画"
+  - "均匀黑线勾边"
+  - "纯色平涂无阴影"
+  - "清晰轮廓线"
+  - "干净明亮配色"
+  - "丁丁历险记风格"
+  - "无网点无渐变"
+  - "条理分明构图"
+  - "欧式漫画分格"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#1A1A1A"
+    stroke: "#FFFFFF"
+    stroke_width: 2
+    band_color: "rgba(255, 255, 255, 0.90)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 7
+    transition_duration_seconds: 0.5
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.5s"
+  padding_color: "#FFFFFF"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "欧式清线漫画, 均匀黑线勾边, 纯色平涂无阴影, 清晰轮廓线, 干净明亮配色, 丁丁历险记风格, 无网点无渐变, 条理分明构图"
+  image_negative_prompt: "photorealistic, 3D render, photograph, shading, shadow, gradient, texture, rough lines, sketchy"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "线条必须均匀清晰，粗细一致"
+  - "色块必须纯色平涂无渐变无阴影"
+  - "文字叠加不得遮挡角色面部表情"

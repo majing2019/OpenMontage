@@ -1,0 +1,89 @@
+identity:
+  name: "Warm Storybook"
+  category: comic
+  mood: warm, human, everyday, smoky
+  pace: moderate
+  best_for: "烟火气、打工人、人间冷暖、平凡故事、治愈日常"
+
+visual_language:
+  color_palette:
+    primary: ["#C9A87C", "#B8956A"]
+    accent: ["#D4765D", "#C17F59", "#8B9D6B"]
+    background: "#FBF6ED"
+    text: "#3E2E1F"
+    muted: "#D4C4B0"
+  composition: 米黄纸面上暖棕色勾勒，人物占画面主体，留白处有纸张纹理般的柔和边缘
+  texture: 暖棕细线如钢笔淡彩，低饱和暖色轻染，米黄底像旧书页，无纯黑线条
+
+style_lock:
+  - "暖调故事感插画"
+  - "米黄纸张底色"
+  - "暖棕色细线勾勒"
+  - "低饱和暖色轻染"
+  - "手绘质感"
+  - "柔和纸纹肌理"
+  - "治愈烟火气"
+  - "干净简洁角色"
+  - "留白充足"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#3E2E1F"
+    stroke: "#FBF6ED"
+    stroke_width: 3
+    band_color: "rgba(251, 246, 237, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方，无间隙"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 8
+    transition_duration_seconds: 0.5
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280 → 整体占满画布"
+  transition: "xfade=fade, duration=0.5s"
+  padding_color: "#FBF6ED"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "暖调故事感插画, 米黄纸张底色, 暖棕色细线勾勒, 低饱和暖色轻染, 手绘质感, 柔和纸纹肌理, 治愈烟火气, 干净简洁角色, 留白充足"
+  image_negative_prompt: "photorealistic, 3D render, photograph, pure black lines, pure white background, cold colors, neon, vibrant saturated, anime, cartoon, digital art"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"
+  - "线条必须是暖棕色或深褐色，不可出现纯黑色线条"
+  - "底色必须是米黄色或暖白纸色，不可纯白"
+  - "色彩必须低饱和，不可鲜艳"

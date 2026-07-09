@@ -1,0 +1,88 @@
+identity:
+  name: "Collage Papercut"
+  category: comic
+  mood: creative, artsy, playful, tactile
+  pace: moderate
+  best_for: "创意表达、手工感故事、童趣内容、不一样的视觉、艺术向"
+
+visual_language:
+  color_palette:
+    primary: ["#D4A574", "#C9A87C"]
+    accent: ["#E85D5D", "#4A90B8", "#F0C75E", "#6BA368"]
+    background: "#F8F3EB"
+    text: "#2A2218"
+    muted: "#C5B8A5"
+  composition: 彩纸撕边叠加拼贴，几何形状组合成角色和场景，纸张层叠有厚度感
+  texture: 撕纸毛边不规整，彩纸纤维纹理，纸张层叠阴影，几何简约造型
+
+style_lock:
+  - "拼贴剪纸风格"
+  - "彩纸撕边毛边"
+  - "几何形状拼贴"
+  - "纸张层叠阴影"
+  - "彩纸纤维纹理"
+  - "手工剪纸质感"
+  - "简约几何造型"
+  - "撞色搭配"
+  - "儿童绘本拼贴"
+
+typography:
+  headings:
+    font: "PingFang SC"
+    weight: 700
+    line_height: 1.2
+  body:
+    font: "PingFang SC"
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#2A2218"
+    stroke: "#F8F3EB"
+    stroke_width: 3
+    band_color: "rgba(248, 243, 235, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方，无间隙"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 7
+    transition_duration_seconds: 0.5
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280 → 整体占满画布"
+  transition: "xfade=fade, duration=0.5s"
+  padding_color: "#F8F3EB"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "拼贴剪纸风格, 彩纸撕边毛边, 几何形状拼贴, 纸张层叠阴影, 彩纸纤维纹理, 手工剪纸质感, 简约几何造型, 撞色搭配, 儿童绘本拼贴"
+  image_negative_prompt: "photorealistic, 3D render, photograph, smooth lines, watercolor, oil painting, shading, gradient, realistic anatomy, detailed"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"
+  - "造型必须用几何形状拼贴，不可写实"
+  - "边缘必须有撕纸毛边感"

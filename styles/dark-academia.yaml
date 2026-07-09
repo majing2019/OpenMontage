@@ -1,0 +1,83 @@
+identity:
+  name: "Dark Academia"
+  category: comic
+  mood: scholarly, moody, romantic, intellectual
+  pace: slow
+  best_for: "学术叙事、古典校园、知识与孤独、昏黄图书馆、青春沉思"
+
+visual_language:
+  color_palette:
+    primary: ["#2A1F14", "#3C2A1E", "#1A1208"]
+    accent: ["#8B6914", "#C43A31", "#4A5A3A"]
+    background: "#E8DCC8"
+    text: "#2A1F14"
+    muted: "#A09078"
+  composition: 烛光或台灯照亮的古旧书桌，羊皮纸和羽毛笔，哥特式拱窗
+  texture: 旧书脊的皮革纹理，泛黄书页的边缘，烛光摇曳的暖暗光
+
+style_lock:
+  - "暗黑学院风格"
+  - "烛光古旧书桌"
+  - "羊皮纸羽毛笔"
+  - "哥特式拱窗"
+  - "昏黄暖暗光"
+  - "旧书皮革纹理"
+  - "古典学术氛围"
+  - "知识与孤独"
+  - "哥特校园"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#2A1F14"
+    stroke: "#E8DCC8"
+    stroke_width: 3
+    band_color: "rgba(232, 220, 200, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: gentle-fade
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 9
+    transition_duration_seconds: 0.8
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.8s"
+  padding_color: "#E8DCC8"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "暗黑学院风格, 烛光古旧书桌, 羊皮纸羽毛笔, 哥特式拱窗, 昏黄暖暗光照, 旧书皮革纹理, 古典学术氛围"
+  image_negative_prompt: "bright, modern, digital, clean, white, minimalist, cheerful, photorealistic"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有烛光或昏黄暖暗光"
+  - "必须有古旧书桌或羊皮纸元素"
+  - "文字叠加不得遮挡角色面部表情"

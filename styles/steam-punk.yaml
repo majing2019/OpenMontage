@@ -1,0 +1,84 @@
+identity:
+  name: "Steam Punk"
+  category: comic
+  mood: retro-futuristic, mechanical, adventurous, brass-n-gears
+  pace: moderate
+  best_for: "奇幻冒险、机械朋克、维多利亚科幻、齿轮与铜管、蒸汽时代"
+
+visual_language:
+  color_palette:
+    primary: ["#8B6914", "#6B4E0A"]
+    accent: ["#C43A31", "#3B5998", "#C17F59"]
+    background: "#E8DCC8"
+    text: "#3C2A1E"
+    muted: "#A09070"
+  composition: 黄铜齿轮和蒸汽管道穿插画面，维多利亚时代服装配机械义肢，飞艇背景
+  texture: 抛光的黄铜反光，铸铁粗糙表面，皮革纹理，蒸汽雾气和齿轮啮合
+
+style_lock:
+  - "蒸汽朋克风格"
+  - "黄铜齿轮管道"
+  - "维多利亚机械美学"
+  - "蒸汽雾气弥漫"
+  - "飞艇和齿轮"
+  - "皮革黄铜质感"
+  - "机械义肢改装"
+  - "复古科技感"
+  - "发条与蒸汽"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#3C2A1E"
+    stroke: "#E8DCC8"
+    stroke_width: 3
+    band_color: "rgba(232, 220, 200, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 7
+    transition_duration_seconds: 0.5
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.5s"
+  padding_color: "#E8DCC8"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "蒸汽朋克风格, 黄铜齿轮管道, 维多利亚机械美学, 蒸汽雾气弥漫, 飞艇和齿轮, 皮革黄铜质感, 机械义肢改装, 复古科技感"
+  image_negative_prompt: "modern, digital, plastic, minimal, clean future, white, sleek, photorealistic"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有黄铜齿轮或蒸汽管道元素"
+  - "必须有维多利亚复古科技感"
+  - "文字叠加不得遮挡角色面部表情"

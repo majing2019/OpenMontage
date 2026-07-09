@@ -1,0 +1,84 @@
+identity:
+  name: "Chibi Q"
+  category: comic
+  mood: cute, playful, adorable, joyful
+  pace: fast
+  best_for: "萌系段子、可爱日常、宠物视角、轻松分享、撒娇卖萌"
+
+visual_language:
+  color_palette:
+    primary: ["#FFFFFF", "#FFF5F5"]
+    accent: ["#FFB7C5", "#FFD93D", "#B5D8FF", "#C5E8B7"]
+    background: "#FFFFFF"
+    text: "#4A4A4A"
+    muted: "#E8E8E8"
+  composition: 大头小身体超萌比例，圆润无棱角造型，腮红线，星星眼，小短腿
+  texture: Q版超变形的萌系画风，圆滚滚的身体，豆豆眼或星星眼，腮红明显
+
+style_lock:
+  - "Q版超萌风格"
+  - "大头小身体比例"
+  - "圆润无棱角造型"
+  - "腮红线豆豆眼"
+  - "可爱星星眼"
+  - "小短腿萌系"
+  - "粉色系点缀"
+  - "软萌治愈"
+  - "超变形可爱角色"
+
+typography:
+  headings:
+    font: "PingFang SC"
+    weight: 600
+    line_height: 1.2
+  body:
+    font: "PingFang SC"
+    weight: 400
+    line_height: 1.4
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 34
+    color: "#4A4A4A"
+    stroke: "#FFB7C5"
+    stroke_width: 2
+    band_color: "rgba(255, 245, 245, 0.90)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 5
+    transition_duration_seconds: 0.4
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.4s"
+  padding_color: "#FFFFFF"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "Q版超萌风格, 大头小身体比例, 圆润无棱角造型, 腮红线, 豆豆眼星星眼, 小短腿萌系, 粉色系点缀, 软萌治愈, 超变形可爱角色设计"
+  image_negative_prompt: "realistic proportions, realistic anatomy, photorealistic, 3D render, dark, scary, adult, serious"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "角色比例必须是Q版大头小身体"
+  - "造型必须圆润无棱角"
+  - "文字叠加不得遮挡角色面部表情"

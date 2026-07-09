@@ -1,0 +1,83 @@
+identity:
+  name: "Quilling"
+  category: comic
+  mood: delicate, intricate, crafty, whimsical
+  pace: slow
+  best_for: "精致手作、童话叙事、细腻表达、纸艺魔法、童心未泯"
+
+visual_language:
+  color_palette:
+    primary: ["#FF6B9D", "#FFD93D", "#6BCB77", "#4D96FF"]
+    accent: ["#FFB7C5", "#FFE5A3", "#C5E8B7"]
+    background: "#FFFFFF"
+    text: "#4A3A4A"
+    muted: "#E8E0E8"
+  composition: 彩色细纸条卷成漩涡花朵和小动物，纸条立体的厚度肉眼可见
+  texture: 衍纸卷曲的纸条纹理，一圈圈螺旋叠加，纸条侧面的厚度感
+
+style_lock:
+  - "衍纸艺术风格"
+  - "彩色纸条卷曲"
+  - "螺旋叠加纹理"
+  - "纸条立体厚度"
+  - "精致手工质感"
+  - "纸艺漩涡花朵"
+  - "童话般细腻"
+  - "纸条一侧的厚度"
+  - "衍纸卷曲"
+
+typography:
+  headings:
+    font: "PingFang SC"
+    weight: 500
+    line_height: 1.2
+  body:
+    font: "PingFang SC"
+    weight: 300
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 34
+    color: "#4A3A4A"
+    stroke: "#FFFFFF"
+    stroke_width: 3
+    band_color: "rgba(255, 255, 255, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: gentle-fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 8
+    transition_duration_seconds: 0.6
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.6s"
+  padding_color: "#FFFFFF"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "衍纸艺术风格, 彩色纸条卷曲, 螺旋叠加纹理, 纸条立体厚度感, 精致手工质感, 纸艺漩涡花朵, 童话般细腻"
+  image_negative_prompt: "flat, smooth, digital, photorealistic, dark, rough, simple"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有纸条卷曲的螺旋纹理"
+  - "必须有纸条立体厚度感"
+  - "文字叠加不得遮挡角色面部表情"

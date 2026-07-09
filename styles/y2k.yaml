@@ -1,0 +1,83 @@
+identity:
+  name: "Y2K Aesthetic"
+  category: comic
+  mood: nostalgic-futuristic, metallic, bubblegum, optimistic
+  pace: fast
+  best_for: "千禧年怀旧、科技乐观主义、Y2K梗、泡泡糖美学、未来已来"
+
+visual_language:
+  color_palette:
+    primary: ["#C0C0C0", "#FF69B4", "#00E5FF"]
+    accent: ["#9933CC", "#FFD700", "#FF3300"]
+    background: "#FFFFFF"
+    text: "#333366"
+    muted: "#D0D0E0"
+  composition: 金属光泽和透明塑料质感，圆润的流线型科技产品，蝴蝶夹和翻盖手机
+  texture: 半透明彩色塑料反光，拉丝金属表面，千禧年电脑渲染的圆润界面
+
+style_lock:
+  - "Y2K千禧美学"
+  - "半透明塑料反光"
+  - "拉丝金属光泽"
+  - "圆润流线科技"
+  - "泡泡糖粉色"
+  - "翻盖手机年代"
+  - "科技乐观主义"
+  - "千禧年怀旧"
+  - "未来已来感"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 600
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.4
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#333366"
+    stroke: "#FFFFFF"
+    stroke_width: 3
+    band_color: "rgba(255, 255, 255, 0.90)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 6
+    transition_duration_seconds: 0.4
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.4s"
+  padding_color: "#FFFFFF"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "Y2K千禧美学, 半透明彩色塑料反光, 拉丝金属光泽, 圆润流线型科技产品, 泡泡糖粉色系, 翻盖手机年代感, 科技乐观主义"
+  image_negative_prompt: "dark, gritty, natural, organic, wood, stone, rough, matte, photorealistic"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有金属光泽或半透明塑料质感"
+  - "必须有千禧年科技美学感"
+  - "文字叠加不得遮挡角色面部表情"

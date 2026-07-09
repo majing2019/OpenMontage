@@ -1,0 +1,89 @@
+identity:
+  name: "Rough Print"
+  category: comic
+  mood: artsy, indie, bold, raw
+  pace: moderate
+  best_for: "独立创作、态度表达、社会观察、不羁风格、个性化内容"
+
+visual_language:
+  color_palette:
+    primary: ["#1A1815", "#2C2416"]
+    accent: ["#C43A31", "#D4875E", "#4A6B8A"]
+    background: "#F0EAD6"
+    text: "#1A1815"
+    muted: "#A09080"
+  composition: 粗犷刀刻木版纹理，油墨叠印效果，厚卡纸肌理，每格像一幅手工小版画
+  texture: 木刻刀痕纹理，油墨叠印错位感，纸张厚实肌理，粗线条有毛边
+
+style_lock:
+  - "粗粝版画风格"
+  - "木刻刀痕纹理"
+  - "油墨叠印效果"
+  - "厚卡纸肌理"
+  - "粗线条毛边"
+  - "复古油墨配色"
+  - "手工印刷质感"
+  - "简约有力构图"
+  - "独立创作气质"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 900
+    line_height: 1.15
+  body:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#1A1815"
+    stroke: "#F0EAD6"
+    stroke_width: 3
+    band_color: "rgba(240, 234, 214, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方，无间隙"
+
+motion:
+  transitions:
+    - cut
+    - xfade_fade
+  animation_style: cut
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 7
+    transition_duration_seconds: 0.4
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280 → 整体占满画布"
+  transition: "xfade=fade, duration=0.4s"
+  padding_color: "#F0EAD6"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "粗粝版画风格, 木刻刀痕纹理, 油墨叠印效果, 厚卡纸肌理, 粗线条毛边, 复古油墨配色, 手工印刷质感, 简约有力构图, 独立创作气质"
+  image_negative_prompt: "photorealistic, 3D render, photograph, smooth lines, clean digital, soft, watercolor, gradient, anime, cartoon, polished"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "场景模板前缀从 scene_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有角色在所有画面中必须使用完全相同的角色锚定描述"
+  - "所有画面必须包含 style_lock 关键词"
+  - "场景模板前缀在相同场景的所有画面中必须字面一致"
+  - "文字叠加不得遮挡角色面部表情"
+  - "画面内文字（scene_texts）≤5字用 ai_draw，>5字用 post_only"
+  - "线条必须有粗粝毛边质感，不可光滑"
+  - "色彩必须像油墨叠印，不可干净纯色"

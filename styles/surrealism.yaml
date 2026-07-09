@@ -1,0 +1,83 @@
+identity:
+  name: "Surrealism"
+  category: comic
+  mood: dreamlike, bizarre, symbolic, mind-bending
+  pace: slow
+  best_for: "梦境叙事、潜意识表达、荒诞寓言、打破逻辑、发疯文学"
+
+visual_language:
+  color_palette:
+    primary: ["#C4A882", "#8BB8D0"]
+    accent: ["#C43A31", "#F5C842", "#6B8B5A"]
+    background: "#F0E8D8"
+    text: "#2A1F14"
+    muted: "#B0A090"
+  composition: 物体在不可能的空间里漂浮融化，透视扭曲，时间钟表像软糖一样垂下
+  texture: 超现实的梦境质感，天空和地面互相渗透，像达利画作的漫画版
+
+style_lock:
+  - "超现实主义风格"
+  - "梦境般扭曲"
+  - "物体漂浮融化"
+  - "不可能的空间"
+  - "时钟软塌变形"
+  - "透视扭曲"
+  - "达利式荒诞"
+  - "潜意识象征"
+  - "打破物理法则"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.3
+  body:
+    font: Noto Serif SC
+    weight: 300
+    line_height: 1.6
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#2A1F14"
+    stroke: "#F0E8D8"
+    stroke_width: 3
+    band_color: "rgba(240, 232, 216, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: dreamy-fade
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 9
+    transition_duration_seconds: 1.0
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=1.0s"
+  padding_color: "#F0E8D8"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "超现实主义风格, 梦境般扭曲透视, 物体漂浮融化, 不可能的空间, 达利式荒诞, 潜意识象征, 打破物理法则"
+  image_negative_prompt: "photorealistic, realistic, normal, ordinary, logical, natural physics"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有超现实的扭曲和漂浮元素"
+  - "文字叠加不得遮挡角色面部表情"

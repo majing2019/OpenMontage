@@ -39,6 +39,14 @@ from tools.base_tool import (
     ToolTier,
 )
 
+# Bypass system proxy for Volcengine Ark domains — macOS Clash/V2Ray proxy
+# (127.0.0.1:7897) causes SSL handshake failures with these endpoints.
+_VOLCENGINE_NO_PROXY_HOSTS = "ark.cn-beijing.volces.com,ark-acg-cn-beijing.tos-cn-beijing.volces.com"
+for _k in ("NO_PROXY", "no_proxy"):
+    _existing = os.environ.get(_k, "")
+    if _VOLCENGINE_NO_PROXY_HOSTS not in _existing:
+        os.environ[_k] = f"{_VOLCENGINE_NO_PROXY_HOSTS},{_existing}" if _existing else _VOLCENGINE_NO_PROXY_HOSTS
+
 # Volcengine Ark image generation endpoint (synchronous)
 _API_URL = "https://ark.cn-beijing.volces.com/api/v3/images/generations"
 
@@ -177,11 +185,21 @@ class SeedreamVolcengine(BaseTool):
             },
             "image_url": {
                 "type": "string",
-                "description": "Reference image URL for image-to-image generation.",
+                "description": "Single reference image URL for image-to-image generation. Mutually exclusive with image_urls.",
+            },
+            "image_urls": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Multiple reference image URLs (2-14). Seedream merges features from all references into one image. Use for multi-character anchoring or style+identity fusion.",
             },
             "image_path": {
                 "type": "string",
-                "description": "Local reference image path — auto-converted to base64 data URI.",
+                "description": "Single local reference image path — auto-converted to base64 data URI. Mutually exclusive with image_paths.",
+            },
+            "image_paths": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Multiple local reference image paths (2-14). Auto-converted to base64 data URIs. Use for multi-character anchoring when multiple characters need identity preservation.",
             },
             "output_path": {
                 "type": "string",
@@ -283,17 +301,47 @@ class SeedreamVolcengine(BaseTool):
             payload["seed"] = inputs["seed"]
 
         # Reference images for image-to-image
+        # Supports single (image_url/image_path) and multi (image_urls/image_paths)
         image_url = inputs.get("image_url")
+        image_urls = inputs.get("image_urls")
         image_path = inputs.get("image_path")
+        image_paths = inputs.get("image_paths")
 
+        # Convert local paths to data URIs
+        reference_images = []
+
+        # Single path → data URI
         if image_path:
             try:
-                image_url = _file_to_data_uri(image_path)
+                reference_images.append(_file_to_data_uri(image_path))
             except Exception as e:
                 return ToolResult(success=False, error=f"Failed to read reference image: {e}")
 
+        # Multiple paths → data URIs
+        if image_paths:
+            try:
+                reference_images.extend(_file_to_data_uri(p) for p in image_paths)
+            except Exception as e:
+                return ToolResult(success=False, error=f"Failed to read reference images: {e}")
+
+        # Single URL
         if image_url:
-            payload["image"] = image_url
+            reference_images.append(image_url)
+
+        # Multiple URLs
+        if image_urls:
+            reference_images.extend(image_urls)
+
+        # Set payload["image"]: string for single, array for multiple
+        if len(reference_images) == 1:
+            payload["image"] = reference_images[0]
+        elif len(reference_images) >= 2:
+            if len(reference_images) > 14:
+                return ToolResult(
+                    success=False,
+                    error=f"Seedream supports max 14 reference images, got {len(reference_images)}.",
+                )
+            payload["image"] = reference_images
 
         headers = {
             "Authorization": f"Bearer {api_key}",

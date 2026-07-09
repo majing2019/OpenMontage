@@ -1,0 +1,83 @@
+identity:
+  name: "Aboriginal Dot"
+  category: comic
+  mood: ancient, earthy, spiritual, grounded
+  pace: slow
+  best_for: "大地叙事、原住民智慧、自然循环、梦幻时代、澳洲原住民美学"
+
+visual_language:
+  color_palette:
+    primary: ["#8B4513", "#A0522D", "#654321"]
+    accent: ["#FF8C00", "#FFD700", "#FFFFFF", "#CC0000"]
+    background: "#2A1A0A"
+    text: "#FFCC88"
+    muted: "#6B4E3A"
+  composition: 密集彩点组成同心圆和蜿蜒线，符号化的人和动物足迹，大地色系
+  texture: 土褐色底上密集的彩色圆点，传统澳洲原住民点画，象征性的足迹和营地
+
+style_lock:
+  - "澳洲原住民点画"
+  - "密集彩点同心圆"
+  - "大地色系底"
+  - "符号化足迹"
+  - "蜿蜒线条"
+  - "梦幻时代叙事"
+  - "古老大地质感"
+  - "原住民艺术"
+  - "自然循环象征"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 600
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#FFCC88"
+    stroke: "#2A1A0A"
+    stroke_width: 3
+    band_color: "rgba(42, 26, 10, 0.88)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: gentle-fade
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 9
+    transition_duration_seconds: 0.8
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.8s"
+  padding_color: "#2A1A0A"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "澳洲原住民点画风格, 密集彩点同心圆, 大地色系深底, 符号化动物足迹, 蜿蜒线条, 梦幻时代叙事, 古老大地质感"
+  image_negative_prompt: "photorealistic, smooth, blended, realistic anatomy, western, modern, clean, white background"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有密集彩点纹理"
+  - "必须有符号化的图案语言"
+  - "文字叠加不得遮挡角色面部表情"

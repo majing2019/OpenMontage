@@ -1,0 +1,83 @@
+identity:
+  name: "Superhero Comic"
+  category: comic
+  mood: heroic, dynamic, epic, larger-than-life
+  pace: fast
+  best_for: "英雄叙事、力量对决、热血战斗、史诗感、超级英雄梗"
+
+visual_language:
+  color_palette:
+    primary: ["#0033AA", "#CC0000", "#FFCC00"]
+    accent: ["#FF6600", "#00CC66", "#9933CC"]
+    background: "#FFFFFF"
+    text: "#000000"
+    muted: "#CCCCCC"
+  composition: 经典美式超级英雄漫画，夸张透视的动态姿势，爆炸和速度线
+  texture: 美漫网点上色，肌肉线条夸张，动态透视的冲击力，像Marvel/DC内页
+
+style_lock:
+  - "美式超级英雄漫画"
+  - "夸张动态透视"
+  - "爆炸速度线"
+  - "网点上色"
+  - "肌肉线条夸张"
+  - "Marvel-DC风格"
+  - "英雄史诗感"
+  - "冲击力构图"
+  - "披风和紧身衣"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 900
+    line_height: 1.0
+  body:
+    font: Noto Sans SC
+    weight: 700
+    line_height: 1.3
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#000000"
+    stroke: "#FFFFFF"
+    stroke_width: 2
+    band_color: "rgba(255, 255, 255, 0.90)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - cut
+  animation_style: cut
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 5
+    transition_duration_seconds: 0.3
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.3s"
+  padding_color: "#FFFFFF"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "美式超级英雄漫画风格, 夸张动态透视, 爆炸速度线, 网点上色, 肌肉线条夸张, Marvel-DC漫画风格, 英雄史诗冲击力"
+  image_negative_prompt: "photorealistic, realistic anatomy, subtle, quiet, gentle, watercolor"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有夸张的动态透视"
+  - "必须有爆炸或速度线元素"
+  - "文字叠加不得遮挡角色面部表情"

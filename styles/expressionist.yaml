@@ -1,0 +1,84 @@
+identity:
+  name: "Expressionist"
+  category: comic
+  mood: raw, distorted, intense, subjective
+  pace: moderate
+  best_for: "愤怒宣泄、焦虑共鸣、心理叙事、情绪风暴、反精致"
+
+visual_language:
+  color_palette:
+    primary: ["#C43A31", "#2A1F14"]
+    accent: ["#FF6600", "#9933CC", "#FFCC00"]
+    background: "#F0E8D8"
+    text: "#2A1F14"
+    muted: "#A09080"
+  composition: 人物和场景被情绪扭曲变形，笔触狂野，色彩脱离现实来表达内心状态
+  texture: 粗犷笔触像抹在画布上，颜色溢出轮廓，油彩厚涂肌理，像爱德华·蒙克的呐喊
+
+style_lock:
+  - "表现主义风格"
+  - "情绪扭曲变形"
+  - "狂野粗犷笔触"
+  - "色彩脱离现实"
+  - "油彩厚涂肌理"
+  - "颜色溢出轮廓"
+  - "蒙克呐喊感"
+  - "主观心理表达"
+  - "反精致的粗粝"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 900
+    line_height: 1.1
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.4
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#2A1F14"
+    stroke: "#F0E8D8"
+    stroke_width: 3
+    band_color: "rgba(240, 232, 216, 0.90)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - cut
+  animation_style: dramatic-cut
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 6
+    transition_duration_seconds: 0.4
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.4s"
+  padding_color: "#F0E8D8"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "表现主义风格, 情绪扭曲变形, 狂野粗犷笔触, 色彩脱离现实, 油彩厚涂肌理, 颜色溢出轮廓, 蒙克呐喊感, 主观心理表达"
+  image_negative_prompt: "photorealistic, 3D render, photograph, clean, polished, smooth, calm, natural, realistic proportions"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "笔触必须粗犷狂野"
+  - "色彩必须主观化脱离现实"
+  - "文字叠加不得遮挡角色面部表情"

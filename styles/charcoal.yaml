@@ -1,0 +1,85 @@
+identity:
+  name: "Charcoal"
+  category: comic
+  mood: dramatic, raw, emotional, intense
+  pace: moderate
+  best_for: "情感爆发、内心独白、黑暗时刻、压抑叙事、情绪张力"
+
+visual_language:
+  color_palette:
+    primary: ["#1A1A1A", "#2C2C2C"]
+    accent: ["#4A4A4A"]
+    background: "#F0EAD6"
+    text: "#1A1A1A"
+    muted: "#A09888"
+  composition: 碳条粗犷涂抹，大量飞白和碳粉散落，明暗对比极其强烈
+  texture: 碳条粗糙涂抹痕迹，碳粉散落画纸，手指揉擦晕开，纸张凹凸肌理
+
+style_lock:
+  - "碳笔速写风格"
+  - "碳条粗犷涂抹"
+  - "碳粉散落飞白"
+  - "强烈明暗对比"
+  - "手指揉擦晕开"
+  - "纸张凹凸肌理"
+  - "粗粝情感表达"
+  - "素描纸纹理"
+  - "戏剧性光影"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 700
+    line_height: 1.15
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#1A1A1A"
+    stroke: "#F0EAD6"
+    stroke_width: 3
+    band_color: "rgba(240, 234, 214, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - cut
+    - xfade_fade
+  animation_style: dramatic-cut
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 7
+    transition_duration_seconds: 0.5
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.5s"
+  padding_color: "#F0EAD6"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "碳笔速写风格, 碳条粗犷涂抹, 碳粉散落飞白, 强烈明暗对比, 手指揉擦晕开, 纸张凹凸肌理, 粗粝情感表达"
+  image_negative_prompt: "color, clean lines, smooth, polished, digital, photorealistic, 3D render, cute, soft"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须是单色碳笔质感"
+  - "必须有碳粉飞白和涂抹痕迹"
+  - "文字叠加不得遮挡角色面部表情"

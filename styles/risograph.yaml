@@ -1,0 +1,84 @@
+identity:
+  name: "Risograph"
+  category: comic
+  mood: indie, artsy, zine-like, tactile
+  pace: moderate
+  best_for: "独立杂志感、文艺分享、小众审美、创意表达、地下文化"
+
+visual_language:
+  color_palette:
+    primary: ["#FF495C", "#3BA3D0", "#FFD03A"]
+    accent: ["#FF6B8A", "#2C9A6B", "#F5A623"]
+    background: "#FAF8F5"
+    text: "#1C1C1C"
+    muted: "#D0C8C0"
+  composition: 专色叠印错位效果，网点半色调纹理，多层色彩套印感，像独立出版的 zine
+  texture: Riso印刷网点纹理，专色叠印微错位，纸张吸收油墨的不均匀感，手工装订感
+
+style_lock:
+  - "Riso印刷风格"
+  - "专色叠印错位"
+  - "网点半色调纹理"
+  - "独立zine质感"
+  - "油墨吸收纸面"
+  - "多层色彩套印"
+  - "手工装订感"
+  - "小众文艺审美"
+  - "地下出版美学"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 34
+    color: "#1C1C1C"
+    stroke: "#FAF8F5"
+    stroke_width: 3
+    band_color: "rgba(250, 248, 245, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 7
+    transition_duration_seconds: 0.5
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.5s"
+  padding_color: "#FAF8F5"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "Riso印刷风格, 专色叠印错位, 网点半色调纹理, 独立zine质感, 油墨吸收纸面, 多层色彩套印, 手工装订感, 小众文艺审美"
+  image_negative_prompt: "photorealistic, 3D render, photograph, smooth, clean digital, polished, glossy, gradient blend, perfect registration"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有网点半色调纹理"
+  - "色彩叠印必须有微错位感"
+  - "文字叠加不得遮挡角色面部表情"

@@ -1,0 +1,84 @@
+identity:
+  name: "Solar Punk"
+  category: comic
+  mood: hopeful, green, utopian, regenerative
+  pace: moderate
+  best_for: "环保叙事、未来希望、绿色乌托邦、自然科技共生、阳光正能量"
+
+visual_language:
+  color_palette:
+    primary: ["#2E8B57", "#6BA368", "#8B9D6B"]
+    accent: ["#FFD700", "#FF8C5A", "#4A90B8"]
+    background: "#F0F5E8"
+    text: "#2A3A2A"
+    muted: "#B8C8A8"
+  composition: 太阳能板与藤蔓交织，绿色建筑上爬满植物，自然与高科技和谐共生
+  texture: 绿叶藤蔓攀附科技建筑，阳光透过植物的光斑，光伏板的蓝色反光
+
+style_lock:
+  - "太阳朋克风格"
+  - "自然科技共生"
+  - "绿色建筑藤蔓"
+  - "太阳能板反光"
+  - "阳光光斑洒落"
+  - "乌托邦未来"
+  - "积极希望美学"
+  - "环保再生理念"
+  - "植物攀附科技"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 600
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#2A3A2A"
+    stroke: "#F0F5E8"
+    stroke_width: 3
+    band_color: "rgba(240, 245, 232, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: gentle-fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 8
+    transition_duration_seconds: 0.6
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.6s"
+  padding_color: "#F0F5E8"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "太阳朋克风格, 自然科技共生, 绿色建筑藤蔓攀附, 太阳能板蓝色反光, 阳光透过植物光斑洒落, 乌托邦未来的希望美学"
+  image_negative_prompt: "dark, dystopian, industrial, pollution, gray, concrete, cold, sterile, cyberpunk"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有绿色植物与科技共生元素"
+  - "色调必须明亮积极"
+  - "文字叠加不得遮挡角色面部表情"

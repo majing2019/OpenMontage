@@ -1,0 +1,84 @@
+identity:
+  name: "Blueprint"
+  category: comic
+  mood: technical, precise, architectural, analytical
+  pace: slow
+  best_for: "技术科普、建筑叙事、设计思维、结构分析、理性表达"
+
+visual_language:
+  color_palette:
+    primary: ["#0A3D6B", "#1A5D9B"]
+    accent: ["#FFFFFF", "#4A8DCB"]
+    background: "#0A3D6B"
+    text: "#FFFFFF"
+    muted: "#2A6DAB"
+  composition: 深蓝底上的白色工程线稿，标注尺寸虚线，网格参考线，建筑平面图感
+  texture: 蓝图晒印的深蓝感光底色，白色工程线条，虚线辅助线，网格坐标
+
+style_lock:
+  - "蓝图工程风格"
+  - "深蓝感光底色"
+  - "白色工程线条"
+  - "虚线标注尺寸"
+  - "网格参考线"
+  - "建筑平面图感"
+  - "技术图纸美学"
+  - "精确几何造型"
+  - "工程图插画"
+
+typography:
+  headings:
+    font: "Courier New"
+    weight: 700
+    line_height: 1.15
+  body:
+    font: "Courier New"
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "Courier New"
+    font_size: 32
+    color: "#FFFFFF"
+    stroke: "#0A3D6B"
+    stroke_width: 2
+    band_color: "rgba(10, 61, 107, 0.90)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 3
+    max_scene_hold_seconds: 8
+    transition_duration_seconds: 0.6
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.6s"
+  padding_color: "#0A3D6B"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "蓝图工程风格, 深蓝感光底色, 白色工程线条, 虚线标注尺寸, 网格参考线, 建筑平面图感, 技术图纸美学"
+  image_negative_prompt: "colorful, warm, organic, natural, photorealistic, photograph, rough, sketchy"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须是深蓝底白色工程线条"
+  - "必须有网格或虚线标注元素"
+  - "文字叠加不得遮挡角色面部表情"

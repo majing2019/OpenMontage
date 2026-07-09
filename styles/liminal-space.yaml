@@ -1,0 +1,83 @@
+identity:
+  name: "Liminal Space"
+  category: comic
+  mood: eerie, empty, transitional, uncanny
+  pace: slow
+  best_for: "孤独叙事、阈限空间美学、后室感、空旷不安、似曾相识的陌生"
+
+visual_language:
+  color_palette:
+    primary: ["#C4B898", "#D4C8A8", "#B8A888"]
+    accent: ["#FFD700", "#FF8C5A"]
+    background: "#E8E0D0"
+    text: "#4A3A2A"
+    muted: "#C0B898"
+  composition: 空无一人的走廊或大厅，黄绿色荧光灯，潮湿地毯，无限延伸的空间
+  texture: 微颗粒感的低像素画质，荧光灯的嗡嗡感，空的楼梯间和废弃办公室
+
+style_lock:
+  - "阈限空间风格"
+  - "空无一人的走廊"
+  - "黄绿色荧光灯"
+  - "无限延伸空间"
+  - "后室美学"
+  - "潮湿地毯质感"
+  - "似曾相识的陌生"
+  - "空旷不安感"
+  - "低像素颗粒"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.3
+  body:
+    font: Noto Sans SC
+    weight: 300
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#4A3A2A"
+    stroke: "#E8E0D0"
+    stroke_width: 3
+    band_color: "rgba(232, 224, 208, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: dreamy-fade
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 9
+    transition_duration_seconds: 1.0
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=1.0s"
+  padding_color: "#E8E0D0"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "阈限空间风格, 空无一人的走廊大厅, 黄绿色荧光灯照明, 无限延伸的空旷空间, 后室美学, 潮湿地毯质感, 似曾相识的陌生感"
+  image_negative_prompt: "people, crowded, bright natural light, modern clean, happy, cozy, warm"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须是空无一人的空间"
+  - "必须有荧光灯或人工照明的空旷感"
+  - "文字叠加不得遮挡角色面部表情"

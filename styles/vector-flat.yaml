@@ -1,0 +1,84 @@
+identity:
+  name: "Vector Flat"
+  category: comic
+  mood: modern, clean, professional, cheerful
+  pace: fast
+  best_for: "职场吐槽、知识科普、数据可视化叙事、清单体内容、现代生活"
+
+visual_language:
+  color_palette:
+    primary: ["#FFFFFF", "#F5F7FA"]
+    accent: ["#FF6B6B", "#4ECDC4", "#FFD93D", "#6C5CE7", "#A8E6CF"]
+    background: "#FFFFFF"
+    text: "#2D3436"
+    muted: "#DFE6E9"
+  composition: 扁平几何图形构成角色，无描边或细描边，明亮纯色块，人物身体由基本形拼接
+  texture: 纯色块无渐变无阴影，极简几何造型，像企业插画但更有个性
+
+style_lock:
+  - "扁平矢量插画"
+  - "几何图形角色"
+  - "纯色块无渐变"
+  - "明亮配色"
+  - "极简现代风格"
+  - "细描边或无描边"
+  - "基本形拼接"
+  - "清爽干净"
+  - "企业插画风"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#2D3436"
+    stroke: "#FFFFFF"
+    stroke_width: 3
+    band_color: "rgba(255, 255, 255, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: fade
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 6
+    transition_duration_seconds: 0.4
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.4s"
+  padding_color: "#FFFFFF"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "扁平矢量插画, 几何图形角色, 纯色块无渐变, 明亮配色, 极简现代风格, 细描边, 基本形拼接, 清爽干净"
+  image_negative_prompt: "photorealistic, 3D render, photograph, shading, gradient, texture, watercolor, oil painting, complex detail"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须是纯色块无渐变"
+  - "造型必须几何化扁平化"
+  - "文字叠加不得遮挡角色面部表情"

@@ -1,0 +1,84 @@
+identity:
+  name: "Gongbi"
+  category: comic
+  mood: refined, delicate, classical, exquisite
+  pace: slow
+  best_for: "古典故事、精致美学、传统文化、工笔花鸟人物、高端审美"
+
+visual_language:
+  color_palette:
+    primary: ["#F5E6D3", "#E8D5C0"]
+    accent: ["#C43A31", "#3B5998", "#8B9D6B", "#D4A574"]
+    background: "#FBF5EC"
+    text: "#3C2A1E"
+    muted: "#C5B8A0"
+  composition: 精细工笔勾勒，层层晕染色块，绢本质地，人物衣纹一丝不苟
+  texture: 工笔细线勾勒，多层渲染晕色，绢本丝绸纹理，精致到每一根发丝
+
+style_lock:
+  - "工笔画风格"
+  - "精细工笔勾勒"
+  - "层层渲染晕色"
+  - "绢本丝绸纹理"
+  - "衣纹一丝不苟"
+  - "传统中国画配色"
+  - "精致到发丝"
+  - "古典雅致"
+  - "国画工笔人物"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 600
+    line_height: 1.3
+  body:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.6
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#3C2A1E"
+    stroke: "#FBF5EC"
+    stroke_width: 3
+    band_color: "rgba(251, 245, 236, 0.92)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: gentle-fade
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 9
+    transition_duration_seconds: 1.0
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=1.0s"
+  padding_color: "#FBF5EC"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "工笔画风格, 精细工笔勾勒, 层层渲染晕色, 绢本丝绸纹理, 衣纹一丝不苟, 传统中国画配色, 精致到发丝, 古典雅致"
+  image_negative_prompt: "rough, sketchy, abstract, cartoon, anime, photorealistic, 3D render, simple, minimal"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "线条必须精细工笔，不可潦草"
+  - "色彩必须有层层渲染的层次感"
+  - "文字叠加不得遮挡角色面部表情"

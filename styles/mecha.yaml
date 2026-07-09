@@ -1,0 +1,83 @@
+identity:
+  name: "Mecha"
+  category: comic
+  mood: mechanical, powerful, sci-fi, engineered
+  pace: fast
+  best_for: "机甲科幻、机器人故事、科技幻想、钢铁美学、硬核设定"
+
+visual_language:
+  color_palette:
+    primary: ["#4A5A6B", "#3A4A5B", "#6B7B8B"]
+    accent: ["#FF3300", "#00CCFF", "#FFD700"]
+    background: "#1A1A2E"
+    text: "#E0E8F0"
+    muted: "#5A6A7B"
+  composition: 机械关节装甲板构成人物，液压管和电缆外露，驾驶舱和武器系统，钢铁巨构
+  texture: 装甲板铆接，机械关节液压杆，金属划痕和战损，发光的传感器和推进器
+
+style_lock:
+  - "机甲风格"
+  - "装甲板铆接"
+  - "液压管电缆外露"
+  - "金属战损划痕"
+  - "发光传感器"
+  - "钢铁机械美学"
+  - "巨型机器人"
+  - "硬核科幻设定"
+  - "推进器和武器"
+
+typography:
+  headings:
+    font: Noto Sans SC
+    weight: 900
+    line_height: 1.1
+  body:
+    font: Noto Sans SC
+    weight: 400
+    line_height: 1.4
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#E0E8F0"
+    stroke: "#1A1A2E"
+    stroke_width: 3
+    band_color: "rgba(26, 26, 46, 0.88)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - cut
+  animation_style: cut
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 6
+    transition_duration_seconds: 0.3
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.3s"
+  padding_color: "#1A1A2E"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "机甲风格, 装甲板铆接, 液压管电缆外露, 金属战损划痕, 发光传感器, 钢铁机械美学, 巨型机器人设定"
+  image_negative_prompt: "organic, biological, soft, flesh, natural, ancient, photorealistic human"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有机械装甲和金属质感"
+  - "文字叠加不得遮挡角色面部表情"

@@ -1,0 +1,83 @@
+identity:
+  name: "Baroque"
+  category: comic
+  mood: dramatic, theatrical, grand, intense
+  pace: slow
+  best_for: "宏大叙事、戏剧性时刻、命运转折、光影对决、华丽的黑暗"
+
+visual_language:
+  color_palette:
+    primary: ["#1A1208", "#2A1A0A"]
+    accent: ["#C43A31", "#D4A020", "#8B5A3C"]
+    background: "#0D0804"
+    text: "#FFEECC"
+    muted: "#5A4A3A"
+  composition: 卡拉瓦乔式的强烈明暗对比（暗色调主义），一束光从画外打亮主体
+  texture: 戏剧性的聚光灯光效，暗部极深几乎吞噬细节，亮部极致清晰
+
+style_lock:
+  - "巴洛克风格"
+  - "卡拉瓦乔明暗对比"
+  - "聚光灯光效"
+  - "暗部极深吞噬"
+  - "亮部极致清晰"
+  - "戏剧性光影"
+  - "华丽黑暗美学"
+  - "宏大叙事感"
+  - "暗色调主义"
+
+typography:
+  headings:
+    font: Noto Serif SC
+    weight: 700
+    line_height: 1.2
+  body:
+    font: Noto Serif SC
+    weight: 400
+    line_height: 1.5
+  caption:
+    font: "PingFang SC Regular"
+    font_size: 36
+    color: "#FFEECC"
+    stroke: "#0D0804"
+    stroke_width: 3
+    band_color: "rgba(13, 8, 4, 0.90)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - xfade_fade
+  animation_style: dramatic-cut
+  pacing_rules:
+    min_scene_hold_seconds: 4
+    max_scene_hold_seconds: 8
+    transition_duration_seconds: 0.7
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.7s"
+  padding_color: "#0D0804"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "巴洛克风格, 卡拉瓦乔式明暗对比, 聚光灯光效, 暗部极深吞噬细节, 亮部极致清晰, 戏剧性光影, 华丽黑暗美学, 暗色调主义"
+  image_negative_prompt: "bright, evenly lit, flat lighting, minimal, simple, modern, photorealistic"
+  consistency_anchors:
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有强烈的聚光明暗对比"
+  - "暗部必须极深"
+  - "文字叠加不得遮挡角色面部表情"

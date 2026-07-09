@@ -1,0 +1,84 @@
+identity:
+  name: "Glitch Art"
+  category: comic
+  mood: distorted, digital, malfunctioning, chaotic
+  pace: fast
+  best_for: "网络崩溃感、信息过载、数字焦虑、赛博故障、数据损坏美学"
+
+visual_language:
+  color_palette:
+    primary: ["#FF00FF", "#00FFFF", "#FF0000"]
+    accent: ["#FF00FF", "#00FF00", "#0000FF"]
+    background: "#0A0A0A"
+    text: "#FFFFFF"
+    muted: "#660066"
+  composition: RGB通道错位分离，画面撕裂横纹，像素块漂移，数据损坏的视觉化
+  texture: 扫描线撕裂，RGB三色通道偏移，像素化碎块，信号干扰噪点
+
+style_lock:
+  - "故障艺术风格"
+  - "RGB通道错位"
+  - "画面撕裂横纹"
+  - "像素块漂移"
+  - "数据损坏视觉"
+  - "信号干扰噪点"
+  - "数字崩溃美学"
+  - "赛博故障感"
+  - "CRT屏幕碎裂"
+
+typography:
+  headings:
+    font: "Courier New"
+    weight: 700
+    line_height: 1.1
+  body:
+    font: "Courier New"
+    weight: 400
+    line_height: 1.4
+  caption:
+    font: "Courier New"
+    font_size: 32
+    color: "#FFFFFF"
+    stroke: "#0A0A0A"
+    stroke_width: 2
+    band_color: "rgba(10, 10, 10, 0.88)"
+    band_side_padding: 20
+    text_margin_x: 60
+    position: "紧贴图片下方"
+
+motion:
+  transitions:
+    - cut
+  animation_style: cut
+  pacing_rules:
+    min_scene_hold_seconds: 2
+    max_scene_hold_seconds: 5
+    transition_duration_seconds: 0.2
+
+audio:
+  voice_style: "none"
+  music_mood: "none"
+  music_volume: 0
+  sfx_style: "none"
+
+video_composition:
+  target_resolution: "720×1280"
+  fps: 30
+  codec: "h264"
+  layout: "1440×2560 原图 → 缩放到 720×1280"
+  transition: "xfade=fade, duration=0.2s"
+  padding_color: "#0A0A0A"
+
+asset_generation:
+  image_resolution: "1440×2560"
+  image_prompt_prefix: "故障艺术风格, RGB通道错位分离, 画面撕裂横纹, 像素块漂移, 数据损坏视觉化, 信号干扰噪点, 数字崩溃美学"
+  image_negative_prompt: "clean, smooth, natural, photorealistic, organic, perfect, traditional art"
+  consistency_anchors:
+    - "角色描述从 character_registry 逐字复用到每个 prompt"
+    - "style_lock 关键词追加到每个 prompt 末尾"
+
+quality_rules:
+  - "所有画面必须包含 style_lock 关键词"
+  - "必须有RGB通道错位或画面撕裂效果"
+  - "必须有数字故障失真感"
+  - "文字叠加不得遮挡角色面部表情"

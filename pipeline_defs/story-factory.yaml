@@ -1,0 +1,130 @@
+name: story-factory
+version: "1.0"
+description: >
+  Pure story creation pipeline: generates polished short-form narrative stories
+  with rich characters, subtext-aware dialogue, and layered conflict — no images,
+  no video, just story. Ideal for content ideation, script writing, and story
+  development for short-form platforms (Douyin, TikTok, Reels, Shorts).
+  Leverages 18 story patterns, 200+ pre-seeded emotion×scene combinations,
+  5 what-if transformation rules, and subtext-aware dialogue templates.
+category: custom
+stability: beta
+default_checkpoint_policy: guided
+
+orchestration:
+  mode: executive-producer
+  skill: pipelines/story-factory/executive-producer
+  budget_default_usd: 0.0
+  max_revisions_per_stage: 3
+  max_send_backs: 3
+  max_wall_time_minutes: 10
+
+extensions:
+  custom_scripts: true
+  custom_playbooks: true
+  custom_skills: true
+  custom_tools: false
+
+required_skills:
+  - pipelines/story-factory/executive-producer
+  - pipelines/story-factory/ideate-director
+  - pipelines/story-factory/develop-director
+  - pipelines/story-factory/review-director
+  - creative/storytelling
+  - creative/short-form
+  - creative/comedy-framework
+  - creative/advertising-structure
+  - creative/visual-grammar
+  - meta/reviewer
+  - meta/checkpoint-protocol
+
+stages:
+  # ── Stage 1: Ideate ──────────────────────────────────────────────────
+  - name: ideate
+    skill: pipelines/story-factory/ideate-director
+    produces:
+      - story_seed
+    tools_available:
+      - story_factory
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - hook is non-empty and attention-grabbing
+      - beats has complete 5-beat structure (minItems:5, maxItems:5)
+      - emotion_arc contains starts/peaks_at/ends
+      - character_archetypes has at least 1 entry with visual_notes
+      - at least 5 pitches were presented in Round 1
+      - user explicitly selected one pitch
+      - pattern is appropriate for target emotion
+      - conflict operates on three levels (surface/middle/deep) when story seed provides it
+    success_criteria:
+      - Schema-valid story_seed artifact produced
+      - 5-8 candidate pitches generated for user selection
+      - Each seed has complete 5-beat narrative structure
+      - Chosen pitch logline recorded in seed metadata
+      - Correct story_factory mode selected based on user input type
+
+  # ── Stage 2: Develop ─────────────────────────────────────────────────
+  - name: develop
+    skill: pipelines/story-factory/develop-director
+    required_artifacts_in:
+      - story_seed
+    produces:
+      - story_script
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - story_script is schema-valid against story_script.schema.json
+      - all characters have complete Egri 3D dimensions (physiological/sociological/psychological)
+      - all characters have sacred_flaw, desire_want, desire_need
+      - desire_want != desire_need for every character
+      - every scene has surface/middle/deep conflict values (all non-empty)
+      - all dialogue lines have surface_text and subtext_meaning that differ
+      - all dialogue lines are mobile_optimized (<=15 chars or marked false)
+      - therefore_but_chain has entries for every adjacent scene pair
+      - no "and then" connections in therefore_but_chain
+      - breathing rhythm has inhale/hold/exhale assignments per scene
+      - conflict escalation is rising (not static or jumping)
+    success_criteria:
+      - Schema-valid story_script artifact produced
+      - All 5 beats expanded into full scene descriptions (1-2 paragraphs each)
+      - Characters have complete depth profiles from Egri/Storr/Truby framework
+      - Dialogue demonstrates subtext awareness (surface ≠ subtext)
+      - Conflict operates on all three levels across the story
+      - Therefore/but chain connects all scenes with causal or contrastive logic
+      - Mobile constraints respected throughout
+
+  # ── Stage 3: Review ──────────────────────────────────────────────────
+  - name: review
+    skill: pipelines/story-factory/review-director
+    required_artifacts_in:
+      - story_seed
+      - story_script
+    produces:
+      - story_script
+      - review
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - every scene-to-scene connection passes therefore/but test
+      - replacing connector with "and then" makes the sentence feel flat
+      - at least one scene has deep-level conflict (value/identity question)
+      - no character dimension is empty or placeholder
+      - no dialogue line has surface_text == subtext_meaning
+      - every scene has a value change (emotional_polarity_start != end)
+      - breathing rhythm pattern is present across scenes
+      - no more than 2 consecutive scenes with same breathing mode
+      - conflict escalates (Egri rising conflict, not static or jumping)
+      - markdown export is generated and readable at projects/<name>/story.md
+      - review_findings are populated in story_script
+    success_criteria:
+      - All narrative quality checks pass (therefore/but, conflict depth, character depth, dialogue subtext)
+      - Therefore/but chain validated — no weak "and then" connections
+      - Conflict depth audit passed — at least one deep conflict present
+      - Character dimension verification passed — all dimensions filled, desire_want ≠ desire_need
+      - Dialogue subtext audit passed — no lines with surface_text == subtext_meaning
+      - Value change audit passed — every scene produces a state change
+      - Breathing rhythm verified — inhale/hold/exhale cycle present
+      - Markdown story export generated at projects/<name>/story.md

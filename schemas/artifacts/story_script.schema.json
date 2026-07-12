@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/story_script",
+  "title": "Story Script",
+  "description": "A fully developed narrative script with character depth, subtext-aware dialogue, layered conflict, and structural quality markers — the output of the story-factory pipeline's develop stage.",
+  "type": "object",
+  "required": [
+    "version",
+    "source_seed_id",
+    "title",
+    "logline",
+    "hook",
+    "pattern",
+    "pattern_category",
+    "emotion_arc",
+    "characters",
+    "scene_sequence",
+    "therefore_but_chain",
+    "total_scenes",
+    "total_characters"
+  ],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "source_seed_id": {
+      "type": "string",
+      "description": "Links back to the story_seed.seed_id that this script was developed from"
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "logline": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One-sentence story summary"
+    },
+    "hook": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opening hook — the first thing the audience sees/reads"
+    },
+    "pattern": {
+      "type": "string",
+      "description": "Story pattern name (e.g. 身份反转, 误会连环, 日常英雄)"
+    },
+    "pattern_category": {
+      "type": "string",
+      "enum": ["emotional", "comedy", "suspense", "slice_of_life", "social"]
+    },
+    "douyin_tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Suggested platform hashtags"
+    },
+    "emotion_arc": {
+      "type": "object",
+      "required": ["starts", "peaks_at", "ends"],
+      "properties": {
+        "starts": { "type": "string" },
+        "peaks_at": { "type": "string" },
+        "ends": { "type": "string" }
+      }
+    },
+    "ending": {
+      "type": "object",
+      "description": "Ending design per Snyder contrast + 4 resolution types + manga page-turn",
+      "properties": {
+        "description": { "type": "string" },
+        "ending_type": { "type": "string", "enum": ["positive", "negative", "ironic", "open_ended"] },
+        "closing_image_hint": { "type": "string", "description": "Snyder closing image that contrasts with opening" },
+        "page_turn_hook": { "type": "string", "description": "Manga technique: 右页最后一格的悬念设计" }
+      }
+    },
+    "target_platform": {
+      "type": "string",
+      "default": "douyin",
+      "enum": ["douyin", "tiktok", "instagram", "youtube_shorts", "generic"]
+    },
+    "target_duration_seconds": {
+      "type": "number",
+      "minimum": 15,
+      "maximum": 90,
+      "default": 60
+    },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "total_scenes": { "type": "integer", "minimum": 5 },
+    "total_characters": { "type": "integer", "minimum": 1, "maximum": 4 },
+
+    "characters": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "description": "Character registry with full Egri 3D depth model",
+      "items": {
+        "type": "object",
+        "required": [
+          "character_id", "name", "role",
+          "physiological", "sociological", "psychological",
+          "sacred_flaw", "desire_want", "desire_need"
+        ],
+        "properties": {
+          "character_id": { "type": "string", "description": "Unique within this story (e.g. 'char_1', 'mom')" },
+          "name": { "type": "string" },
+          "role": { "type": "string", "description": "Archetype label (e.g. 妈妈, 打工人)" },
+          "physiological": { "type": "string", "minLength": 1, "description": "Egri dimension 1: age, body, appearance, health" },
+          "sociological": { "type": "string", "minLength": 1, "description": "Egri dimension 2: class, job, education, family, religion" },
+          "psychological": { "type": "string", "minLength": 1, "description": "Egri dimension 3: temperament, beliefs, complexes, values" },
+          "sacred_flaw": { "type": "string", "minLength": 1, "description": "Storr: deeply flawed but sacredly held worldview (trauma → false conclusion → rigid belief)" },
+          "trauma_origin": { "type": "string", "description": "Root cause of the sacred flaw" },
+          "desire_want": { "type": "string", "minLength": 1, "description": "Truby: external, conscious goal" },
+          "desire_need": { "type": "string", "minLength": 1, "description": "Truby: internal growth requirement — must differ from desire_want" },
+          "opponent_mirror": { "type": "string", "description": "What the character's opponent reflects about their hidden fears" },
+          "action_under_pressure": { "type": "string", "description": "McKee: how this character acts when cornered" },
+          "archetype_source": { "type": "string", "description": "Which character_archetypes entry from story_seed this was developed from" }
+        }
+      }
+    },
+
+    "scene_sequence": {
+      "type": "array",
+      "minItems": 5,
+      "description": "Expanded scene-by-scene narrative sequence",
+      "items": {
+        "type": "object",
+        "required": [
+          "scene_number", "beat_name", "start_pct", "end_pct",
+          "scene_description", "setting",
+          "conflict_surface", "conflict_middle", "conflict_deep",
+          "emotional_polarity_start", "emotional_polarity_end",
+          "value_change"
+        ],
+        "properties": {
+          "scene_number": { "type": "integer", "minimum": 1 },
+          "beat_name": { "type": "string", "description": "From story_seed beats (HOOK, BUILD, CONFRONT, REVEAL, RESOLVE)" },
+          "start_pct": { "type": "number", "minimum": 0, "maximum": 1, "description": "Proportional start time (0.0–1.0 × target_duration)" },
+          "end_pct": { "type": "number", "minimum": 0, "maximum": 1, "description": "Proportional end time" },
+          "scene_description": { "type": "string", "minLength": 1, "description": "1-2 paragraphs of prose describing what happens in this scene" },
+          "setting": { "type": "string", "minLength": 1, "description": "Location and environment" },
+          "characters_present": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "character_ids of characters appearing in this scene"
+          },
+          "conflict_surface": { "type": "string", "minLength": 1, "description": "Level 1: visible functional/practical problem" },
+          "conflict_middle": { "type": "string", "minLength": 1, "description": "Level 2: emotional/relational opposition" },
+          "conflict_deep": { "type": "string", "minLength": 1, "description": "Level 3: value/identity contradiction (freedom vs security, self vs group)" },
+          "emotional_polarity_start": { "type": "string", "description": "McKee: emotional state at scene start" },
+          "emotional_polarity_end": { "type": "string", "description": "McKee: emotional state at scene end — must differ from start" },
+          "value_change": { "type": "string", "minLength": 1, "description": "McKee: what value changed in this scene (e.g. Hope → Despair, Ignorance → Knowledge)" },
+          "dialogue": {
+            "type": "array",
+            "description": "Optional dialogue lines for this scene",
+            "items": {
+              "type": "object",
+              "required": ["character_id", "surface_text", "subtext_meaning"],
+              "properties": {
+                "character_id": { "type": "string" },
+                "surface_text": { "type": "string", "maxLength": 15, "description": "Words spoken aloud — mobile-optimized (≤15 Chinese chars)" },
+                "subtext_meaning": { "type": "string", "description": "Actual meaning beneath the surface — must differ from surface_text" },
+                "emotion": { "type": "string" },
+                "tone": { "type": "string" },
+                "mobile_optimized": { "type": "boolean", "description": "Whether surface_text fits within mobile constraints" },
+                "delivery_hint": { "type": "string", "description": "Performance direction (action, expression, pause)" },
+                "subtext_rule_applied": {
+                  "type": "string",
+                  "enum": [
+                    "don't name emotions",
+                    "use action instead of emotion words",
+                    "say the opposite",
+                    "change topic = emotional avoidance",
+                    "questions hide judgment",
+                    "repetition = emphasis",
+                    "silence = most powerful line",
+                    "concrete over abstract"
+                  ],
+                  "description": "Which McKee subtext rule this line applies"
+                }
+              }
+            }
+          },
+          "shot_hint": {
+            "type": "string",
+            "description": "Shot size and angle suggestion from visual-grammar (ELS/LS/MS/CU/ECU + angle)"
+          },
+          "breathing_mode": {
+            "type": "string",
+            "enum": ["inhale", "hold", "exhale"],
+            "description": "Short-form breathing rhythm: inhale (tension build), hold (suspense peak), exhale (release)"
+          }
+        }
+      }
+    },
+
+    "therefore_but_chain": {
+      "type": "array",
+      "minItems": 4,
+      "description": "Causal/contrastive connections between every adjacent scene pair — never 'and then'",
+      "items": {
+        "type": "object",
+        "required": ["from_scene", "to_scene", "connector", "explanation"],
+        "properties": {
+          "from_scene": { "type": "integer", "minimum": 1 },
+          "to_scene": { "type": "integer", "minimum": 1 },
+          "connector": {
+            "type": "string",
+            "enum": ["therefore", "but"],
+            "description": "therefore = causal consequence; but = contradiction/surprise"
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "description": "How the connection works narratively — must describe causal or contrastive logic"
+          }
+        }
+      }
+    },
+
+    "conflict_depth_summary": {
+      "type": "object",
+      "description": "Cross-scene conflict audit summary",
+      "properties": {
+        "has_deep_conflict": { "type": "boolean", "description": "At least one scene reaches deep (value/identity) level" },
+        "escalation_pattern": { "type": "string", "enum": ["rising", "static", "jumping"], "description": "Egri: conflict should rise, not stay static or jump" },
+        "deepest_scene": { "type": "integer", "description": "Scene number where conflict reaches deepest level" }
+      }
+    },
+
+    "breathing_rhythm_summary": {
+      "type": "object",
+      "description": "Cross-scene breathing rhythm audit",
+      "properties": {
+        "has_cycle": { "type": "boolean", "description": "Scene sequence contains inhale → hold → exhale cycle" },
+        "max_consecutive_same_mode": { "type": "integer", "description": "Max consecutive scenes with same breathing mode (should be ≤2)" }
+      }
+    },
+
+    "review_findings": {
+      "type": "object",
+      "description": "Findings from the review stage (populated after review)",
+      "properties": {
+        "total_checks": { "type": "integer" },
+        "critical": { "type": "integer" },
+        "suggestion": { "type": "integer" },
+        "nitpick": { "type": "integer" },
+        "passed": { "type": "boolean" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

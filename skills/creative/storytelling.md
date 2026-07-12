@@ -187,3 +187,175 @@ When writing a **script artifact** for the animated-explainer pipeline:
 6. Plan visual changes every 3-5 seconds in the scene_plan
 7. Mark "silence" beats in the script for key insights
 8. Validate: total concepts should not exceed the scaling table above
+
+---
+
+## Ending Techniques
+
+### Snyder Opening/Closing Image Contrast (Save the Cat)
+
+> Source: Blake Snyder "Save the Cat!" (2005)
+
+The closing image must **visually prove** that the protagonist has changed. It should mirror the opening image but show a transformation.
+
+| Opening Image | Closing Image | What It Proves |
+|-------------|--------------|---------------|
+| Lonely person eating alone | Same restaurant, but someone is with them | Connection found |
+| Cluttered desk, stressed | Same desk, but clean — one item removed = change started | Change is real |
+| Character running away | Character walking toward something | Direction reversed |
+
+**Application**: When writing a story seed, include both `opening_image_hint` and `closing_image_hint` fields. The closing image should directly contrast the opening.
+
+### 4 Resolution Types
+
+| Type | When to Use | Example |
+|------|-------------|---------|
+| **Positive** | Hero achieves goal through growth | Problem solved, lesson learned |
+| **Negative** | Hero fails but grows | Didn't succeed, but became wiser |
+| **Ironic** | Surface success masks hidden cost, or vice versa | Got what was wanted but lost something more valuable |
+| **Open-ended** | Leave the audience thinking | Life continues, no definitive answer — most realistic |
+
+**Rule**: Never use the ending to preach. Let the audience draw the conclusion from the contrast.
+
+### Page Turn Suspense (Manga Technique)
+
+> Source: 《漫画密码》, 《你与大师一步之遥：漫画脚本篇》
+
+The **last panel of a right page** is the prime suspense location. The **first panel of a left page** is the prime reveal/impact location.
+
+**Formula**: Present a question + new悬念 = page ending → reader MUST turn → reveal on next page.
+
+**Application in OpenMontage**: Include a `page_turn_hook` field in story seeds — one sentence describing what makes the reader/viewer want to continue to the next beat.
+
+### Elixir Return (Hero's Journey)
+
+> Source: Vogler "The Writer's Journey" (1998)
+
+The hero must bring back a **gift for the community** — not just for themselves. Knowledge, experience, love, or peace. The story has universal meaning only when the hero's growth benefits others.
+
+---
+
+## Conflict Design Framework
+
+### McKee's Value Change Per Scene
+
+> Source: Robert McKee "Story" (1997)
+
+**Every scene must produce a value change** — positive to negative, or negative to positive. If a scene ends in the same state it began, delete it.
+
+| Scene Start | Scene End | Value Change |
+|-------------|-----------|-------------|
+| Hope → | Despair | ✅ (negative change) |
+| Ignorance → | Knowledge | ✅ (positive change) |
+| Status quo → | Status quo | ❌ (no change — delete or revise) |
+
+**Application**: When writing beats, explicitly note the emotional polarity at the start and end. If unchanged, the beat needs a turning point.
+
+### Gap Theory (Story Energy Source)
+
+> Source: McKee "Story", Storr "The Science of Storytelling"
+
+**Story energy = gap between expectation and reality.**
+
+1. Character takes action expecting result X
+2. Reality delivers result Y (different from X)
+3. This gap forces the character into a more extreme choice
+4. The gap between expectation and reality **is** what keeps the audience engaged
+
+**Application**: Design each beat so that the character's expectation is violated. The gap doesn't need to be dramatic — even small gaps ("I thought they'd say yes, they said no") create energy.
+
+### Egri's Rising Conflict
+
+> Source: Lajos Egri "The Art of Dramatic Writing" (1942)
+
+Conflict must **escalate gradually**, with each step logically caused by the previous one.
+
+| Type | Description | Avoid? |
+|------|-------------|--------|
+| **Static** | Equal opposing forces, no progress | ❌ Always avoid |
+| **Jumping** | Sudden escalation without causality | ❌ Always avoid |
+| **Rising** | Gradual escalation, each step from previous | ✅ Ideal |
+
+**Three-Level Conflict Depth** (from 叶茂中《冲突》):
+
+| Level | Chinese | What It Is | Examples |
+|-------|---------|-----------|----------|
+| Surface | 表层 | Functional/practical problem | How to do X, schedule conflict |
+| Middle | 中层 | Emotional/relational opposition | Misunderstanding, hurt feelings |
+| Deep | 深层 | Value/identity contradiction | Freedom vs security, self vs group |
+
+**Best stories use all three levels** — surface conflict hooks attention, middle conflict creates empathy, deep conflict gives lasting impact.
+
+### Information Gap Theory (Storr)
+
+> Source: Will Storr "The Science of Storytelling" (2019)
+
+**Curiosity = brain detecting information gaps.** It works like hunger — an unsatisfied gap demands to be filled.
+
+**How to use:**
+1. Open a gap that is **too large to ignore** but **small enough to understand**
+2. Feed information **incrementally** — never resolve all gaps at once
+3. Each resolved gap should **open a new gap** to maintain momentum
+4. The final gap is the core dramatic question — resolved at the climax
+
+**The Change Detection Opening**: Begin with **change/anomaly**, not normal state. "Something's wrong" triggers the brain's change-detection system, which demands attention.
+
+---
+
+## Therefore/But Connection Test
+
+> Source: William M. Akers "Your Screenplay Sucks!" (2008)
+
+**Scene connections must be "therefore" or "but" — never "and then."**
+
+| Connection | Meaning | Effect |
+|------------|---------|--------|
+| Therefore | Causal consequence | Narrative drive forward |
+| But | Contradiction / surprise | Narrative drive via tension |
+| And then | No connection | Narrative death — delete or revise |
+
+**Quick test**: Replace the transition between any two beats with "and then." If the sentence still makes sense, the beats aren't connected strongly enough. Fix by finding the causal link or contrast between them.
+
+**Extended: McKee's scene-level test**: Replace "and then" with "because" or "but" — if neither works, the scene sequence has a structural problem.
+
+---
+
+## Character Depth System
+
+> Sources: Egri "The Art of Dramatic Writing", Storr "The Science of Storytelling", Truby "The Anatomy of Story"
+
+### 3D Character Model (Egri)
+
+Every character should have three dimensions:
+
+| Dimension | Chinese | Questions | Purpose |
+|-----------|---------|----------|---------|
+| Physiological | 生理 | Age, body, appearance, health | Visual design, physical behavior |
+| Sociological | 社会 | Class, job, education, family, religion | Social context, relationships |
+| Psychological | 心理 | Temperament, beliefs, complexes, values | Motivation, inner conflict |
+
+### Sacred Flaw (Storr)
+
+Every compelling character has a **deeply flawed but sacredly held worldview**:
+
+```
+Trauma → False conclusion → Rigid belief → Behavior patterns
+```
+
+The character's **growth** = recognizing and revising this belief. The story proves one lifestyle superior through consequences.
+
+### Desire vs. Need (Truby)
+
+| Component | What It Is | Example |
+|-----------|-----------|---------|
+| **Desire (Want)** | External, conscious goal | "I want to get promoted" |
+| **Need** | Internal growth requirement | "I need to learn to collaborate" |
+| **Opponent as Mirror** | Represents what hero refuses to see | The team player who challenges the lone wolf |
+
+The story's ending: the character achieves (or fails to achieve) the **Want**, but the audience judges success by whether they grew toward the **Need**.
+
+### Character = Action Under Pressure (McKee)
+
+Characters are revealed through **choices under pressure**, not through stated traits or backstory dumps. Greater pressure → deeper revelation → more authentic character.
+
+**Application in OpenMontage**: The `story_factory` CHARACTER_ARCHETYPES now include all these fields (`sacred_flaw`, `desire_want`, `desire_need`, `opponent_mirror`, `action_under_pressure`). Use them in the story generation pipeline.

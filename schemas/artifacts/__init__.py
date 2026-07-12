@@ -36,6 +36,7 @@ ARTIFACT_NAMES = [
     "shot_list",
     "preview_manifest",
     "captioned_assets",
+    "story_script",
 ]
 
 

@@ -217,3 +217,58 @@ Ask for approval. The user can request changes to any panel before entering prev
 - **Vague character descriptions**: "a man" is useless. core_traits must be specific: "中年男子，圆脸，戴黑框眼镜，穿蓝色格子衬衫，微胖".
 - **Missing expression on a panel**: Every character in every panel needs expression + body_language. No exceptions.
 - **Forgetting IP outro**: The last panel is the creator's brand moment. It must be planned here.
+
+## Visual Grammar Integration
+
+When designing panels, apply the visual storytelling grammar from `skills/creative/visual-grammar.md`:
+
+### Shot Size Selection Per Beat
+
+| Beat Type | Recommended Shot Size | Why |
+|-----------|---------------------|-----|
+| HOOK (first panel) | MS or CU with visual impact | Must grab attention in frame 1 |
+| BUILD (setup/info) | LS or MS | Establish context and character |
+| CONFRONT (climax) | CU or ECU + camera variety | Maximum emotional intensity |
+| REVEAL (turning point) | CU with reaction shot | Focus on what changed |
+| RESOLVE (ending) | MS or LS (pull back) | Release — let audience breathe |
+
+### Panel Transition Types Between Beats
+
+Use McCloud's 6 transition types between consecutive panels:
+
+| Transition | Between Beat Types | Effect |
+|-----------|-------------------|--------|
+| Moment-to-Moment | Within BUILD → BUILD | Slow, detailed, atmospheric |
+| Action-to-Action | Within CONFRONT → CONFRONT | Fast, dynamic, tense |
+| Subject-to-Subject | Between same-scene panels | Dialogue, reaction shots |
+| Scene-to-Scene | Between different locations | Time/place jump |
+| Aspect-to-Aspect | Atmosphere-building panels | Japanese "air" feel |
+| Non-Sequitur | Dream/reality breaks | Disorientation, symbolism |
+
+### Panel Shape = Rhythm
+
+| Panel Shape | Use When | Avoid When |
+|-----------|---------|-----------|
+| Standard horizontal | Normal narrative flow | Monotonous if all panels are same |
+| Narrow vertical | Urgency, tension, peeking | Overuse (loses impact) |
+| Wide horizontal | Scene establishment, time passage | In tight dialogue scenes |
+| Irregular/tilted | Chaos, psychological break | Normal daily scenes |
+
+### Breathing Rhythm Design
+
+Plan the shot list as a **breathing cycle**:
+
+```
+Inhale (tension build):
+  Panel 1-3: Smaller panels, denser info, rising conflict
+
+Hold (anticipation):
+  Panel 4: Large panel, silence, key reveal or suspense moment
+
+Exhale (release):
+  Panel 5: Medium/large panel, emotional resolution, open composition
+```
+
+**Multi-beat stories**: Each 30-second segment should have its own inhale-hold-exhale cycle. Continuous tension without release causes audience fatigue.
+
+See `skills/creative/short-form.md` → "Breathing Rhythm Modes" for full details.

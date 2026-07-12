@@ -197,6 +197,81 @@ When building short-form content:
 1. **Set output resolution to 1080x1920** (9:16) in the compose stage
 2. **Keep all text within 900x1400px safe zone** — centered in frame
 3. **Captions are mandatory** — use `subtitle_gen` with word-by-word timing
+
+## 30-Second Emotional Density Rule
+
+> Source: 葛飞《爆款短剧与微电影创作》
+
+**Every 30 seconds must contain at least one emotional stimulation point.** This is the retention optimization rule for short-form drama on mobile platforms.
+
+| Interval | Stimulation Type | Purpose |
+|----------|------------------|---------|
+| 0-3s | Visual impact / hook | Prevent scroll-away |
+| ~30s | First emotional turning point | Maintain engagement |
+| ~60s | Information density shift or new revelation | Prevent flat middle |
+| ~90s | Suspense or cliffhanger | Keep watching to end |
+
+**Implementation**: When writing scripts or scene plans for 60s+ content, map out emotional density points and verify every 30-second window has at least one. If a segment has no stimulation point, either add a reveal, a reversal, a tone shift, or cut the dead segment.
+
+## Breathing Rhythm Modes
+
+> Source: 《漫画密码》, 《你与大师一步之遥：漫画脚本篇》
+
+Short-form narrative needs **rhythmic breathing** — constant tension causes fatigue, constant calm causes boredom.
+
+| Mode | Chinese | Pattern | Effect |
+|------|---------|--------|--------|
+| Inhale | 吸气 | Panels get smaller, more numerous, dialogue denser | Tension builds |
+| Hold | 屏息 | One large silent panel, no text, suspense | Maximum anticipation |
+| Exhale | 呼气 | Large panel, release of tension, relief | Emotional payoff |
+
+**Application**: Plan each 30-second segment as a breath cycle:
+- Segment 1 (0-30s): Inhale — build tension or curiosity
+- Segment 2 (30-45s): Hold — key revelation or turning point
+- Segment 3 (45-60s): Exhale — resolution or emotional release
+
+## Panel Rhythm Control
+
+> Source: McCloud "Understanding Comics", Eisner "Comics & Sequential Art"
+
+Panel size and quantity directly control **perceived time and pacing**.
+
+| Technique | Chinese | Visual Pattern | Rhythm Effect |
+|-----------|---------|--------------|---------------|
+| Acceleration | 加速 | Panels get smaller/more numerous | Rising tension, urgency |
+| Deceleration | 减速 | Panels get larger/fewer | Emotional settling, emphasis |
+| Explosion | 爆发 | Many small panels → sudden large panel | Impact, reveal payoff |
+| Breathing | 呼吸 | Large-small-large-small alternation | Natural rhythmic flow |
+
+**Rules of thumb:**
+- **Small panel (1/4 page)** = fast moment, transition, quick action
+- **Medium panel (1/2 page)** = standard beat, dialogue, reaction
+- **Large panel (3/4+ page)** = slow time, emphasis, emotional weight
+- **Full page / splash** = maximum emphasis, emotional climax
+
+**Tension-release alternation**: After a tension section, always include a relief section. Continuous tension without release causes audience fatigue. See `skills/creative/comedy-framework.md` for comedy-specific rhythm.
+
+## Information Gap Theory
+
+> Source: Storr "The Science of Storytelling", Heath brothers "Made to Stick"
+
+**Curiosity = brain detecting information gaps** (like hunger — it demands to be satisfied).
+
+**Application in short-form:**
+- Create gaps that are **too large to ignore** but **small enough to understand**
+- Open a gap in the first 3 seconds (hook = gap creation)
+- Feed information **incrementally** — never resolve all gaps at once
+- Leave one gap unresolved at the end → motivates rewatch or follow
+
+**The SUCCESs Framework** (Made to Stick) for making ideas stick:
+| Principle | Chinese | Application |
+|-----------|---------|------------|
+| Simple | 简单 | One core message per video |
+| Unexpected | 意外 | Break pattern expectation in the hook |
+| Concrete | 具体 | Use specific numbers, names, images — not abstractions |
+| Credible | 可信 | Use authority, data, or social proof |
+| Emotional | 情感 | Make the audience feel something, not just know something |
+| Stories | 故事 | Frame information as a narrative, not a lecture |
 4. **Hook in frame 1** — text overlay + voice starts immediately, no intro
 5. **Visual change every 1-3 seconds** — use quick cuts, zooms, text pops
 6. **Voiceover at 180-200 WPM** — faster than long-form

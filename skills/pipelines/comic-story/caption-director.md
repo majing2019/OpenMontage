@@ -146,3 +146,38 @@ All outputs are **720×1280 RGB PNG** — ready for FFmpeg composition without f
 - **Double-overlaying scene text**: AI already drew speech bubbles, phone messages, etc. Only overlay `text_overlay`.
 - **Stretching images**: Scale preserving aspect ratio, fill empty space with white.
 - **Inconsistent band height**: Band height varies by text length but all other properties (font, color, padding) are identical.
+
+## Subtext-Aware Dialogue
+
+When writing or reviewing caption text, apply the subtext principles from `tools/writing/_dialogue_engine.py`:
+
+### Core Rules
+
+| Rule | What It Means | Example |
+|------|---------------|---------|
+| **Don't name emotions** | Characters don't say "I'm angry" | "（沉默，杯子重重放下）" |
+| **Use actions over feelings** | Show, don't tell | "第三次路过你喜欢的面包店" |
+| **Embrace irony** | Surface ≠ subtext | 说"没事"时心里正在难过 |
+| **Ask "therefore/but"** | Connect causally, not temporally | 场景之间必须有因果或转折 |
+
+### Mobile Constraints (from Ge Fei)
+
+| Constraint | Value | Why |
+|-----------|-------|-----|
+| Max chars per line | 15 Chinese characters | Phone screen width |
+| Max bubbles per panel | 3 | Visual space limit |
+| Prioritize visual-first | If image tells the story, don't add text | Comics are visual medium |
+
+### Image-Text Relationship (McCloud)
+
+Aim for **Interdependent** (1+1>2) — image and text each provide what the other cannot:
+
+| Type | Use Case | Quality |
+|------|----------|---------|
+| Word Specific (image decorates text) | Text-heavy explanation | Acceptable |
+| Picture Specific (text explains image) | Ambiguous image | Acceptable |
+| **Interdependent (best)** | Both essential | **Target** |
+| Parallel (text and image contrast) | Irony, commentary | Special use |
+| Duo-Specific (redundant) | Text repeats what image shows | **Avoid** |
+
+See `skills/creative/comedy-framework.md` for comedy-specific dialogue patterns.

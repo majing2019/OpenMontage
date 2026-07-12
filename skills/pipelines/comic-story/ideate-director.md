@@ -159,3 +159,44 @@ Display the developed seed to the user:
 - **Ignoring video visual analysis**: Path B feeds style-pick. Skipping it means style-pick starts from scratch instead of having grounded suggestions.
 - **Over-complicated stories**: Comic shorts work best with simple, relatable stories. One clear twist, one emotional beat.
 - **Wrong pitch → seed mapping**: The chosen pitch's `style_hint` should pre-fill the `suggested_style` in the seed. Don't override it arbitrarily.
+
+## Pattern Selection Guide (18 Patterns)
+
+When generating or selecting a pattern, consider the audience's emotional need:
+
+| Audience Need | Recommended Patterns | Avoid |
+|--------------|----------------------|-------|
+| Quick laugh | 喜剧升级, 社死瞬间, 误会连环 | 救猫咪节拍 (too complex) |
+| Emotional warmth | 日常英雄, 陌生人温暖, 亲情反转 | 奇葩逻辑 |
+| Surprise/reversal | 身份反转, 隐藏真相, 五幕对称 | 打工人小确幸 |
+| Life reflection | 时光对比, 如果当初, 扁平到立体 | 社死瞬间 |
+| Suspense/thrill | 隐藏真相, 瞬间决定, 五幕对称 | 打工人小确幸 |
+| Growth/inspiration | 救猫咪节拍, 英雄之旅, 扁平到立体 | 误会连环 |
+| Practical value | 问题解决 | 隐藏真相, 时光对比 |
+
+## Hook Type Selection
+
+When choosing or designing hooks, match to the story's primary emotion and platform:
+
+| Story Emotion | Best Hook Types | Why |
+|-------------|---------------|-----|
+| 好笑 | 冲突进行中, 极端对比, 身份锚定 | Comedy needs immediate energy |
+| 感动 | 情感触发, 结果预览, 强力台词 | Emotion needs a trigger |
+| 惊讶 | 结果预览, 悬念提问, 视觉冲击 | Surprise needs a setup |
+| 紧张 | 冲突进行中, 悬念提问, 视觉冲击 | Tension needs immediate stakes |
+| 温暖 | 身份锚定, 情感触发, 强力台词 | Warmth needs relatable entry |
+| 心酸 | 结果预览, 强力台词, 情感触发 | Heartache needs emotional weight |
+
+See `skills/creative/advertising-structure.md` for detailed hook templates.
+
+## Conflict Depth Design
+
+When developing the story seed, ensure conflict operates on three levels:
+
+1. **Surface**: The visible problem — what characters argue about
+2. **Middle**: The emotional subtext — what they actually feel
+3. **Deep**: The value/identity question — what the story is really about
+
+**Quick test**: Ask "Why does this conflict matter?" three times. If the answer gets deeper each time, the conflict has all three levels. If it stays the same, the conflict is only surface-level.
+
+See `skills/creative/storytelling.md` → "Conflict Design Framework" for the full methodology.

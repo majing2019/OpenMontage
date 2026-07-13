@@ -41,7 +41,11 @@ from ._patterns import (
     StoryPattern,
 )
 from ._whatif_engine import get_daily_observation, transform
-from ._polarity_engine import collide, get_dimension_names
+from ._polarity_engine import (
+    build_batch_prompts,
+    complete_collisions,
+    get_dimension_names,
+)
 from ._text_analyzer import TextAnalysisResult, analyze_text
 from ._video_to_concept import extract_concept_from_video
 
@@ -290,8 +294,8 @@ class StoryFactory(BaseTool):
         "properties": {
             "mode": {
                 "type": "string",
-                "enum": ["emotion_matrix", "what_if", "daily_catch", "random", "batch", "from_text", "from_video", "polarity", "pitch"],
-                "description": "Generation mode. pitch: lightweight one-sentence story ideas for brainstorming. polarity: collide opposite poles from life dimensions to generate one-liner stories. from_text: analyze text → story seeds. from_video: analyze video → story seeds.",
+                "enum": ["emotion_matrix", "what_if", "daily_catch", "random", "batch", "from_text", "from_video", "polarity", "polarity_complete", "pitch"],
+                "description": "Generation mode. polarity: build creative prompts for agent-driven polarity collision. polarity_complete: complete seeds from agent-generated outputs. pitch: lightweight one-sentence story ideas. from_text: analyze text → story seeds. from_video: analyze video → story seeds.",
             },
             "emotion": {
                 "type": "string",
@@ -393,7 +397,24 @@ class StoryFactory(BaseTool):
             elif mode == "daily_catch":
                 seeds = self._gen_daily_catch(inputs, count, rng, target_duration, char_count)
             elif mode == "polarity":
-                seeds = self._gen_polarity(inputs, count, rng, target_duration, char_count)
+                prompts = self._gen_polarity(inputs, count, rng, target_duration, char_count)
+                result = ToolResult(
+                    success=True,
+                    data={
+                        "prompts": prompts,
+                        "generation_mode": "polarity",
+                        "total": len(prompts),
+                        "hint": (
+                            "Feed these prompts to an LLM agent to generate pole_a, pole_b, "
+                            "trigger, and one_liner values. Then call execute() with "
+                            "mode='polarity_complete' and agent_outputs=[...] to build seeds."
+                        ),
+                    },
+                    duration_seconds=round(time.time() - start, 3),
+                    cost_usd=0.0,
+                    seed=seed_val,
+                )
+                return result
             elif mode == "random":
                 seeds = self._gen_random(inputs, count, rng, target_duration, char_count)
             elif mode == "batch":
@@ -419,6 +440,9 @@ class StoryFactory(BaseTool):
                     seed=seed_val,
                 )
                 return result
+            elif mode == "polarity_complete":
+                seeds = self._complete_polarity_seeds(
+                    inputs, rng, target_duration, char_count)
             else:
                 return ToolResult(
                     success=False,
@@ -512,14 +536,51 @@ class StoryFactory(BaseTool):
     def _gen_polarity(
         self, inputs, count, rng, duration, char_count
     ) -> list[dict]:
-        """Generate story seeds via polarity collision."""
+        """Build polarity collision prompts for agent-driven generation.
+
+        Returns a list of prompt dicts (not seeds). The caller feeds these to
+        an LLM agent, collects the outputs, then calls complete_polarity_seeds().
+        """
+        cross_ratio = inputs.get("cross_ratio", 0.3)
         dimension_name = inputs.get("dimension")
-        pattern_name = inputs.get("pattern")
-        collisions = collide(
-            dimension_name=dimension_name,
-            count=count,
-            rng=rng,
+
+        if dimension_name:
+            from ._polarity_engine import build_collision_prompt, load_dimensions
+            dims = load_dimensions()
+            prompts = []
+            for _ in range(count):
+                dim = _first(dims, dimension_name)
+                if dim is None:
+                    continue
+                cross = None
+                if cross_ratio > 0 and dim.get("cross_axis_hooks") and rng.random() < cross_ratio:
+                    hook = rng.choice(dim["cross_axis_hooks"])
+                    cross = hook["partner"]
+                prompts.append(build_collision_prompt(
+                    dimension_name, cross_dim_name=cross, rng=rng,
+                ))
+            return prompts
+
+        # No specific dimension: use build_batch_prompts for diversity
+        prompts = build_batch_prompts(
+            count=count, cross_ratio=cross_ratio, spread=True, rng=rng,
         )
+        return prompts
+
+    def _complete_polarity_seeds(
+        self, inputs, rng, duration, char_count
+    ) -> list[dict]:
+        """Complete polarity collision seeds from agent-generated outputs.
+
+        Expects inputs['agent_outputs'] — a list of dicts, each with:
+          - pole_a, pole_b, trigger, one_liner (required)
+          - dimension (required)
+          - cross_axis, emotion, pattern (optional)
+        """
+        agent_outputs = inputs.get("agent_outputs", [])
+        pattern_name = inputs.get("pattern")
+
+        collisions = complete_collisions(agent_outputs, rng=rng)
         seeds = []
         for c in collisions:
             seeds.append(self._build_seed_from_polarity(
@@ -555,9 +616,14 @@ class StoryFactory(BaseTool):
     def _gen_batch(
         self, inputs, count, rng, duration, char_count
     ) -> list[dict]:
-        """Mix all modes to produce diverse batch output."""
+        """Mix all modes to produce diverse batch output.
+
+        Note: polarity mode is excluded from batch — it requires the two-step
+        agent-driven flow (prompts → agent → complete). Use mode='polarity'
+        directly for polarity stories.
+        """
         all_seeds: list[dict] = []
-        modes = ["emotion_matrix", "daily_catch", "random", "polarity"]
+        modes = ["emotion_matrix", "daily_catch", "random"]
         per_mode = max(1, count // len(modes))
         remainder = count - per_mode * len(modes)
 
@@ -571,8 +637,6 @@ class StoryFactory(BaseTool):
                 all_seeds.extend(self._gen_daily_catch(batch_inputs, c, rng, duration, char_count))
             elif mode == "random":
                 all_seeds.extend(self._gen_random(batch_inputs, c, rng, duration, char_count))
-            elif mode == "polarity":
-                all_seeds.extend(self._gen_polarity(batch_inputs, c, rng, duration, char_count))
 
         return all_seeds[:count]
 
@@ -586,14 +650,12 @@ class StoryFactory(BaseTool):
         No full 5-beat structure — just enough for the user to gauge interest.
 
         Source mix (when no input provided — "给我灵感"):
-          ~40% polarity collisions — vivid conflict images from life dimensions
-          ~30% what-if on daily observations — everyday moments transformed
-          ~30% emotion matrix — random picks from 200+ pre-seeded concepts
+          ~50% what-if on daily observations — everyday moments transformed
+          ~50% emotion matrix — random picks from 200+ pre-seeded concepts
 
-        This gives pitch the same source diversity as batch, but in lightweight form.
+        Note: polarity is excluded from pitch — it requires the two-step
+        agent-driven flow. Use mode='polarity' directly for polarity pitches.
         """
-        from ._polarity_engine import collide
-
         text_content = inputs.get("text_content", "")
         emotion = inputs.get("emotion")
         scene = inputs.get("scene")
@@ -629,58 +691,20 @@ class StoryFactory(BaseTool):
                 pitches.append(self._matrix_seed_to_pitch(matrix_seed, rng))
 
         elif emotion or scene:
-            # ── has direction: mix matrix + polarity ─────────────────
-            # ~60% matrix (respecting the user's emotion/scene direction)
-            matrix_target = max(3, int(actual_count * 0.6))
-            while len([p for p in pitches if p.get("source") == "matrix"]) < matrix_target:
+            # ── has direction: pure matrix (allows polarity via agent flow) ──
+            while len(pitches) < actual_count:
                 matrix_seed = get_random_seed(emotion, scene, rng)
                 if not matrix_seed:
                     continue
                 pitches.append(self._matrix_seed_to_pitch(matrix_seed, rng))
 
-            # ~40% polarity (random dimensions — surprise the user)
-            polarity_count = actual_count - len(pitches)
-            collisions = collide(count=polarity_count, rng=rng, compact=True)
-            for c in collisions:
-                style_key = EMOTION_STYLE_MAP.get(c.suggested_emotion, "warm_illustration")
-                pitches.append({
-                    "logline": c.one_liner,
-                    "emotion": c.suggested_emotion,
-                    "pattern_hint": c.pattern_hint,
-                    "twist_type": "极性碰撞",
-                    "style_hint": style_key,
-                    "seedream_keywords": STYLE_PRESETS.get(style_key, STYLE_PRESETS["warm_illustration"])["seedream_keywords"],
-                    "source": "polarity",
-                    "polarity_dimension": c.dimension_name,
-                    "polarity_pole_a": c.pole_a,
-                    "polarity_pole_b": c.pole_b,
-                })
-
         else:
-            # ── no input ("给我灵感"): mix all three sources ────────
-            sources = ["polarity", "what_if_observation", "matrix"]
+            # ── no input ("给我灵感"): mix two sources ─────────────
+            sources = ["what_if_observation", "matrix"]
             per_source = max(1, actual_count // len(sources))
             remainder = actual_count - per_source * len(sources)
 
-            # Source 1: polarity collisions (~40%)
-            p_count = per_source + (1 if remainder > 0 else 0)
-            collisions = collide(count=p_count, rng=rng, compact=True)
-            for c in collisions:
-                style_key = EMOTION_STYLE_MAP.get(c.suggested_emotion, "warm_illustration")
-                pitches.append({
-                    "logline": c.one_liner,
-                    "emotion": c.suggested_emotion,
-                    "pattern_hint": c.pattern_hint,
-                    "twist_type": "极性碰撞",
-                    "style_hint": style_key,
-                    "seedream_keywords": STYLE_PRESETS.get(style_key, STYLE_PRESETS["warm_illustration"])["seedream_keywords"],
-                    "source": "polarity",
-                    "polarity_dimension": c.dimension_name,
-                    "polarity_pole_a": c.pole_a,
-                    "polarity_pole_b": c.pole_b,
-                })
-
-            # Source 2: what-if on daily observations (~30%)
+            # Source 1: what-if on daily observations (~50%)
             w_count = per_source + (1 if remainder > 1 else 0)
             used_obs: set[str] = set()
             obs_attempts = 0
@@ -705,7 +729,7 @@ class StoryFactory(BaseTool):
                     "source": "what_if_observation",
                 })
 
-            # Source 3: emotion matrix random seeds (~30%)
+            # Source 2: emotion matrix random seeds (~50%)
             m_count = actual_count - len(pitches)
             while len([p for p in pitches if p.get("source") == "matrix"]) < m_count:
                 matrix_seed = get_random_seed(None, None, rng)
@@ -1014,11 +1038,15 @@ class StoryFactory(BaseTool):
             "polarity_pole_a": collision.pole_a,
             "polarity_pole_b": collision.pole_b,
             "polarity_trigger": collision.trigger,
+            "polarity_cross_axis": collision.cross_axis,
             "target_platform": "douyin",
             "target_duration_seconds": duration,
             "estimated_image_count": len(beats),
             "difficulty": pattern.difficulty,
-            "generation_mode": f"polarity ({collision.dimension_name})",
+            "generation_mode": (
+                f"polarity ({collision.dimension_name}"
+                + (f" × {collision.cross_axis})" if collision.cross_axis else ")")
+            ),
             "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
@@ -1070,6 +1098,14 @@ class StoryFactory(BaseTool):
 # ---------------------------------------------------------------------------
 # Helper functions
 # ---------------------------------------------------------------------------
+
+def _first(items: list[dict], name: str) -> dict | None:
+    """Find the first dict in a list whose 'name' key matches."""
+    for item in items:
+        if item.get("name") == name:
+            return item
+    return None
+
 
 def _make_seed_id(title: str, pattern: str) -> str:
     raw = f"{title}:{pattern}:{uuid.uuid4().hex[:8]}"

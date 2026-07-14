@@ -1,0 +1,88 @@
+{
+  "prompt_checks": {
+    "image": [
+      {
+        "type": "required_pattern",
+        "pattern": "留白",
+        "suggestion": "图片 prompt 必须声明留白位置，用于叠加字幕。例如：画面上方三分之一留白用于叠加文字。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "Hasselblad",
+        "suggestion": "不要使用英文相机品牌参数。Seedream 是中文模型，用中文描述场景效果更好。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "35mm film aesthetic",
+        "suggestion": "不要使用英文摄影术语堆砌。改为中文描述：有胶片颗粒感、色调偏暖。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "cinematic photography",
+        "suggestion": "太笼统。改为中文具体场景描述：清晨五点半的黄山、午后的山谷瀑布。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "8K resolution",
+        "suggestion": "不要用英文参数。如需要可放在末尾集中声明：8K分辨率，摄影写实。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "negative space",
+        "suggestion": "改用中文：留白。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "photorealistic",
+        "suggestion": "改用中文：摄影写实。放在末尾风格声明中。"
+      },
+      {
+        "type": "min_length",
+        "min_chars": 180,
+        "suggestion": "提示词太短。参考归藏模板：至少需要远景、中景、前景、光影、构图五个段落。"
+      }
+    ],
+    "video": [
+      {
+        "type": "required_pattern",
+        "pattern": "no push-in, no dolly, no pan",
+        "suggestion": "视频 prompt 必须以 camera negation 开头。Seedance 需要同时声明镜头 IS 和 ISN'T 做什么。"
+      },
+      {
+        "type": "required_pattern",
+        "pattern": "Beat-by-beat",
+        "suggestion": "视频 prompt 必须有 Beat-by-beat 时间轴分段（Higgsfield 方法论）。"
+      },
+      {
+        "type": "required_pattern",
+        "pattern": "no 3D, no cartoon, no VFX aesthetic",
+        "suggestion": "视频 prompt 必须包含 realism enforcement phrase。"
+      },
+      {
+        "type": "required_pattern",
+        "pattern": "no music, no audio",
+        "suggestion": "Healing-text pipeline 视频无声。必须声明 no music, no audio — silent clip。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "时长",
+        "suggestion": "视频 prompt 不要用中文'时长 X 秒'开头。用 Higgsfield shot-structure 声明：One continuous shot, locked tripod...。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "配套画面描述",
+        "suggestion": "图生视频的 prompt 只描述运动，不要重复描述场景。图片已经定义了场景。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "text_to_video",
+        "suggestion": "本 pipeline 禁止 text_to_video。所有视频必须用 image_to_video。"
+      },
+      {
+        "type": "min_length",
+        "min_chars": 300,
+        "suggestion": "视频 prompt 太短。需要包含：shot-structure 声明 + camera negation + Beat-by-beat 时间轴 + visual quality + 负面约束。"
+      }
+    ]
+  }
+}

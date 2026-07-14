@@ -1,0 +1,367 @@
+name: healing-text
+version: "3.0"
+description: >
+  Social-media-first emotional/inspirational video pipeline for Xiaohongshu
+  and similar platforms. User provides healing text, selects a visual style
+  (治愈插画风 warm-illustration or 文学摄影风 literary-illustration), and the
+  pipeline generates styled images/video clips with background music,
+  top-center text overlay, and exports in both 16:9 and 9:16.
+  Two selectable illustration styles, background music via pixabay_music,
+  Remotion composition with spring-animated text and gentle motion.
+category: social-emotional
+stability: beta
+default_checkpoint_policy: guided
+
+extensions:
+  custom_scripts: true
+  custom_playbooks: true
+  custom_skills: true
+  custom_tools: false
+
+required_skills:
+  - pipelines/healing-text/script-director
+  - pipelines/healing-text/asset-director
+  - pipelines/healing-text/compose-director
+  - pipelines/healing-text/publish-director
+  - meta/reviewer
+  - meta/checkpoint-protocol
+
+agent_skills:
+  prompt_craft:
+    - healing-text-prompt-guide        # MANDATORY: healing-text specific prompt templates (image + video)
+    - seedance-2-0                     # Seedance API params + camera language
+    - fpv-video-prompting              # FPV immersion + camera route patterns
+    - seedream-prompt-patterns         # High-quality Chinese image prompt examples
+  composition:
+    - remotion                         # Remotion composition patterns
+    - remotion-best-practices          # Remotion quality & performance
+  quality:
+    - visual-taste                     # Anti-slop aesthetic quality principles
+
+compatible_playbooks:
+  recommended:
+    - warm-illustration       # Style A: 治愈插画风 — cute characters, warm tones
+    - literary-illustration   # Style B: 文学摄影风 — Morandi palette, literary feel
+  also_works:
+    - anime-ghibli            # Anime-style healing content
+    - cinematic-drama          # Original cinematic photography (backward compat)
+  custom_allowed: true
+
+orchestration:
+  mode: agent-driven
+  budget_default_usd: 3.00    # ai-generated mode; stock-footage mode is $0.00
+  max_revisions_per_stage: 3
+  max_send_backs: 3
+  max_wall_time_minutes: 20
+
+modes:
+  tts_enabled:
+    description: >
+      Enables TTS narration for each text segment. When enabled, the asset
+      stage generates narration audio via tts_selector (preferring doubao_tts
+      for Chinese text), and the compose stage mixes narration + music with
+      sidechain ducking. Subtitles remain active regardless.
+    default: false
+    options:
+      - value: true
+        label: "TTS Narration (Enabled)"
+        description: "Generate narration per segment. Music ducks during speech (~0.08) and rises between segments (~0.12)."
+      - value: false
+        label: "No Narration (Default)"
+        description: "Text-only video with background music. Subtitles carry the voice."
+  asset_mode:
+    description: >
+      Selects the asset sourcing strategy. ai-generated uses Seedream +
+      Seedance for AI image/video generation (~$3 budget). stock-footage
+      sources all video clips from free stock sites via direct_clip_search
+      and applies color_grade for consistency ($0 budget).
+    default: "ai-generated"
+    options:
+      - value: "ai-generated"
+        label: "AI Generated (Default)"
+        description: "Seedream still images + Seedance image_to_video. Cinematic quality, ~$3 cost."
+        budget_default_usd: 3.00
+      - value: "stock-footage"
+        label: "Stock Footage"
+        description: "All video clips from Pexels/Pixabay/Coverr. Free, color-graded for consistency."
+        budget_default_usd: 0.00
+
+# ---------------------------------------------------------------------------
+# Transition & Text Animation Defaults
+# ---------------------------------------------------------------------------
+# These defaults govern video crossfade and independent text fade behaviour
+# across the compose stage.  The compose-director references these values;
+# override per-project in edit_decisions.metadata if the user requests it.
+# ---------------------------------------------------------------------------
+transition_defaults:
+  video:
+    crossfade_duration_seconds: 1.0
+    crossfade_peak_duration_seconds: 1.2
+    breathing_pause_seconds: 0.4        # gap between segments (image-only, no text)
+  text:
+    fade_in_seconds: 0.7
+    fade_out_seconds: 0.5
+    # Text fades are INDEPENDENT of video crossfade:
+    # - Outgoing subtitle fades out BEFORE the video crossfade begins
+    # - Incoming subtitle fades in AFTER the video crossfade completes
+    # This ensures clean readability — no text overlapping during blend
+    max_words_per_line: 12
+    max_words_per_line_vertical: 7
+    line_height_ratio: 1.6
+    # ── Auto font size formula ──
+    # All segments use the SAME font size. Size is auto-calculated from:
+    #   1. Video width × target fill ratio → how wide the text block should span
+    #   2. Longest text line across ALL segments
+    #
+    #   font_size = clamp(width × fill_ratio / longest_chars, min_font, max_font)
+    #
+    # Reference: 情感励志4 — top-center white text filling ~75-80% of screen width
+    # on a 720×1280 vertical video, with noticeable character spacing.
+    font_size_formula:
+      target_fill_ratio:
+        "16:9": 0.40             # text block fills 40% of video width on horizontal
+        "9:16": 0.72             # text block fills 72% of video width on vertical
+      min_font:
+        "16:9": 34
+        "9:16": 44
+      max_font:
+        "16:9": 48
+        "9:16": 64
+    # Per-playbook overrides (optional):
+    # font_size_playbook_override:
+    #   warm-illustration: { "9:16": { target_fill_ratio: 0.70 } }
+    #   literary-illustration: { "9:16": { target_fill_ratio: 0.72 } }
+    #
+    # ── Text position ──
+    # Reference: 情感励志4 — text sits at Y=2%-5% from top (extremely high).
+    # Rationale: social-media vertical video text competes with platform UI at top;
+    # placing text very high creates the "杂志封面标题" feel.
+    text_position:
+      "16:9":
+        alignment: 5              # middle-center
+        margin_v: 0
+      "9:16":
+        alignment: 5              # middle-center
+        margin_v: 0
+    #
+    # ── Auto-adaptive text color ──
+    text_color_formula:
+      # Analyzes average luma of concatenated silent video. ONE color for entire video.
+      light_threshold: 128           # luma > 128 → light video, use dark text
+      dark_text: "#3C3833"           # charcoal (literary-illustration default)
+      light_text: "#F0F8FA"          # cool near-white with subtle blue tint
+      # Reference: 情感励志4 uses a cool white slightly tinted blue/cyan
+      # Background band: always fully transparent for 9:16 vertical
+      # Outline: none for 9:16 vertical (clean look matching reference)
+  music:
+    volume_by_playbook:
+      warm-illustration: 0.12
+      literary-illustration: 0.10
+      cinematic-drama: 0.12
+    fade_in_seconds: 2.0
+    fade_out_seconds: 3.0
+    # Narration ducking defaults (when tts_enabled=true)
+    ducking:
+      music_volume_during_speech: 0.08
+      music_volume_between_speech: 0.12
+      attack_ms: 200
+      release_ms: 500
+
+# ---------------------------------------------------------------------------
+# Font Reference
+# ---------------------------------------------------------------------------
+font_reference_preview: skills/pipelines/healing-text/font-preview.html
+
+stages:
+  # ── Script: text segmentation + visual direction + motion priority ──
+
+  - name: script
+    skill: pipelines/healing-text/script-director
+    produces:
+      - script
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - User has explicitly selected a visual style (warm-illustration or literary-illustration)
+      - Selected playbook recorded in script metadata
+      - Text segmentation respects natural pauses and emotional rhythm
+      - Motion priority is correctly assigned (peak=video, buildup=animate, quiet=still)
+      - Peak segments are sparse — at most 30% of total segments get video priority
+      - Each segment has concrete visual keywords (not abstract adjectives)
+      - Font shortlist offers genuine stylistic contrast (2-3 options)
+      - Mood analysis is grounded in the actual text content
+      - Segment count is appropriate for the text length (roughly 3-8)
+    success_criteria:
+      - Schema-valid script artifact with at least 3 segments
+      - Every segment has `visual_keywords`, `mood`, and `motion_priority` in metadata
+      - At least 1 video-priority segment (emotional peak)
+      - Font shortlist has 2+ options with rationale
+      - `selected_playbook` is recorded in metadata (warm-illustration or literary-illustration)
+      - `text_overlay_position` is set to "top-center" in metadata
+
+  # ── Assets: generate/source video clips + images per segment ────────
+
+  - name: assets
+    skill: pipelines/healing-text/asset-director
+    required_artifacts_in:
+      - script
+    produces:
+      - asset_manifest
+    required_tools_by_mode:
+      ai-generated:
+        - seedance_volcengine
+        - image_selector
+      stock-footage:
+        - direct_clip_search
+        - color_grade
+    # Union of all mode-specific required tools; orchestrator checks availability
+    # based on selected mode at runtime from script.metadata.asset_mode.
+    required_tools:
+      - seedance_volcengine
+      - image_selector
+      - direct_clip_search
+      - color_grade
+    optional_tools:
+      - pexels_video
+      - pexels_image
+      - pixabay_video
+      - pixabay_image
+      - pixabay_music         # background music (free, no API key)
+      - music_gen             # ElevenLabs music generation (fallback if pixabay blocked)
+      - suno_music            # Suno AI music generation (fallback)
+      - tts_selector          # narration audio (when tts_enabled)
+    tools_available:
+      - seedance_volcengine
+      - image_selector
+      - direct_clip_search
+      - color_grade
+      - pexels_video
+      - pexels_image
+      - pixabay_video
+      - pixabay_image
+      - pixabay_music
+      - music_gen
+      - suno_music
+      - video_selector
+      - tts_selector          # narration generation
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      # === ai-generated mode ===
+      - ALL videos are image_to_video — text_to_video is FORBIDDEN in this pipeline
+      - Every segment has a still image generated (Phase 1), user-approved before Phase 2
+      - Video-priority segments have image_to_video clips (5s, 1080p, no audio)
+      - Animate-priority segments have image_to_video clips (4s, 1080p, no audio)
+      - Still-priority segments are high-quality cinematic still images (2560×1440)
+      - All video clips match their source image composition (image is first frame)
+      - Photorealistic/cinematic aesthetic maintained throughout (no cartoon drift)
+      - Color tone is warm and consistent across all assets
+      - Asset generation matches the selected playbook's visual language
+      - Background music sourced from pixabay_music (mood matches visual style)
+      # === tts_enabled mode ===
+      - "tts_enabled: Narration generated for EVERY script segment via tts_selector"
+      - "tts_enabled: Voice sample was user-approved before batch generation"
+      - "tts_enabled: All narration audio files exist and duration is within tolerance"
+      - "tts_enabled: Preferred TTS provider is doubao_tts for Chinese text"
+      # === stock-footage mode ===
+      - ALL assets are stock video (no AI generation, no still images)
+      - Each segment has video clips in BOTH horizontal (16:9) and vertical (9:16)
+      - Clips downloaded via direct_clip_search from pexels/pixabay_video/coverr
+      - Search queries are English, concrete, scene-based (not abstract or poetic)
+      - All clips pass duration check (at least segment duration, 1080p+)
+      - color_grade applied to ALL clips with cinematic_warm profile (intensity 0.8)
+      - ALL video clips verified silent (ffprobe: no audio stream)
+      - Background music sourced from pixabay_music (fallback: music_gen or suno_music)
+    success_criteria:
+      # === ai-generated mode ===
+      - Schema-valid asset_manifest with one asset per script segment
+      - All asset file paths exist on disk
+      - Video assets produced via image_to_video operation, never text_to_video
+      - ALL video clips verified silent — ffprobe shows only video stream, no audio
+      - Resolution meets minimum 2560x1440 for images and 1920x1080 for videos
+      - Music asset exists on disk (pixabay_music output) with duration >= video duration
+      # === stock-footage mode ===
+      - Schema-valid asset_manifest with video assets per segment per orientation
+      - All stock video file paths exist on disk (clips/ + graded/ directories)
+      - All clips sourced from free stock sites with provider, license, and original_url
+      - Resolution meets minimum 1920x1080 for horizontal, 1080x1920 for vertical
+      - All clips color-graded (cinematic_warm, intensity 0.8)
+      - Music asset exists on disk OR gracefully marked as absent in manifest
+      # === tts_enabled mode ===
+      - "tts_enabled: Schema-valid asset_manifest with narration entries per segment"
+      - "tts_enabled: All narration files exist on disk with correct duration"
+
+  # ── Compose: Remotion assembly + subtitle burn + dual AR ────────────
+
+  - name: compose
+    skill: pipelines/healing-text/compose-director
+    required_artifacts_in:
+      - script
+      - asset_manifest
+    produces:
+      - render_report
+      - final_review
+    required_tools:
+      - video_compose
+    optional_tools:
+      - subtitle_gen
+      - color_grade
+      - audio_mixer           # music mixing into final video
+    tools_available:
+      - video_compose
+      - subtitle_gen
+      - color_grade
+      - audio_mixer
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Video clips play natively (no unnecessary Ken Burns on already-moving footage)
+      - Still images use gentle Ken Burns motion (scale ≤ 1.08x)
+      - Text overlay positioned at TOP-CENTER (not lower-third)
+      - Subtitle timing matches the approved segment pacing
+      - Font choice matches the approved selection from script stage
+      - "Transitions are smooth: crossfade for video clips, dissolve for video-to-image"
+      - Both 16:9 and 9:16 exports are present and visually correct
+      - Color grade is warm and consistent across all frames
+      - "render_runtime: for ai-generated, MUST be 'remotion' (FFmpeg swap is CRITICAL). For stock-footage with all-video assets, 'ffmpeg' is acceptable (no Ken Burns needed)."
+      - "stock-footage mode: all-video timeline with crossfade transitions; FFmpeg concat acceptable"
+      - "stock-footage mode: color grade is pre-applied by asset director — do NOT re-grade in compose"
+      - Background music mixed at ~0.12 volume with 2s fade-in and 3s fade-out
+      - "tts_enabled: Narration audio is synchronized with segment timing"
+      - "tts_enabled: Music ducks to ~0.08 during narration, rises to ~0.12 between segments"
+      - "tts_enabled: Subtitles remain visible alongside narration"
+      - Music mood matches the selected visual style
+      - "stock-footage mode: music absence is NOT a failure (music_absent flag in render_report)"
+    success_criteria:
+      - Schema-valid render_report with outputs for both 16:9 and 9:16
+      - Both output files exist and pass ffprobe validation
+      - Output files contain mixed music audio track (AAC) — OR — silent with music_absent flag in render_report (stock-footage only)
+      - "tts_enabled: Output files contain mixed narration + music audio track (AAC)"
+      - Subtitles match script segments word-for-word
+      - Text overlay position is top-center
+
+  # ── Publish: package for distribution ───────────────────────────────
+
+  - name: publish
+    skill: pipelines/healing-text/publish-director
+    required_artifacts_in:
+      - render_report
+      - final_review
+    optional_artifacts_in:
+      - script
+    produces:
+      - publish_log
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Hero export and social cutdown are clearly labeled
+      - File naming includes platform hint (e.g., _16x9, _9x16)
+      - Thumbnail/poster concept captures a peak video moment
+      - "asset_mode and asset_source are recorded in publish log metadata"
+      - "stock-footage mode: distribution notes include stock sources and license info"
+    success_criteria:
+      - Schema-valid publish_log artifact
+      - Export directory contains both aspect ratio variants and thumbnails
+      - "publish_log.metadata includes asset_mode and asset_source fields"

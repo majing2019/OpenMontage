@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字体预览 — Healing Text Pipeline</title>
+<!-- Google Fonts: downloadable fonts loaded from CDN for preview -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@300;400;700&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@200;300;400;600&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #F5F0EB;
+    font-family: "PingFang SC", system-ui, sans-serif;
+    color: #3C3833;
+    padding: 40px;
+  }
+  h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+  .subtitle {
+    color: #8B9D83;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .mode-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .mode-btn {
+    padding: 8px 20px;
+    border: 2px solid #D4C9C0;
+    border-radius: 6px;
+    background: #FDFAF6;
+    cursor: pointer;
+    font-size: 14px;
+    color: #5C4A3A;
+    transition: all 0.2s;
+  }
+  .mode-btn:hover { border-color: #8B9D83; }
+  .mode-btn.active {
+    border-color: #8B9D83;
+    background: #8B9D83;
+    color: #fff;
+  }
+  .section {
+    margin-bottom: 48px;
+  }
+  .section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #A89F95;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #D4C9C0;
+  }
+  .section-title .playbook-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .playbook-tag.warm { background: #E8D5B7; color: #5C4A3A; }
+  .playbook-tag.literary { background: #D4C9C0; color: #5C4A3A; }
+  .playbook-tag.shared { background: #C5BBB5; color: #3C3833; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    background: #FDFAF6;
+    border: 1px solid #E8E0D8;
+    border-radius: 8px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .card .label {
+    font-size: 11px;
+    color: #A89F95;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card .label .badge {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+  .badge.system { background: #E8E0D8; color: #8B7B6B; }
+  .badge.download { background: #D4C9C0; color: #5C4A3A; }
+  .badge.recommended { background: #8B9D83; color: #fff; }
+  .card .sample {
+    font-size: 22px;
+    line-height: 1.6;
+    padding: 4px 0;
+  }
+  .card .sample.small {
+    font-size: 18px;
+  }
+  .card .sample.large {
+    font-size: 28px;
+  }
+  .card .weight {
+    font-size: 10px;
+    color: #B8A99A;
+    margin-top: 2px;
+  }
+  .install-cmd {
+    margin-top: 40px;
+    padding: 24px;
+    background: #E8E0D8;
+    border-radius: 8px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .install-cmd h3 {
+    font-family: "PingFang SC", system-ui, sans-serif;
+    font-size: 15px;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .install-cmd code {
+    background: rgba(0,0,0,0.06);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .note {
+    margin-top: 40px;
+    font-size: 12px;
+    color: #A89F95;
+    line-height: 1.6;
+  }
+  /* Style indicators */
+  .serif::before { content: "衬线"; }
+  .sans::before { content: "无衬线"; }
+  .kai::before { content: "楷体"; }
+  .handwrite::before { content: "手写"; }
+</style>
+</head>
+<body>
+
+<h1>字体预览</h1>
+<p class="subtitle">Healing Text Pipeline — 样本文案 "你只需要被自己喜欢。"</p>
+
+<div class="mode-selector">
+  <button class="mode-btn active" onclick="showPlaybook('all')">全部字体</button>
+  <button class="mode-btn" onclick="showPlaybook('warm')">治愈插画风</button>
+  <button class="mode-btn" onclick="showPlaybook('literary')">文学摄影风</button>
+</div>
+
+<!-- SECTION: Pipeline Recommended — Literary Illustration -->
+<div class="section" data-playbook="literary">
+  <div class="section-title">
+    📖 文学摄影风推荐 <span class="playbook-tag literary">literary-illustration</span>
+  </div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> Noto Serif SC · Regular 400</div>
+      <div class="sample serif" style="font-family: 'Noto Serif SC', 'Source Han Serif SC', serif; font-weight: 400;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">标准宋体 · 散文质感，文学典雅</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> Noto Serif SC · SemiBold 600</div>
+      <div class="sample serif" style="font-family: 'Noto Serif SC', 'Source Han Serif SC', serif; font-weight: 600;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">半粗宋体 · 文学典雅，视觉重量适中</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> Noto Serif SC · Light 300</div>
+      <div class="sample serif" style="font-family: 'Noto Serif SC', 'Source Han Serif SC', serif; font-weight: 300;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">轻盈宋体 · 文学感恰好，适合长文</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> Noto Serif SC · ExtraLight 200</div>
+      <div class="sample serif" style="font-family: 'Noto Serif SC', 'Source Han Serif SC', serif; font-weight: 200;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">极细宋体 · 比 weight 600 轻三倍，适合大面积留白</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> STFangsong（华文仿宋）</div>
+      <div class="sample serif" style="font-family: 'STFangsong', 'FangSong', serif">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 仿宋体，散文质感，克制优雅</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> Noto Sans SC · Light 300</div>
+      <div class="sample sans" style="font-family: 'Noto Sans SC', sans-serif; font-weight: 300;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">轻盈黑体 · 克制简约，现代文艺</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> PingFang SC · Light 300</div>
+      <div class="sample sans" style="font-family: 'PingFang SC', sans-serif; font-weight: 300;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">⭐ 极细腻的现代黑体（系统自带）</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECTION: Pipeline Recommended — Warm Illustration -->
+<div class="section" data-playbook="warm">
+  <div class="section-title">
+    ☀️ 治愈插画风推荐 <span class="playbook-tag warm">warm-illustration</span>
+  </div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> ZCOOL KuaiLe（站酷快乐体）</div>
+      <div class="sample handwrite large" style="font-family: 'ZCOOL KuaiLe', cursive">被讨厌的勇气</div>
+      <div class="weight">圆体手写 · 亲切可爱，治愈日常</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> Ma Shan Zheng（马山正）</div>
+      <div class="sample large" style="font-family: 'Ma Shan Zheng', cursive">被讨厌的勇气</div>
+      <div class="weight">书法手写 · 钝拙有温度</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> Noto Sans SC · Regular 400</div>
+      <div class="sample sans" style="font-family: 'Noto Sans SC', sans-serif; font-weight: 400;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">圆黑体 · 温暖现代，干净清爽</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> LXGW WenKai · Light 300</div>
+      <div class="sample kai" style="font-family: 'LXGW WenKai', cursive; font-weight: 300;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">⭐ 霞鹜文楷细体 · 小红书治愈系标配</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge recommended">推荐</span> LXGW WenKai · Regular 400</div>
+      <div class="sample kai" style="font-family: 'LXGW WenKai', cursive; font-weight: 400;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">霞鹜文楷 · 温暖手写，文艺手写感</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECTION: All System Serif -->
+<div class="section" data-playbook="all">
+  <div class="section-title">
+    📦 系统自带 — 衬线 / 宋体 / 楷体 <span class="playbook-tag shared">通用</span>
+  </div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> Apple LiSung（俪宋）</div>
+      <div class="sample serif" style="font-family: 'Apple LiSung', 'LiSong Pro', serif">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 经典印刷宋体</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> LiSong Pro Light</div>
+      <div class="sample serif" style="font-family: 'LiSong Pro', serif; font-weight: 300;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Light · 极细宋体</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> Kaiti SC（楷体）</div>
+      <div class="sample kai" style="font-family: 'Kaiti SC', 'STKaiti', '楷体', serif">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 手写楷书</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> BiauKaiTC（標楷體）</div>
+      <div class="sample kai" style="font-family: 'BiauKaiTC', 'BiauKaiHK', serif">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 台标楷书</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> STFangsong（华文仿宋）</div>
+      <div class="sample serif" style="font-family: 'STFangsong', 'FangSong', serif">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 传统书籍正文，散文质感</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECTION: All System Sans -->
+<div class="section" data-playbook="all">
+  <div class="section-title">
+    📦 系统自带 — 无衬线 / 黑体系 <span class="playbook-tag shared">通用</span>
+  </div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> PingFang SC Ultralight</div>
+      <div class="sample sans" style="font-family: 'PingFang SC', sans-serif; font-weight: 100;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Ultralight · 极致轻盈</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> PingFang SC Light</div>
+      <div class="sample sans" style="font-family: 'PingFang SC', sans-serif; font-weight: 300;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Light · 极细腻的现代黑体</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> PingFang SC Regular</div>
+      <div class="sample sans" style="font-family: 'PingFang SC', sans-serif; font-weight: 400;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 日常读感</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> Hiragino Sans GB W3</div>
+      <div class="sample sans" style="font-family: 'Hiragino Sans GB', '冬青黑体简体中文', sans-serif; font-weight: 300;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">W3 · 日系精致黑体，有笔锋</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> Hiragino Sans GB W6</div>
+      <div class="sample sans" style="font-family: 'Hiragino Sans GB', '冬青黑体简体中文', sans-serif; font-weight: 600;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">W6 · 冬青粗体</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> Lantinghei SC（兰亭黑）</div>
+      <div class="sample sans" style="font-family: 'Lantinghei SC', '兰亭黑-简', sans-serif">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 方正中正</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> Heiti SC（黑体）</div>
+      <div class="sample sans" style="font-family: 'Heiti SC', '黑体-简', sans-serif">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 标准印刷黑体</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECTION: All System Handwrite -->
+<div class="section" data-playbook="all">
+  <div class="section-title">
+    📦 系统自带 — 手写 / 个性体 <span class="playbook-tag shared">通用</span>
+  </div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> HanziPen SC（翩翩体）</div>
+      <div class="sample handwrite" style="font-family: 'HanziPen SC', '翩翩体-简', cursive">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 硬笔手写，轻盈随性</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> Hannotate SC（手札体）</div>
+      <div class="sample handwrite" style="font-family: 'Hannotate SC', '手札体-简', cursive">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 毛笔拙朴</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> Baoli SC（报隶）</div>
+      <div class="sample handwrite" style="font-family: 'Baoli SC', '报隶-简', serif">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 隶书古朴</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge system">系统</span> Libian SC（隶变）</div>
+      <div class="sample handwrite" style="font-family: 'Libian SC', '隶变-简', serif">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">Regular · 隶书变体</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECTION: Downloadable from Google Fonts -->
+<div class="section" data-playbook="all">
+  <div class="section-title">
+    🌐 可下载 — Google Fonts CDN <span class="playbook-tag shared">通用</span>
+  </div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> Noto Serif SC · ExtraLight 200</div>
+      <div class="sample serif" style="font-family: 'Noto Serif SC', serif; font-weight: 200;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">极细宋体 · 比 weight 600 轻三倍</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> Noto Serif SC · Light 300</div>
+      <div class="sample serif" style="font-family: 'Noto Serif SC', serif; font-weight: 300;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">轻盈宋体 · 文学感恰好</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> Noto Serif SC · Regular 400</div>
+      <div class="sample serif" style="font-family: 'Noto Serif SC', serif; font-weight: 400;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">标准宋体 · 比当前 600 轻</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> Noto Serif SC · SemiBold 600</div>
+      <div class="sample serif" style="font-family: 'Noto Serif SC', serif; font-weight: 600;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">半粗宋体 · 视觉重量适中</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> LXGW WenKai · Light 300</div>
+      <div class="sample kai" style="font-family: 'LXGW WenKai', cursive; font-weight: 300;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">⭐ 霞鹜文楷细体 · 小红书治愈系标配</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> LXGW WenKai · Regular 400</div>
+      <div class="sample kai" style="font-family: 'LXGW WenKai', cursive; font-weight: 400;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">霞鹜文楷 · 温暖手写</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> Ma Shan Zheng（马山正）</div>
+      <div class="sample large" style="font-family: 'Ma Shan Zheng', cursive">被讨厌的勇气</div>
+      <div class="weight">书法手写 · 钝拙有温度</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> ZCOOL KuaiLe（站酷快乐体）</div>
+      <div class="sample handwrite large" style="font-family: 'ZCOOL KuaiLe', cursive">被讨厌的勇气</div>
+      <div class="weight">圆体手写 · 亲切可爱，治愈日常</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> ZCOOL XiaoWei</div>
+      <div class="sample serif" style="font-family: 'ZCOOL XiaoWei', serif">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">综艺宋体 · 个性张扬</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> Noto Sans SC · Light 300</div>
+      <div class="sample sans" style="font-family: 'Noto Sans SC', sans-serif; font-weight: 300;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">轻盈黑体 · 留白感强</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> Noto Sans SC · Regular 400</div>
+      <div class="sample sans" style="font-family: 'Noto Sans SC', sans-serif; font-weight: 400;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">标准黑体 · 温暖现代</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="badge download">需安装</span> Noto Sans SC · Bold 700</div>
+      <div class="sample sans" style="font-family: 'Noto Sans SC', sans-serif; font-weight: 700;">被讨厌的勇气<br>你只需要被自己喜欢。</div>
+      <div class="weight">粗黑体 · 视觉冲击，适合标题</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Install commands -->
+<div class="install-cmd">
+  <h3>🔧 一键安装所有可下载字体（Homebrew）</h3>
+  <code style="display:block;margin-bottom:12px;">
+    brew install font-noto-serif-sc font-noto-sans-sc font-lxgw-wenkai font-ma-shan-zheng font-zcool-kuaile font-zcool-xiaowei
+  </code>
+  <p style="font-size:12px;color:#8B7B6B;margin-top:8px;">
+    如果某个 brew cask 不存在，手动去 <a href="https://fonts.google.com/" style="color:#5C4A3A;">Google Fonts</a> 下载 .ttf 放到 ~/Library/Fonts/ 即可。<br>
+    安装后重新打开浏览器刷新此页面即可看到本地渲染效果。
+  </p>
+</div>
+
+<div class="note">
+  <strong>Playbook 字体推荐：</strong><br>
+  ☀️ 治愈插画风（warm-illustration）：ZCOOL KuaiLe、Ma Shan Zheng、Noto Sans SC（400）、LXGW WenKai<br>
+  📖 文学摄影风（literary-illustration）：Noto Serif SC（400/600）、STFangsong、Noto Sans SC Light、PingFang SC Light<br>
+  <br>
+  <strong>渲染引擎注意：</strong>Remotion 使用系统字体，字体必须安装在运行渲染的机器上。Google Fonts CDN 版本仅用于浏览器预览。
+</div>
+
+<script>
+function showPlaybook(mode) {
+  // Update buttons
+  document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // Show/hide sections
+  document.querySelectorAll('.section').forEach(section => {
+    const pb = section.dataset.playbook;
+    if (mode === 'all') {
+      section.style.display = '';
+    } else if (pb === mode || pb === 'all') {
+      section.style.display = '';
+    } else {
+      section.style.display = 'none';
+    }
+  });
+}
+</script>
+
+</body>
+</html>

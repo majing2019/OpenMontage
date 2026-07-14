@@ -1,0 +1,318 @@
+name: book-recommend
+version: "1.0"
+description: >
+  Book recommendation video pipeline for social media (Douyin, Xiaohongshu).
+  User provides narration text + book info; pipeline handles segmentation,
+  visual planning, book cover retrieval, AI-generated or stock footage,
+  and Remotion composition with dual 16:9 + 9:16 export.
+  Music and TTS are optional toggles — off by default.
+category: social-emotional
+stability: beta
+default_checkpoint_policy: guided
+
+extensions:
+  custom_scripts: true
+  custom_playbooks: true
+  custom_skills: true
+  custom_tools: false
+
+required_skills:
+  - pipelines/book-recommend/script-director
+  - pipelines/book-recommend/asset-director
+  - pipelines/book-recommend/compose-director
+  - pipelines/book-recommend/publish-director
+  - meta/reviewer
+  - meta/checkpoint-protocol
+
+agent_skills:
+  prompt_craft:
+    - seedream-prompt-patterns
+    - flux-best-practices
+    - seedance-2-0
+  composition:
+    - remotion
+    - remotion-best-practices
+  quality:
+    - visual-taste
+
+compatible_playbooks:
+  recommended:
+    - warm-illustration
+    - literary-illustration
+  also_works:
+    - clean-professional
+    - flat-motion-graphics
+  custom_allowed: true
+
+orchestration:
+  mode: agent-driven
+  budget_default_usd: 3.00
+  max_revisions_per_stage: 3
+  max_send_backs: 3
+  max_wall_time_minutes: 15
+
+# ── Modes ────────────────────────────────────────────────────
+
+modes:
+  format_mode:
+    description: >
+      Content structure for the book recommendation video.
+    default: "book-list"
+    options:
+      - value: "single-book"
+        label: "Single Book Deep Dive"
+        description: "One book, full depth — plot, quotes, reflections. 3-5 min."
+      - value: "book-list"
+        label: "Book List Quick Recs (Default)"
+        description: "3-5 books, 20-40s each, fast-paced. 60-90s."
+      - value: "themed-list"
+        label: "Themed Book List"
+        description: "Books grouped by a theme, each tied to the theme. 2-3 min."
+
+  asset_mode:
+    description: >
+      Visual asset sourcing strategy.
+    default: "ai-generated"
+    options:
+      - value: "ai-generated"
+        label: "AI Generated (Default)"
+        description: "Seedream images + optional Seedance video. ~$3 budget."
+        budget_default_usd: 3.00
+      - value: "stock-footage"
+        label: "Stock Footage"
+        description: "Clips from Pexels/Pixabay/Coverr via direct_clip_search. Free."
+        budget_default_usd: 0.00
+
+  music_enabled:
+    description: >
+      Whether to include background music in the video.
+    default: false
+    options:
+      - value: true
+        label: "Background Music On"
+        description: "Background music sourced from pixabay_music, mixed at low volume."
+      - value: false
+        label: "No Music (Default)"
+        description: "Silent video with subtitles only."
+
+  tts_enabled:
+    description: >
+      Whether to generate AI narration from the user's text.
+    default: false
+    options:
+      - value: true
+        label: "TTS Narration On"
+        description: "Generate AI narration via tts_selector. Music ducks during speech."
+      - value: false
+        label: "No TTS (Default)"
+        description: "Use subtitles only — the text IS the voice."
+
+# ── Transition & Layout Defaults ─────────────────────────────
+
+transition_defaults:
+  video:
+    crossfade_duration_seconds: 1.0
+    breathing_pause_seconds: 0.3
+
+  cover_layout:
+    description: >
+      Book cover is ALWAYS present in every segment. Layout adapts by aspect ratio.
+    "16:9":
+      cover_zone:
+        position: "left"
+        width_ratio: 0.30
+      visual_zone:
+        position: "right"
+        width_ratio: 0.70
+    "9:16":
+      cover_zone:
+        position: "top"
+        height_ratio: 0.35
+      visual_zone:
+        position: "bottom"
+        height_ratio: 0.65
+
+  text_overlay:
+    description: >
+      Auto-adaptive text overlay. Font size computed from video width +
+      longest text line. Font color adapts to background luma.
+    font_size_formula:
+      target_fill_ratio:
+        "16:9": 0.30
+        "9:16": 0.65
+      min_font:
+        "16:9": 28
+        "9:16": 40
+      max_font:
+        "16:9": 44
+        "9:16": 60
+      line_height_ratio: 1.6
+      max_words_per_line: 12
+      max_words_per_line_vertical: 7
+    text_color_formula:
+      light_threshold: 128
+      dark_text: "#1A1A1A"
+      light_text: "#F5F5F5"
+
+  music:
+    volume_default: 0.10
+    fade_in_seconds: 2.0
+    fade_out_seconds: 3.0
+    ducking:
+      music_volume_during_speech: 0.08
+      music_volume_between_speech: 0.10
+      attack_ms: 200
+      release_ms: 500
+
+# ── Stages ───────────────────────────────────────────────────
+
+stages:
+  - name: script
+    skill: pipelines/book-recommend/script-director
+    produces:
+      - script
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - User narration text correctly segmented (3-8 segments, natural pauses)
+      - format_mode recorded in script metadata
+      - Each segment has concrete visual_keywords (Chinese for AI, English for stock)
+      - Book metadata complete per title (title, author, cover_search_query)
+      - Quote citations tied to correct segments if present
+      - Motion priority assigned (peak=video, animate=animate, still=still)
+      - Peak segments sparse — at most 30% of total for ai-generated mode
+      - asset_mode / music_enabled / tts_enabled recorded in metadata
+      - Font shortlist presented with 2-3 options matching the text mood
+    success_criteria:
+      - Schema-valid script artifact
+      - Every segment has visual_keywords, mood, motion_priority
+      - All books referenced have cover_search_query
+      - format_mode, asset_mode, music_enabled, tts_enabled in metadata
+
+  - name: assets
+    skill: pipelines/book-recommend/asset-director
+    required_artifacts_in:
+      - script
+    produces:
+      - asset_manifest
+    required_tools_by_mode:
+      ai-generated:
+        - image_selector
+      stock-footage:
+        - direct_clip_search
+        - color_grade
+    required_tools:
+      - image_selector
+      - direct_clip_search
+      - color_grade
+    optional_tools:
+      - video_selector
+      - seedance_volcengine
+      - pexels_video
+      - pexels_image
+      - pixabay_video
+      - pixabay_image
+      - pixabay_music
+      - music_gen
+      - tts_selector
+    tools_available:
+      - image_selector
+      - video_selector
+      - seedance_volcengine
+      - direct_clip_search
+      - color_grade
+      - pexels_video
+      - pexels_image
+      - pixabay_video
+      - pixabay_image
+      - pixabay_music
+      - music_gen
+      - tts_selector
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      # Book covers
+      - "Book cover retrieved for EVERY book, correct edition confirmed"
+      - "Book cover resolution adequate for display (min 800px on longest edge)"
+      # AI-generated mode
+      - "ai-generated mode: one image per segment, still-priority = 2560x1440"
+      - "ai-generated mode: video segments via image_to_video, NEVER text_to_video"
+      - "ai-generated mode: Phase 1 images user-approved before Phase 2 video gen"
+      # Stock-footage mode
+      - "stock-footage mode: clips sourced via direct_clip_search, English queries"
+      - "stock-footage mode: all clips color-graded (cinematic_warm, intensity 0.8)"
+      - "stock-footage mode: clips presented for human selection before grading"
+      # Optional features
+      - "music_enabled: background music sourced, mood matches text"
+      - "tts_enabled: narration generated per segment via tts_selector"
+      - "All file paths resolve to existing files on disk"
+    success_criteria:
+      - Schema-valid asset_manifest
+      - Book cover exists on disk for every book
+      - One visual asset per segment (image or video)
+      - Music exists on disk OR music_enabled=false recorded in metadata
+      - TTS narration exists on disk OR tts_enabled=false recorded in metadata
+
+  - name: compose
+    skill: pipelines/book-recommend/compose-director
+    required_artifacts_in:
+      - script
+      - asset_manifest
+    produces:
+      - render_report
+      - final_review
+    required_tools:
+      - video_compose
+    optional_tools:
+      - subtitle_gen
+      - color_grade
+      - audio_mixer
+    tools_available:
+      - video_compose
+      - subtitle_gen
+      - color_grade
+      - audio_mixer
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      # Layout
+      - "Book cover occupies its designated zone — never occluded by text overlay"
+      - "Text overlay auto-sized via font formula from transition_defaults"
+      - "16:9 layout: cover left 30%, visual right 70%"
+      - "9:16 layout: cover top 35%, visual bottom 65%"
+      # Motion
+      - "Still images: gentle Ken Burns motion (scale ≤ 1.08x)"
+      - "Video clips: play natively, no unnecessary motion overlay"
+      - "Transitions: crossfade between segments"
+      # Audio
+      - "music_enabled: background music at ~0.10 volume, 2s fade-in, 3s fade-out"
+      - "tts_enabled: narration synced to segment timing, music ducks during speech"
+      - "Neither enabled: silent video, subtitle-only delivery"
+      # Export
+      - "Both 16:9 and 9:16 exports present and visually correct"
+      - "render_runtime MUST be 'remotion' — FFmpeg cannot handle cover + text compositing"
+    success_criteria:
+      - Schema-valid render_report with outputs for both aspect ratios
+      - Both output files exist and pass ffprobe validation
+      - Book cover visible and correctly positioned in every segment
+
+  - name: publish
+    skill: pipelines/book-recommend/publish-director
+    required_artifacts_in:
+      - render_report
+      - final_review
+    optional_artifacts_in:
+      - script
+    produces:
+      - publish_log
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - "File naming includes platform and AR suffix (e.g., _16x9, _9x16)"
+      - "Thumbnail concept captures book cover + title hook"
+      - "format_mode, asset_mode, music_enabled, tts_enabled recorded in publish log"
+    success_criteria:
+      - Schema-valid publish_log artifact
+      - Export directory contains both AR variants and thumbnail concepts

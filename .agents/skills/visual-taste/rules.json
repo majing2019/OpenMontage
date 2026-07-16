@@ -1,0 +1,43 @@
+{
+  "prompt_checks": {
+    "image": [
+      {
+        "type": "forbidden_pattern",
+        "pattern": "#000000",
+        "suggestion": "避免纯黑。使用深蓝、深灰、暗棕替代纯黑背景（visual-taste Rule 2: Color Calibration）。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "oversaturated",
+        "suggestion": "饱和度应低于 80%（visual-taste Rule 2）。治愈系需要克制的色调。"
+      }
+    ],
+    "video": [
+      {
+        "type": "forbidden_pattern",
+        "pattern": "fast pan",
+        "suggestion": "禁止快速摇镜（visual-taste MOTION_INTENSITY ≤ 6）。治愈系运动必须是微小的。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "neon",
+        "suggestion": "禁止霓虹/荧光色（visual-taste：AI purple/blue aesthetic is BANNED）。治愈系用自然光色调。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "regex:(?<!no )oversaturated(?! colors)",
+        "suggestion": "禁止过饱和（visual-taste Rule 2）。治愈系需要低饱和、柔和的色调。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "high contrast",
+        "suggestion": "禁止高对比度（visual-taste：desaturate accents to blend elegantly with neutrals）。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "3D rendering",
+        "suggestion": "禁止 3D 渲染风格（visual-taste：NO 3D rendering aesthetic, photorealistic only）。"
+      }
+    ]
+  }
+}

@@ -1,0 +1,274 @@
+{
+  "version": "1.0",
+  "project_id": "little-prince",
+  "pipeline_type": "book-recommend",
+  "stage": "script",
+  "status": "completed",
+  "timestamp": "2026-07-14T12:39:18.796698+00:00",
+  "checkpoint_policy": "guided",
+  "human_approval_required": true,
+  "human_approved": true,
+  "artifacts": {
+    "script": {
+      "version": "1.0",
+      "title": "\u5c0f\u738b\u5b50\uff1a\u7528\u9a6f\u670d\u5efa\u7acb\u4e0d\u53ef\u66ff\u4ee3\u7684\u8054\u7ed3",
+      "total_duration_seconds": 108,
+      "sections": [
+        {
+          "id": "seg_01",
+          "label": "opening",
+          "text": "\u5c0f\u738b\u5b50\u8d70\u7684\u90a3\u5929\uff0c\u72d0\u72f8\u54ed\u4e86\u3002\u7136\u540e\u4ed6\u8bf4\u4e86\u4e00\u53e5\u8bdd\uff0c\u8ba9\u6211\u8bb0\u4e86\u6574\u6574\u5341\u5e74\u3002",
+          "start_seconds": 0,
+          "end_seconds": 6
+        },
+        {
+          "id": "seg_02",
+          "label": "wheat_field",
+          "text": "\u4ed6\u8bf4\uff1a\u6211\u4e0d\u5403\u9762\u5305\u3002\u91d1\u9ec4\u8272\u7684\u9ea6\u7530\u5bf9\u6211\u6765\u8bf4\uff0c\u672c\u6765\u6ca1\u6709\u4efb\u4f55\u610f\u4e49\u3002\u4f46\u4f60\u7684\u5934\u53d1\uff0c\u662f\u91d1\u9ec4\u8272\u7684\u3002\u6240\u4ee5\u4ece\u4eca\u4ee5\u540e\u2014\u2014\u98ce\u5439\u8fc7\u9ea6\u6d6a\uff0c\u6211\u5c31\u4f1a\u60f3\u8d77\u4f60\u3002",
+          "start_seconds": 6,
+          "end_seconds": 18
+        },
+        {
+          "id": "seg_03",
+          "label": "taming_defined",
+          "text": "\u8fd9\u4e2a\u5c31\u53eb\"\u9a6f\u670d\"\u3002\u9a6f\u670d\u7684\u610f\u601d\u4e0d\u662f\u5f81\u670d\uff0c\u800c\u662f\u5efa\u7acb\u8054\u7cfb\u3002\u662f\u8ba9\u4e00\u4e2a\u8ddf\u4f60\u65e0\u5173\u7684\u751f\u547d\uff0c\u4ece\u6b64\u53d8\u5f97\u4e0d\u53ef\u66ff\u4ee3\u3002",
+          "start_seconds": 18,
+          "end_seconds": 26
+        },
+        {
+          "id": "seg_04",
+          "label": "unique_bond",
+          "text": "\u9a6f\u670d\u4e4b\u524d\uff0c\u4f60\u53ea\u662f\u5343\u4e07\u4e2a\u7537\u5b69\u4e2d\u7684\u4e00\u4e2a\uff0c\u6211\u53ea\u662f\u5343\u4e07\u53ea\u72d0\u72f8\u91cc\u7684\u4e00\u53ea\u3002\u53ef\u4e00\u65e6\u4f60\u9a6f\u670d\u4e86\u6211\u2014\u2014\u6211\u4eec\u5bf9\u5f7c\u6b64\uff0c\u5c31\u662f\u4e16\u754c\u4e0a\u552f\u4e00\u7684\u4e86\u3002",
+          "start_seconds": 26,
+          "end_seconds": 36
+        },
+        {
+          "id": "seg_05",
+          "label": "ritual",
+          "text": "\u4ed6\u8fd8\u8bf4\uff0c\u7231\u9700\u8981\u4eea\u5f0f\u611f\u3002\u4f60\u4e0b\u5348\u56db\u70b9\u949f\u6765\uff0c\u90a3\u4ece\u4e09\u70b9\u5f00\u59cb\uff0c\u6211\u5c31\u89c9\u5f97\u5e78\u798f\u3002\u65f6\u95f4\u8d8a\u9760\u8fd1\u56db\u70b9\uff0c\u6211\u5c31\u8d8a\u5750\u7acb\u4e0d\u5b89\u3002\u8fd9\u5c31\u662f\u5e78\u798f\u7684\u4ee3\u4ef7\u3002",
+          "start_seconds": 36,
+          "end_seconds": 46
+        },
+        {
+          "id": "seg_06",
+          "label": "knew_hed_leave",
+          "text": "\u53ef\u662f\u4f60\u77e5\u9053\u5417\u2014\u2014\u72d0\u72f8\u4ece\u4e00\u5f00\u59cb\u5c31\u77e5\u9053\uff0c\u5c0f\u738b\u5b50\u5fc3\u91cc\u6709\u4e00\u6735\u73ab\u7470\u3002\u4ed6\u6c42\u4ed6\u9a6f\u670d\uff0c\u660e\u77e5\u9053\u8fd9\u4e2a\u7537\u5b69\u4e00\u5b9a\u4f1a\u8d70\u3002\u4f46\u4ed6\u8fd8\u662f\u8bf4\u4e86\u90a3\u4e00\u53e5\u2014\u2014\u8bf7\u4f60\u9a6f\u670d\u6211\u5427\u3002",
+          "start_seconds": 46,
+          "end_seconds": 58
+        },
+        {
+          "id": "seg_07",
+          "label": "secret",
+          "text": "\u544a\u522b\u90a3\u5929\uff0c\u72d0\u72f8\u7ed9\u4e86\u5c0f\u738b\u5b50\u4e00\u4e2a\u79d8\u5bc6\u2014\u2014\u53ea\u6709\u7528\u5fc3\u624d\u80fd\u770b\u5f97\u6e05\u3002\u5b9e\u8d28\u6027\u7684\u4e1c\u897f\uff0c\u7528\u773c\u775b\u662f\u770b\u4e0d\u89c1\u7684\u3002",
+          "start_seconds": 58,
+          "end_seconds": 66
+        },
+        {
+          "id": "seg_08",
+          "label": "rose_garden",
+          "text": "\u5c0f\u738b\u5b50\u7ec8\u4e8e\u542c\u61c2\u4e86\u3002\u4ed6\u8dd1\u56de\u90a3\u5ea7\u73ab\u7470\u76db\u5f00\u7684\u82b1\u56ed\uff0c\u5bf9\u7740\u4e94\u5343\u6735\u4e00\u6a21\u4e00\u6837\u7684\u73ab\u7470\u2014\u2014\"\u4f60\u4eec\u5f88\u7f8e\uff0c\u53ef\u662f\u4f60\u4eec\u662f\u7a7a\u7684\u3002\u4ece\u6765\u6ca1\u6709\u4eba\uff0c\u4e3a\u4f60\u4eec\u82b1\u8fc7\u65f6\u95f4\u3002\u4f46\u6211\u7684\u90a3\u6735\u82b1\u2014\u2014\u6211\u6d47\u704c\u8fc7\u5979\uff0c\u4fdd\u62a4\u8fc7\u5979\uff0c\u542c\u8fc7\u5979\u7684\u6c89\u9ed8\u3002\u56e0\u4e3a\u5979\u662f\u6211\u7684\u73ab\u7470\u3002\"",
+          "start_seconds": 66,
+          "end_seconds": 81
+        },
+        {
+          "id": "seg_09",
+          "label": "responsibility",
+          "text": "\u72d0\u72f8\u6700\u540e\u8bf4\u4e86\u4e00\u53e5\uff1a\u4f60\u8981\u6c38\u8fdc\u5bf9\u4f60\u9a6f\u670d\u8fc7\u7684\u4e1c\u897f\u8d1f\u8d23\u3002\u4f60\u8981\u5bf9\u4f60\u7684\u73ab\u7470\u8d1f\u8d23\u3002\u8bf4\u5b8c\uff0c\u4ed6\u8f6c\u8eab\u8d70\u8fdb\u4e86\u9ea6\u7530\u6df1\u5904\u3002\u4ed6\u4ec0\u4e48\u90fd\u6ca1\u6709\u5f97\u5230\u3002\u9664\u4e86\u98ce\u5439\u8fc7\u9ea6\u6d6a\u65f6\uff0c\u90a3\u4e00\u62b9\u5c5e\u4e8e\u4ed6\u7684\u989c\u8272\u3002",
+          "start_seconds": 81,
+          "end_seconds": 93
+        },
+        {
+          "id": "seg_10",
+          "label": "author_epilogue",
+          "text": "\u5199\u8fd9\u672c\u4e66\u7684\u4eba\uff0c\u662f\u4e00\u4e2a\u6cd5\u56fd\u98de\u884c\u5458\u30021935\u5e74\uff0c\u4ed6\u7684\u98de\u673a\u5760\u6bc1\u5728\u6492\u54c8\u62c9\u6c99\u6f20\uff0c\u4ed6\u5728\u65e0\u8fb9\u65e0\u9645\u7684\u6c99\u6d77\u91cc\u8d70\u4e86\u4e09\u5929\uff0c\u5dee\u70b9\u6e34\u6b7b\u3002\u5199\u5b8c\u300a\u5c0f\u738b\u5b50\u300b\u7684\u7b2c\u4e8c\u5e74\uff0c\u4ed6\u9a7e\u9a76\u6218\u673a\u6d88\u5931\u5728\u5730\u4e2d\u6d77\u4e0a\u7a7a\uff0c\u518d\u4e5f\u6ca1\u6709\u56de\u6765\u3002\u4eba\u4eec\u90fd\u8bf4\uff0c\u4ed6\u53bb\u627e\u5c0f\u738b\u5b50\u4e86\u3002",
+          "start_seconds": 93,
+          "end_seconds": 108
+        }
+      ],
+      "metadata": {
+        "format_mode": "single-book",
+        "asset_mode": "stock-footage",
+        "music_enabled": true,
+        "tts_enabled": true,
+        "text_character": "\u6e29\u67d4\u800c\u6df1\u9083\uff0c\u50cf\u591c\u665a\u72ec\u81ea\u4e00\u4eba\u7ffb\u7740\u4e00\u672c\u65e7\u4e66\u3002\u6709\u514b\u5236\u7684\u60c5\u611f\uff0c\u6709\u54f2\u7406\u7684\u91cd\u91cf\uff0c\u4f59\u97f5\u60a0\u957f\u3002",
+        "visual_universe": "\u6e29\u6696\u7684\u9ea6\u7530\u3001\u5b64\u72ec\u7684\u72d0\u72f8\u3001\u76db\u5f00\u7684\u73ab\u7470\u3001\u65e0\u57a0\u7684\u6c99\u6f20\u2014\u2014\u4e00\u4e2a\u4ecb\u4e8e\u7ae5\u8bdd\u4e0e\u73b0\u5b9e\u4e4b\u95f4\u7684\u4e16\u754c\uff0c\u5149\u7ebf\u67d4\u548c\uff0c\u8272\u8c03\u504f\u6696\u504f\u91d1\u3002",
+        "selected_font": "Noto Serif SC",
+        "font_rationale": "\u601d\u6e90\u5b8b\u4f53\u7684\u6587\u5b66\u6c14\u8d28\u4e0e\u5c0f\u738b\u5b50\u7ecf\u5178\u7ae5\u8bdd\u7684\u6c38\u6052\u611f\u5339\u914d\uff0c\u886c\u7ebf\u5b57\u4f53\u5728\u753b\u9762\u4e0a\u6e29\u6da6\u8212\u5c55\u3002",
+        "books": [
+          {
+            "book_id": "book_01",
+            "title": "\u5c0f\u738b\u5b50",
+            "author": "\u5b89\u6258\u4e07\u00b7\u5fb7\u00b7\u5723-\u57c3\u514b\u82cf\u4f69\u91cc",
+            "author_en": "Antoine de Saint-Exup\u00e9ry",
+            "cover_search_query": "The Little Prince Antoine de Saint-Exup\u00e9ry book cover high resolution front",
+            "quote": "\u53ea\u6709\u7528\u5fc3\u624d\u80fd\u770b\u5f97\u6e05\u3002\u5b9e\u8d28\u6027\u7684\u4e1c\u897f\uff0c\u7528\u773c\u775b\u662f\u770b\u4e0d\u89c1\u7684\u3002",
+            "quote_segment": "seg_07"
+          }
+        ],
+        "visual_direction": {
+          "seg_01": {
+            "mood": "poignant",
+            "motion_priority": "still",
+            "visual_keywords_image": [
+              "golden sunset over empty field, lone tree silhouette, warm amber sky, melancholic calm"
+            ],
+            "visual_keywords_video": [
+              "golden field at sunset, gentle breeze swaying grass, lone tree in distance, warm amber light"
+            ],
+            "color_palette": "warm-amber",
+            "duration_seconds": 6,
+            "book_ref": "book_01"
+          },
+          "seg_02": {
+            "mood": "tender",
+            "motion_priority": "video",
+            "visual_keywords_image": [
+              "endless golden wheat field under sunlight, wind creating waves through wheat, soft warm golden glow"
+            ],
+            "visual_keywords_video": [
+              "golden wheat field blowing in wind, slow motion, warm sunlight, cinematic wide shot, summer afternoon"
+            ],
+            "color_palette": "golden-warm",
+            "duration_seconds": 12,
+            "book_ref": "book_01"
+          },
+          "seg_03": {
+            "mood": "reflective",
+            "motion_priority": "still",
+            "visual_keywords_image": [
+              "fox in wild meadow, close up eyes, connection between human and animal, warm sunlight, shallow depth of field"
+            ],
+            "visual_keywords_video": [
+              "wild fox sitting in grass, looking at camera, golden light, intimate nature documentary shot"
+            ],
+            "color_palette": "warm-muted",
+            "duration_seconds": 8,
+            "book_ref": "book_01"
+          },
+          "seg_04": {
+            "mood": "intimate",
+            "motion_priority": "animate",
+            "visual_keywords_image": [
+              "boy walking alone in open meadow, golden hour backlight, small figure in vast landscape, childhood wonder"
+            ],
+            "visual_keywords_video": [
+              "boy walking through tall grass field at sunset, slow motion, golden backlight, poetic nature scene"
+            ],
+            "color_palette": "golden-warm",
+            "duration_seconds": 10,
+            "book_ref": "book_01"
+          },
+          "seg_05": {
+            "mood": "warm",
+            "motion_priority": "animate",
+            "visual_keywords_image": [
+              "afternoon sunlight streaming through window, cozy room, clock on wall, warm amber light, quiet anticipation"
+            ],
+            "visual_keywords_video": [
+              "sunlight streaming through window curtains, afternoon light moving slowly, cozy interior, time passing"
+            ],
+            "color_palette": "warm-cozy",
+            "duration_seconds": 10,
+            "book_ref": "book_01"
+          },
+          "seg_06": {
+            "mood": "bittersweet",
+            "motion_priority": "video",
+            "visual_keywords_image": [
+              "fox sitting alone on hill at sunset, silhouette against orange sky, waiting, melancholic beauty, wide composition"
+            ],
+            "visual_keywords_video": [
+              "lonely fox on hilltop at sunset, looking into distance, wind blowing fur, cinematic moody shot, golden orange sky"
+            ],
+            "color_palette": "warm-melancholic",
+            "duration_seconds": 12,
+            "book_ref": "book_01"
+          },
+          "seg_07": {
+            "mood": "profound",
+            "motion_priority": "still",
+            "visual_keywords_image": [
+              "human hands holding heart shape, warm light, close up, shallow depth of field, intimate and meaningful"
+            ],
+            "visual_keywords_video": [
+              "close up hands gently cupped together, soft warm light, slow movement, intimate meaningful gesture"
+            ],
+            "color_palette": "warm-intimate",
+            "duration_seconds": 8,
+            "book_ref": "book_01"
+          },
+          "seg_08": {
+            "mood": "triumphant",
+            "motion_priority": "video",
+            "visual_keywords_image": [
+              "thousands of red roses blooming in garden, vibrant crimson, golden sunlight, overwhelming beauty, wide shot"
+            ],
+            "visual_keywords_video": [
+              "beautiful rose garden in full bloom, hundreds of red roses, gentle breeze, golden hour light, romantic cinematic"
+            ],
+            "color_palette": "rose-crimson",
+            "duration_seconds": 15,
+            "book_ref": "book_01"
+          },
+          "seg_09": {
+            "mood": "elegiac",
+            "motion_priority": "video",
+            "visual_keywords_image": [
+              "wheat field at golden sunset, fox walking away into distance, solitary figure, golden light, leaving"
+            ],
+            "visual_keywords_video": [
+              "wheat field golden hour, figure walking away into distance, slow fade, melancholic farewell, cinematic"
+            ],
+            "color_palette": "golden-fading",
+            "duration_seconds": 12,
+            "book_ref": "book_01"
+          },
+          "seg_10": {
+            "mood": "transcendent",
+            "motion_priority": "video",
+            "visual_keywords_image": [
+              "vast sahara desert sand dunes, vintage airplane silhouette, endless horizon, golden sand, freedom"
+            ],
+            "visual_keywords_video": [
+              "endless desert sand dunes aerial view, vast sahara landscape, cinematic drone shot, golden sand, infinite horizon"
+            ],
+            "color_palette": "desert-golden",
+            "duration_seconds": 15,
+            "book_ref": "book_01"
+          }
+        },
+        "motion_budget": {
+          "video_count": 5,
+          "animate_count": 2,
+          "still_count": 3,
+          "rationale": "Stock-footage mode allows all-video. Five video segments carry the emotional arc: seg_02 (wheat field \u2014 first beauty), seg_06 (fox alone \u2014 emotional peak of sacrifice), seg_08 (rose garden \u2014 climax of realization), seg_09 (fox walking away \u2014 elegiac farewell), seg_10 (desert \u2014 transcendent ending). Three still segments (seg_01 opening suspense, seg_03 philosophical reflection, seg_07 the secret revealed) act as breathing pauses."
+        },
+        "font_shortlist": [
+          {
+            "name": "Noto Serif SC",
+            "category": "serif",
+            "rationale": "Literary, timeless, elegant \u2014 matches the classic nature of The Little Prince"
+          },
+          {
+            "name": "LXGW WenKai",
+            "category": "handwriting",
+            "rationale": "Warm, personal, artistic \u2014 echoes the intimate tone of the narration"
+          },
+          {
+            "name": "Noto Sans SC Light",
+            "category": "sans-serif",
+            "rationale": "Modern, clean \u2014 understated and lets the story breathe"
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "asset_mode": "stock-footage",
+    "music_enabled": true,
+    "tts_enabled": true,
+    "format_mode": "single-book",
+    "book_title": "\u5c0f\u738b\u5b50",
+    "book_author": "\u5b89\u6258\u4e07\u00b7\u5fb7\u00b7\u5723-\u57c3\u514b\u82cf\u4f69\u91cc"
+  }
+}

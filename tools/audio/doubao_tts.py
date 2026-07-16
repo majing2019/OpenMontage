@@ -42,7 +42,7 @@ class DoubaoTTS(BaseTool):
     )
     fallback = "google_tts"
     fallback_tools = ["google_tts", "elevenlabs_tts", "openai_tts", "piper_tts"]
-    agent_skills = ["doubao-tts", "text-to-speech"]
+    agent_skills = ["doubao-tts", "text-to-speech", "doubao-tts/voice-catalog"]
 
     capabilities = [
         "text_to_speech",
@@ -67,7 +67,9 @@ class DoubaoTTS(BaseTool):
         "fully offline production",
         "voice clone matching",
         "real-time interactive speech playback",
+        "blind voice_id guessing — always read doubao-tts/voice-catalog first",
     ]
+    voice_catalog = ".agents/skills/doubao-tts/voice-catalog.md  # 99 voices for seed-tts-2.0"
 
     input_schema = {
         "type": "object",

@@ -9,6 +9,11 @@
 - If `asset_mode == "stock-footage"`: Skip to **Section S: Stock-Footage
   Workflow** at the end of this document.
 
+**For single-book format_mode: Section I (Intro Carousel Images) is MANDATORY**
+before any other asset work. Read `script.metadata.format_mode` — if it's
+`"single-book"`, generate intro images FIRST (Section I below), then proceed
+with the rest of the asset workflow.
+
 **Also check `script.metadata.music_enabled` and `script.metadata.tts_enabled`:**
 
 - `music_enabled == true`: Source background music after visual assets (Section 4).
@@ -31,6 +36,76 @@ You need to:
 | Prior artifact | `state.artifacts["script"]["script"]` | Segments + motion priorities + keywords + books |
 | Tools | `image_selector`, `video_selector`, `direct_clip_search`, `color_grade` | Generation and stock |
 | Layer 3 skills | `.agents/skills/seedream-prompt-patterns/`, `.agents/skills/seedance-2-0/SKILL.md`, `.agents/skills/flux-best-practices/SKILL.md`, `.agents/skills/visual-taste/SKILL.md` | Provider-specific prompt craft |
+
+---
+
+## I: Intro Carousel Images (MANDATORY for single-book mode)
+
+The intro uses a rapid image carousel with spinning title overlay. These images
+must be **searched from stock sources** — NEVER extract frames from body video clips.
+Dedicated image search produces higher-quality, more thematic results.
+
+### I.1 Generate Search Keywords
+
+Read `script.metadata.visual_universe` and the book's themes. Generate 12 English
+search keywords that are CONCRETE and IMAGEABLE. Keywords should span the book's
+visual universe:
+
+| Theme | Example Keywords |
+|-------|-----------------|
+| Setting | `golden wheat field sunset`, `desert sand dunes vast`, `starry night sky` |
+| Characters | `fox wild animal nature`, `boy child field golden hour`, `pilot vintage airplane` |
+| Symbols | `red rose garden bloom`, `heart hands connection`, `sheep stars illustration` |
+| Mood | `lonely tree silhouette sunset`, `afternoon sunlight window warm` |
+
+Write these into `script.metadata.visual_direction.intro_keywords` as an array.
+
+### I.2 Search for Images
+
+Use `pixabay_image` (primary) with `image_type: "photo"` and `orientation: "vertical"`.
+Fall back to `pexels_image` if pixabay returns too few results.
+
+```python
+pixabay_image = registry.get('pixabay_image')
+
+all_images = []
+for keyword in intro_keywords:
+    result = pixabay_image.execute({
+        "query": keyword,
+        "image_type": "photo",
+        "orientation": "vertical",
+        "per_page": 5,
+        "editors_choice": True,
+        "output_path": f"projects/<proj>/assets/images/intro_carousel/",
+    })
+    all_images.extend(result.data.get('images', []))
+
+# Deduplicate and pick the best 15-20 images with highest quality
+# Filter: min 800px on shortest edge, relevant to book theme
+```
+
+### I.3 Quality Gate
+
+- [ ] At least 15 images downloaded (target: 15-20 for fast rotation)
+- [ ] All images are vertical orientation (portrait for 9:16)
+- [ ] Images are thematically diverse (not all the same subject)
+- [ ] Images evoke the book's emotional mood
+- [ ] Saved to `assets/images/intro_carousel/`
+
+### I.4 Record in Asset Manifest
+
+```json
+{
+  "id": "intro_carousel",
+  "type": "image",
+  "subtype": "intro_carousel",
+  "path": "assets/images/intro_carousel/",
+  "source_tool": "pixabay_image",
+  "image_count": 15,
+  "search_keywords": ["..."],
+  "generation_summary": "Searched pixabay for 12 keywords, selected best 15 vertical images for intro carousel"
+}
+```
 
 ---
 
@@ -226,8 +301,9 @@ If `tts_enabled == false`, skip this section entirely.
 ### T.1 Voice Selection
 
 1. For Chinese text: prefer `doubao_tts` (natural Mandarin)
-2. Use `tts_selector` with rank operation to check availability
-3. Select a voice matching the content tone (warm, calm, articulate)
+2. **MANDATORY: Read `.agents/skills/doubao-tts/voice-catalog.md` first** — 99 voices for seed-tts-2.0. Never guess voice_id; present a curated shortlist (3-5 options) that match the text's tone.
+3. Use `tts_selector` with rank operation to check availability
+4. Select a voice matching the content tone (warm, calm, articulate)
 
 ### T.2 Sample Preview (MANDATORY)
 

@@ -1,0 +1,181 @@
+{
+  "version": "1.0",
+  "project_id": "zou-shiming-dignity",
+  "decisions": [
+    {
+      "decision_id": "idea-tone-register",
+      "stage": "idea",
+      "decision": "tone_register locked to personal",
+      "reason": "Human interest profile of fallen champion \u2014 warm, intimate storytelling fits the script arc from glory to fall to redemption",
+      "alternatives_considered": [
+        "reverent"
+      ],
+      "alternatives_rejected": "reverent is too solemn/distant for the intimate detail of selling handbags and moving to a rental",
+      "timestamp": "2026-07-14T00:00:00Z"
+    },
+    {
+      "decision_id": "idea-tts-voice",
+      "stage": "idea",
+      "decision": "voice_id locked to zh_male_cixingjieshuonan_uranus_bigtts",
+      "reason": "User explicitly selected from voice catalog. Magnetic documentary narration \u2014 weighty without being stiff, natural storytelling cadence.",
+      "alternatives_considered": [
+        "zh_male_shenyeboke_uranus_bigtts",
+        "zh_male_dongfanghaoran_uranus_bigtts"
+      ],
+      "timestamp": "2026-07-14T00:00:00Z"
+    },
+    {
+      "decision_id": "idea-render-runtime",
+      "stage": "idea",
+      "decision": "render_runtime locked to remotion",
+      "reason": "Narration-driven documentary with text cards, Ken Burns on still images, subtitle burn-in \u2014 Remotion scene component stack is the best fit.",
+      "alternatives_considered": [
+        "hyperframes",
+        "ffmpeg"
+      ],
+      "options_considered": [
+        {
+          "runtime": "remotion",
+          "strength": "React scene component stack: text cards, Ken Burns, spring transitions, subtitle burn. Made for documentary narration style.",
+          "weakness": "Static-image-driven; no native video effects pipeline."
+        },
+        {
+          "runtime": "hyperframes",
+          "strength": "HTML/CSS/GSAP kinetic typography \u2014 best for fast-paced social media content.",
+          "weakness": "No text_card scene type. Less natural fit for narration-driven documentary."
+        },
+        {
+          "runtime": "ffmpeg",
+          "strength": "Simple concat/trim/burn. Always available.",
+          "weakness": "Ken Burns only. No animated text cards, no spring physics."
+        }
+      ],
+      "render_runtime_selection": {
+        "selected": "remotion",
+        "rejected": {
+          "hyperframes": "less suited for documentary narration style; no text_card scene type",
+          "ffmpeg": "insufficient for animated text cards and scene composition"
+        }
+      },
+      "timestamp": "2026-07-14T00:00:00Z"
+    },
+    {
+      "decision_id": "idea-music-plan",
+      "stage": "idea",
+      "decision": "music_plan.source = none \u2014 DEFAULT for news-narrative pipeline",
+      "reason": "\u65b0\u95fb\u53d9\u4e8b \u2014 \u4eba\u58f0\u9a71\u52a8\uff0c\u4e0d\u9700\u8981\u80cc\u666f\u97f3\u4e50\u3002The narration IS the audio. Adding music would distract from the voice-forward documentary style.",
+      "timestamp": "2026-07-14T00:00:00Z"
+    },
+    {
+      "decision_id": "d-001",
+      "stage": "idea",
+      "category": "playbook_selection",
+      "subject": "Tone register for Zou Shiming documentary",
+      "options_considered": [
+        {
+          "option_id": "personal",
+          "label": "Personal (\u4eba\u7269\u5fd7)",
+          "score": 0.95,
+          "reason": "Warm, intimate storytelling fits the script arc from glory to fall to redemption \u2014 intimate details like selling handbags, moving to rental"
+        },
+        {
+          "option_id": "reverent",
+          "label": "Reverent (\u81f4\u656c)",
+          "score": 0.6,
+          "reason": "Too solemn and distant for the intimate, ground-level details in the script",
+          "rejected_because": "Too solemn for the personal details of selling handbags and moving to a rental"
+        }
+      ],
+      "selected": "personal",
+      "reason": "Human interest profile of fallen champion \u2014 warm, intimate tone matches the script's emotional texture of family, debt, and quiet dignity.",
+      "user_visible": true,
+      "user_approved": true,
+      "confidence": 0.95
+    },
+    {
+      "decision_id": "d-002",
+      "stage": "idea",
+      "category": "voice_selection",
+      "subject": "TTS voice for Chinese documentary narration",
+      "options_considered": [
+        {
+          "option_id": "zh_male_cixingjieshuonan_uranus_bigtts",
+          "label": "\u78c1\u6027\u89e3\u8bf4\u7537\u58f0 2.0",
+          "score": 0.95,
+          "reason": "Documentary-grade magnetic narration \u2014 weighty without stiffness, natural storytelling cadence, perfect for this tone"
+        },
+        {
+          "option_id": "zh_male_shenyeboke_uranus_bigtts",
+          "label": "\u6df1\u591c\u64ad\u5ba2 2.0",
+          "score": 0.75,
+          "reason": "Warm and intimate but more suitable for late-night conversational content than documentary narration",
+          "rejected_because": "Too casual/conversational for documentary register"
+        },
+        {
+          "option_id": "zh_male_dongfanghaoran_uranus_bigtts",
+          "label": "\u4e1c\u65b9\u6d69\u7136 2.0",
+          "score": 0.65,
+          "reason": "Solemn and weighty but too grandiose for a personal human-interest story",
+          "rejected_because": "Too grandiose/ceremonial for personal human-interest narrative"
+        }
+      ],
+      "selected": "zh_male_cixingjieshuonan_uranus_bigtts",
+      "reason": "User explicitly selected from voice catalog after reviewing recommendations. Magnetic documentary narration \u2014 the definitive choice for this content.",
+      "user_visible": true,
+      "user_approved": true,
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "d-003",
+      "stage": "idea",
+      "category": "render_runtime_selection",
+      "subject": "Composition runtime for documentary montage",
+      "options_considered": [
+        {
+          "option_id": "remotion",
+          "label": "Remotion (React-based)",
+          "score": 0.95,
+          "reason": "React scene component stack: text cards, Ken Burns on stills, spring transitions, subtitle burn-in. Purpose-built for this documentary style."
+        },
+        {
+          "option_id": "hyperframes",
+          "label": "HyperFrames (HTML/CSS/GSAP)",
+          "score": 0.4,
+          "reason": "Best for kinetic typography and product promos; lacks Remotion's text_card and scene-type stack",
+          "rejected_because": "No text_card scene type; less natural fit for narration-driven documentary"
+        },
+        {
+          "option_id": "ffmpeg",
+          "label": "FFmpeg (Ken Burns only)",
+          "score": 0.25,
+          "reason": "Only supports Ken Burns pan-and-zoom; cannot render animated text cards or spring transitions",
+          "rejected_because": "Insufficient for animated text cards and scene composition required by this piece"
+        }
+      ],
+      "selected": "remotion",
+      "reason": "The piece requires animated text cards (golden-line moments), Ken Burns on AI-generated stills, and spring-physics transitions for emotional pacing. Remotion's scene component stack is purpose-built for this.",
+      "user_visible": true,
+      "user_approved": true,
+      "confidence": 0.95
+    },
+    {
+      "decision_id": "d-004",
+      "stage": "idea",
+      "category": "music_source",
+      "subject": "Background music for news narrative",
+      "options_considered": [
+        {
+          "option_id": "no_music",
+          "label": "No music (pipeline DEFAULT)",
+          "score": 1.0,
+          "reason": "News-narrative pipeline defaults to voice-only. Narration IS the audio. No music keeps the focus on the human voice and the weight of the words."
+        }
+      ],
+      "selected": "no_music",
+      "reason": "\u65b0\u95fb\u53d9\u4e8b \u2014 \u4eba\u58f0\u9a71\u52a8\uff0c\u4e0d\u9700\u8981\u80cc\u666f\u97f3\u4e50\u3002The narration IS the audio. Adding music would distract from the voice-forward documentary style.",
+      "user_visible": true,
+      "user_approved": true,
+      "confidence": 1.0
+    }
+  ]
+}

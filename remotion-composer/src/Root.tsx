@@ -16,6 +16,7 @@ import { ProductReveal, ProductRevealProps } from "./components/ProductReveal";
 import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
 import { CollageBurst, CollageBurstProps } from "./CollageBurst";
 import { LyricOverlay, LyricOverlayProps } from "./LyricOverlay";
+import { BookRecommendIntro, BookRecommendIntroProps } from "./BookRecommendIntro";
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -208,6 +209,36 @@ export const Root: React.FC = () => {
           accentColor: "#F5C470",
         }}
         calculateMetadata={calculateTitledVideoMetadata}
+      />
+      <Composition
+        id="BookRecommendIntro"
+        component={BookRecommendIntro}
+        durationInFrames={30 * 12}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          images: [],
+          coverImage: "",
+          hookText: "今天分享的是",
+          title: "",
+          author: "",
+        } as BookRecommendIntroProps}
+      />
+      <Composition
+        id="BookRecommendIntroWide"
+        component={BookRecommendIntro}
+        durationInFrames={30 * 12}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          images: [],
+          coverImage: "",
+          hookText: "今天分享的是",
+          title: "",
+          author: "",
+        } as BookRecommendIntroProps}
       />
       <Composition
         id="HeroTitle"

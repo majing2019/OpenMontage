@@ -116,7 +116,9 @@ transition_defaults:
 
   cover_layout:
     description: >
-      Book cover is ALWAYS present in every segment. Layout adapts by aspect ratio.
+      **Book-list mode only.** Book cover is present in every segment so the viewer
+      knows which book is being discussed. For single-book mode, see intro_layout below —
+      the cover appears ONLY in the intro, not on every frame.
     "16:9":
       cover_zone:
         position: "left"
@@ -132,10 +134,61 @@ transition_defaults:
         position: "bottom"
         height_ratio: 0.65
 
+  intro_layout:
+    description: >
+      **Single-book mode only.** Book cover appears in a designed intro (~6-12s),
+      then the entire rest of the video is full-screen visuals with subtitles.
+      DO NOT paste the cover on every frame in single-book mode.
+    intro_duration:
+      min_seconds: 6
+      max_seconds: 12
+      formula: "clamp(seg_01_narration_duration + 2, min, max)"
+    carousel:
+      description: >
+        Phase 2 of the intro: rapid image rotation with spinning title overlay.
+        Images are searched from stock sources using book-theme keywords.
+        NEVER extract frames from body video clips — search for dedicated images.
+      image_count:
+        min: 12
+        max: 20
+        default: 15
+      switch_interval_seconds:
+        min: 0.02
+        max: 0.08
+        default: 0.035
+      search_sources:
+        primary: "pixabay_image"
+        fallback: "pexels_image"
+      search_keywords:
+        count: 12
+        language: "English (stock APIs require English queries)"
+    "16:9":
+      cover_zone:
+        position: "left"
+        width_ratio: 0.35
+      text_zone:
+        position: "right"
+        width_ratio: 0.65
+        content: "今日好书\n《书名》\n作者"
+    "9:16":
+      cover_zone:
+        position: "top"
+        height_ratio: 0.40
+      text_zone:
+        position: "bottom"
+        height_ratio: 0.60
+        content: "今日好书\n《书名》\n作者"
+
   text_overlay:
     description: >
       Auto-adaptive text overlay. Font size computed from video width +
       longest text line. Font color adapts to background luma.
+      CRITICAL: Use SRT subtitles (via subtitle_gen tool), NOT ffmpeg drawtext
+      with inline Chinese text. Inline drawtext causes garbled characters (乱码)
+      due to UTF-8 multi-byte sequences interacting with escape characters.
+    subtitle_method: "srt"
+    subtitle_tool: "subtitle_gen"
+    forbidden: "Never use ffmpeg drawtext filter with inline Chinese text — use SRT files instead."
     font_size_formula:
       target_fill_ratio:
         "16:9": 0.30

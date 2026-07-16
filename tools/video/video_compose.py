@@ -639,7 +639,7 @@ class VideoCompose(BaseTool):
     # Each family MUST map to a distinct composition — collapsing defeats visual grammar.
     # Maps renderer_family → Remotion composition ID.
     # Only compositions registered in remotion-composer/src/Root.tsx are valid.
-    # Current compositions: Explainer, CinematicRenderer, TalkingHead
+    # Current compositions: Explainer, CinematicRenderer, TalkingHead, BookRecommendIntro
     RENDERER_FAMILY_MAP = {
         "explainer-data": "Explainer",
         "explainer-teacher": "Explainer",
@@ -649,6 +649,9 @@ class VideoCompose(BaseTool):
         "screen-demo": "Explainer",
         "presenter": "TalkingHead",
         "animation-first": "Explainer",
+        "healing-text-illustration": "Explainer",
+        "healing-text-cinematic": "CinematicRenderer",
+        "book-recommend": "BookRecommendIntro",
     }
 
     @classmethod

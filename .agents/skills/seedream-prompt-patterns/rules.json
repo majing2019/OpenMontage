@@ -1,0 +1,28 @@
+{
+  "prompt_checks": {
+    "image": [
+      {
+        "type": "required_pattern",
+        "pattern": "远景",
+        "suggestion": "归藏模板要求分层场景描述。必须从远景开始：远景 → 中景 → 前景 → 微距细节。"
+      },
+      {
+        "type": "required_pattern",
+        "pattern": "光影与氛围",
+        "suggestion": "光影和氛围应集中写在一个段落，不要散落在各句中。参考归藏模板。"
+      },
+      {
+        "type": "required_pattern",
+        "pattern": "构图与留白",
+        "suggestion": "构图和留白声明应独立成段。精确到留白位置和比例。"
+      },
+      {
+        "type": "min_count",
+        "pattern": "摄影写实",
+        "min_count": 1,
+        "suggestion": "风格声明中应包含'摄影写实'，确保输出是照片而非插画。"
+      }
+    ],
+    "video": []
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "project_id": "little-prince",
+  "pipeline_type": "book-recommend",
+  "stage": "compose",
+  "status": "completed",
+  "timestamp": "2026-07-16T04:17:07.712538+00:00",
+  "checkpoint_policy": "guided",
+  "human_approval_required": true,
+  "human_approved": true,
+  "artifacts": {
+    "render_report": {
+      "version": "1.0",
+      "outputs": [
+        {
+          "path": "renders/final_16x9.mp4",
+          "format": "16:9",
+          "resolution": "1920x1080",
+          "duration_seconds": 192.3,
+          "codec": "h264",
+          "audio_codec": "aac",
+          "file_size_bytes": 110490028,
+          "platform_target": "social_media"
+        },
+        {
+          "path": "renders/final_9x16.mp4",
+          "format": "9:16",
+          "resolution": "1080x1920",
+          "duration_seconds": 192.3,
+          "codec": "h264",
+          "audio_codec": "aac",
+          "file_size_bytes": 92557143,
+          "platform_target": "social_media"
+        }
+      ],
+      "metadata": {
+        "render_runtime": "remotion",
+        "format_mode": "single-book",
+        "asset_mode": "stock-footage",
+        "music_enabled": true,
+        "tts_enabled": true,
+        "tts_voice": "\u5fc3\u7075\u9e21\u6c64 2.0",
+        "selected_font": "PingFang SC",
+        "subtitle_method": "srt",
+        "segment_count": 10
+      }
+    },
+    "final_review": {
+      "version": "1.0",
+      "output_path": "projects/little-prince/renders/final_16x9.mp4",
+      "status": "pass",
+      "checks": {
+        "technical_probe": {
+          "valid_container": true,
+          "duration_seconds": 192.3,
+          "resolution": "1920x1080",
+          "fps": 30.0,
+          "has_audio": true,
+          "codec": "h264",
+          "file_size_bytes": 110490028,
+          "issues": []
+        },
+        "visual_spotcheck": {
+          "frames_sampled": 8,
+          "frame_paths": [],
+          "black_frames_detected": false,
+          "broken_overlays": false
+        },
+        "audio_spotcheck": {
+          "narration_audible": true,
+          "music_present": true,
+          "sync_acceptable": true,
+          "clipping_detected": false
+        },
+        "promise_preservation": {
+          "render_runtime_used": "remotion",
+          "format_mode": "single-book",
+          "cover_intro_only": true,
+          "text_subtitle_srt": true,
+          "both_aspect_ratios_exported": true
+        },
+        "subtitle_check": {
+          "subtitles_present": true,
+          "subtitle_method": "SRT burned via subtitles filter",
+          "text_matches_script": true,
+          "reading_speed_ok": true
+        }
+      }
+    }
+  }
+}

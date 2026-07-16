@@ -1,0 +1,657 @@
+{
+  "version": "1.0",
+  "project_id": "zou-shiming-dignity",
+  "pipeline_type": "news-narrative",
+  "stage": "scene_plan",
+  "status": "completed",
+  "timestamp": "2026-07-14T13:37:18.769564+00:00",
+  "checkpoint_policy": "guided",
+  "human_approval_required": true,
+  "human_approved": true,
+  "artifacts": {
+    "scene_plan": {
+      "version": "1.0",
+      "style_playbook": "clean-journalistic",
+      "scenes": [
+        {
+          "id": "scene_01",
+          "type": "broll",
+          "description": "\u5965\u8fd0\u62f3\u51fb\u51b3\u8d5b\u9ad8\u5149\u65f6\u523b\uff1a\u90b9\u5e02\u660e\u51fb\u4e2d\u5bf9\u624b\u7684\u77ac\u95f4\uff0c\u6162\u52a8\u4f5c\u56de\u653e\uff0c\u88c1\u5224\u9ad8\u4e3e\u4ed6\u7684\u624b\u5ba3\u5e03\u80dc\u5229\uff0c\u5168\u573a\u6b22\u547c",
+          "start_seconds": 0.0,
+          "end_seconds": 14.0,
+          "framing": "medium shot, eye level, ring-side angle",
+          "transition_in": "fade_in",
+          "transition_out": "dissolve",
+          "shot_language": {
+            "shot_size": "medium",
+            "camera_movement": "static",
+            "lighting_key": "high_key",
+            "color_temperature": "warm"
+          },
+          "shot_intent": "\u7528\u5965\u8fd0\u593a\u51a0\u7684\u8f89\u714c\u77ac\u95f4\u5efa\u7acb\u4e3b\u89d2\u8eab\u4efd\u2014\u2014\u8fd9\u662f\u6545\u4e8b\u7684\u6700\u9ad8\u70b9\uff0c\u5236\u9020\u540e\u7eed\u5760\u843d\u7684\u843d\u5dee\u611f",
+          "narrative_role": "introduce_subject",
+          "information_role": "\u90b9\u5e02\u660e\u662f\u8c01\uff1a\u4e24\u5c4a\u5965\u8fd0\u91d1\u724c\u5f97\u4e3b\uff0c\u4e2d\u56fd\u62f3\u51fb\u7684\u6807\u5fd7\u6027\u4eba\u7269",
+          "hero_moment": true,
+          "texture_keywords": [
+            "grain",
+            "archival",
+            "broadcast"
+          ],
+          "required_assets": [
+            {
+              "type": "video_clip",
+              "description": "\u90b9\u5e02\u660e\u5965\u8fd0\u51b3\u8d5b\u9ad8\u6e05\u7d20\u6750",
+              "source": "source"
+            }
+          ]
+        },
+        {
+          "id": "scene_02",
+          "type": "broll",
+          "description": "\u624b\u673a\u5c4f\u5e55\u7279\u5199\u2014\u2014\u76f4\u64ad\u95f4\u754c\u9762\uff0c\u90b9\u5e02\u660e\u5750\u5728\u955c\u5934\u524d\uff0c\u80cc\u666f\u662f\u7b80\u6613\u7684\u5e03\u666f\uff0c\u65f6\u95f4\u662f\u6df1\u591c\uff0c\u7a97\u5916\u5df2\u7ecf\u5168\u9ed1",
+          "start_seconds": 14.0,
+          "end_seconds": 28.0,
+          "framing": "close up on phone screen \u2192 medium shot of streamer at desk",
+          "transition_in": "dissolve",
+          "transition_out": "cut",
+          "shot_language": {
+            "shot_size": "medium_close",
+            "camera_movement": "static",
+            "lighting_key": "low_key",
+            "color_temperature": "cool"
+          },
+          "shot_intent": "\u5f3a\u70c8\u7684\u843d\u5dee\u5bf9\u6bd4\u2014\u2014\u4ece\u5965\u8fd0\u64c2\u53f0\u7684\u4e07\u4eba\u6b22\u547c\u5230\u6df1\u591c\u76f4\u64ad\u95f4\u7684\u4e00\u4eba\u72ec\u5750\uff0c\u8fd9\u662f\u53d9\u4e8b\u7684\u5173\u952e\u8f6c\u6298",
+          "narrative_role": "transition",
+          "information_role": "\u90b9\u5e02\u660e\u73b0\u5728\u5728\u54ea\u91cc\uff1a\u4e0d\u5728\u64c2\u53f0\uff0c\u5728\u76f4\u64ad\u95f4",
+          "hero_moment": false,
+          "texture_keywords": [
+            "clean",
+            "digital",
+            "modern"
+          ],
+          "required_assets": [
+            {
+              "type": "video_clip",
+              "description": "\u90b9\u5e02\u660e\u76f4\u64ad\u753b\u9762\u6216\u76f4\u64ad\u5e26\u8d27\u7d20\u6750",
+              "source": "source"
+            }
+          ]
+        },
+        {
+          "id": "scene_03",
+          "type": "broll",
+          "description": "\u62f3\u51fb\u624b\u5957\u6302\u5728\u5899\u4e0a\uff0c\u65c1\u8fb9\u662f\u5546\u4e1a\u8ba1\u5212\u4e66\u548c\u5408\u540c\u6587\u4ef6\uff1b\u4e00\u4e2a\u62f3\u51fb\u624b\u8131\u4e0b\u62f3\u5957\u7a7f\u4e0a\u897f\u88c5\u8d70\u51fa\u8bad\u7ec3\u9986",
+          "start_seconds": 28.0,
+          "end_seconds": 40.0,
+          "framing": "wide shot, detail inserts of gloves and documents",
+          "transition_in": "cut",
+          "transition_out": "dissolve",
+          "shot_language": {
+            "shot_size": "wide",
+            "camera_movement": "dolly_out",
+            "lighting_key": "natural",
+            "color_temperature": "neutral"
+          },
+          "shot_intent": "\u5c55\u73b0\u9000\u5f79\u8f6c\u578b\u521b\u4e1a\u2014\u2014\u4ece\u62f3\u51fb\u624b\u5230\u521b\u4e1a\u8005\u7684\u8eab\u4efd\u5207\u6362\uff0c\u5e26\u7740\u5e0c\u671b\u548c\u62b1\u8d1f",
+          "narrative_role": "establish_context",
+          "information_role": "\u9000\u5f79\u540e\u521b\u4e1a\u7684\u80cc\u666f\uff1a\u90b9\u5e02\u660e\u5e26\u7740\u59bb\u5b50\u5189\u83b9\u9896\u6295\u8eab\u5546\u754c",
+          "hero_moment": false,
+          "texture_keywords": [
+            "clean",
+            "natural"
+          ],
+          "required_assets": [
+            {
+              "type": "video_clip",
+              "description": "\u62f3\u51fb\u624b\u9000\u5f79\u8f6c\u578b/\u521b\u4e1a\u6c1b\u56f4\u7d20\u6750",
+              "source": "source"
+            }
+          ]
+        },
+        {
+          "id": "scene_04",
+          "type": "text_card",
+          "description": "\u9ed1\u5e95\u767d\u5b57\uff0c\u6570\u5b57\u4f9d\u6b21\u8df3\u51fa\uff1a7\u5e74 \u00b7 \u4e8f\u635f\u8fd12\u4ebf \u00b7 \u98ce\u5149\u53d8\u6210\u4e86\u503a",
+          "start_seconds": 40.0,
+          "end_seconds": 50.0,
+          "framing": "full screen card, centered text",
+          "transition_in": "cut",
+          "transition_out": "dissolve",
+          "shot_language": {
+            "shot_size": "insert",
+            "camera_movement": "static",
+            "lighting_key": "low_key"
+          },
+          "shot_intent": "\u7528\u6570\u636e\u51b2\u51fb\u529b\u8ba9\u89c2\u4f17\u611f\u53d7\u5230\u521b\u4e1a\u5931\u8d25\u7684\u4e25\u91cd\u7a0b\u5ea6\u2014\u2014\u6570\u5b57\u6bd4\u63cf\u8ff0\u66f4\u6709\u529b\u91cf",
+          "narrative_role": "evidence",
+          "information_role": "\u5173\u952e\u4e8b\u5b9e\uff1a7\u5e74\u65f6\u95f4\uff0c\u4e8f\u635f\u8fd12\u4ebf\u4eba\u6c11\u5e01",
+          "hero_moment": false,
+          "texture_keywords": [
+            "clean",
+            "minimal"
+          ],
+          "required_assets": [
+            {
+              "type": "text_card",
+              "description": "stat_card: 7\u5e74\u521b\u4e1a / \u4e8f\u635f\u8fd12\u4ebf / \u98ce\u5149\u53d8\u503a\u52a1",
+              "source": "generate"
+            }
+          ]
+        },
+        {
+          "id": "scene_05",
+          "type": "generated",
+          "description": "\u4e00\u4e2a\u4eba\u5f71\u80cc\u5bf9\u955c\u5934\u8d70\u5411\u6d53\u96fe\u6df1\u5904\uff0c\u8eab\u5f71\u8d8a\u6765\u8d8a\u6a21\u7cca\uff0c\u4eff\u4f5b\u5728\u6d88\u5931\u3002\u753b\u9762\u51b7\u8272\u8c03\uff0c\u7535\u5f71\u611f\u5b64\u72ec\u6c1b\u56f4",
+          "start_seconds": 50.0,
+          "end_seconds": 62.0,
+          "framing": "wide shot, figure centered, walking away",
+          "transition_in": "dissolve",
+          "transition_out": "cut",
+          "shot_language": {
+            "shot_size": "wide",
+            "camera_movement": "dolly_out",
+            "lighting_key": "low_key",
+            "color_temperature": "cool"
+          },
+          "shot_intent": "\u7528\u6d88\u901d\u7684\u4eba\u5f71\u9690\u55bb'\u6d88\u5931'\u2014\u2014\u5f88\u591a\u4eba\u8d70\u5230\u8fd9\u4e00\u6b65\u4f1a\u9009\u62e9\u9003\u907f\uff0c\u753b\u9762\u8981\u8425\u9020\u758f\u79bb\u548c\u65e0\u529b\u611f",
+          "narrative_role": "build_tension",
+          "information_role": "\u666e\u904d\u4eba\u6027\uff1a\u9762\u5bf9\u5de8\u5927\u503a\u52a1\uff0c\u5927\u591a\u6570\u4eba\u4f1a\u9009\u62e9\u9003\u907f\u6216\u6d88\u5931",
+          "hero_moment": false,
+          "texture_keywords": [
+            "ethereal",
+            "grain",
+            "atmospheric"
+          ],
+          "required_assets": [
+            {
+              "type": "image",
+              "description": "AI\u751f\u6210\uff1a\u4e00\u4e2a\u8eab\u5f71\u8d70\u5411\u6d53\u96fe\u6df1\u5904\uff0c\u9010\u6e10\u6d88\u5931",
+              "source": "generate"
+            }
+          ]
+        },
+        {
+          "id": "scene_06",
+          "type": "broll",
+          "description": "\u623f\u4ea7\u4e2d\u4ecb\u7f51\u7ad9\u622a\u56fe\uff0c\u4e00\u5957\u63a5\u4e00\u5957\u623f\u4ea7\u6302\u724c\u51fa\u552e\uff1b\u5189\u83b9\u9896\u548c\u90b9\u5e02\u660e\u63a5\u53d7\u91c7\u8bbf\u7684\u753b\u9762",
+          "start_seconds": 62.0,
+          "end_seconds": 75.0,
+          "framing": "medium shot, split screen or sequential montage",
+          "transition_in": "cut",
+          "transition_out": "cut",
+          "shot_language": {
+            "shot_size": "medium",
+            "camera_movement": "static",
+            "lighting_key": "natural",
+            "color_temperature": "warm"
+          },
+          "shot_intent": "\u5c55\u73b0\u4e24\u4eba'\u4e0d\u8dd1'\u7684\u884c\u52a8\u2014\u2014\u4e0d\u662f\u5634\u4e0a\u8bf4\u4e0d\u8dd1\uff0c\u662f\u5b9e\u5b9e\u5728\u5728\u5356\u623f\u8fd8\u503a",
+          "narrative_role": "emotional_beat",
+          "information_role": "\u5189\u83b9\u9896\u5356\u6389\u4e0a\u6d77\u3001\u7f8e\u56fd\u591a\u5904\u623f\u4ea7\uff08\u51717\u5957\uff09\u8fd8\u503a",
+          "hero_moment": false,
+          "texture_keywords": [
+            "clean",
+            "real",
+            "documentary"
+          ],
+          "required_assets": [
+            {
+              "type": "video_clip",
+              "description": "\u5189\u83b9\u9896\u5356\u623f\u8fd8\u503a\u76f8\u5173\u91c7\u8bbf\u6216\u62a5\u9053\u753b\u9762",
+              "source": "source"
+            }
+          ]
+        },
+        {
+          "id": "scene_07",
+          "type": "broll",
+          "description": "\u4e00\u53ea\u624b\u5c06\u7231\u9a6c\u4ed5\u5305\u4ece\u67dc\u5b50\u91cc\u53d6\u51fa\u3001\u6253\u5305\uff1b\u6df1\u591c\u76f4\u64ad\u95f4\u7684\u65f6\u949f\u6307\u5411\u51cc\u66682\u70b9\uff0c\u5973\u4e3b\u64ad\u55d3\u5b50\u6c99\u54d1\u4ecd\u5728\u5bf9\u7740\u955c\u5934\u8bf4\u8bdd",
+          "start_seconds": 75.0,
+          "end_seconds": 90.0,
+          "framing": "close up detail shots \u2192 medium shot of streaming setup",
+          "transition_in": "cut",
+          "transition_out": "dissolve",
+          "shot_language": {
+            "shot_size": "close_up",
+            "camera_movement": "static",
+            "lighting_key": "low_key",
+            "color_temperature": "warm"
+          },
+          "shot_intent": "\u7ec6\u8282\u753b\u9762\u5c55\u73b0\u8fd8\u503a\u7684\u4ee3\u4ef7\u2014\u2014\u5356\u5305\u5356\u7269\uff0c\u6df1\u591c\u76f4\u64ad\u7684\u75b2\u60eb\uff0c\u8ba9\u89c2\u4f17\u611f\u53d7\u5230\u771f\u5b9e\u7684\u727a\u7272",
+          "narrative_role": "emotional_beat",
+          "information_role": "\u5189\u83b9\u9896\u5356\u5305\u3001\u6bcf\u5929\u76f4\u64ad\u5341\u51e0\u4e2a\u5c0f\u65f6\u5230\u51cc\u6668\u6765\u8fd8\u503a",
+          "hero_moment": false,
+          "texture_keywords": [
+            "real",
+            "intimate",
+            "raw"
+          ],
+          "required_assets": [
+            {
+              "type": "video_clip",
+              "description": "\u76f4\u64ad\u5e26\u8d27\u6df1\u591c\u5de5\u4f5c\u7d20\u6750\u6216\u5189\u83b9\u9896\u76f8\u5173\u753b\u9762",
+              "source": "source"
+            }
+          ]
+        },
+        {
+          "id": "scene_08",
+          "type": "broll",
+          "description": "\u4e00\u5bb6\u4e94\u53e3\u56f4\u5750\u5728\u4e00\u5f20\u4e0d\u5927\u4f46\u6e29\u6696\u7684\u9910\u684c\u524d\u5403\u996d\uff0c\u6696\u9ec4\u8272\u7684\u706f\u5149\uff0c\u5b69\u5b50\u4eec\u5728\u7b11\uff0c\u955c\u5934\u4ece\u623f\u95f4\u5168\u666f\u6162\u6162\u63a8\u5230\u9910\u684c",
+          "start_seconds": 90.0,
+          "end_seconds": 104.0,
+          "framing": "wide shot establishing room \u2192 medium shot of family at table",
+          "transition_in": "dissolve",
+          "transition_out": "dissolve",
+          "shot_language": {
+            "shot_size": "medium",
+            "camera_movement": "dolly_in",
+            "lighting_key": "tungsten_warm",
+            "color_temperature": "warm"
+          },
+          "shot_intent": "\u6e29\u6696\u7684\u5bb6\u5ead\u753b\u9762\u2014\u2014\u623f\u5b50\u5c0f\u4e86\uff0c\u662f\u79df\u6765\u7684\uff0c\u4f46\u4e00\u5bb6\u4eba\u8fd8\u5728\u4e00\u8d77\u3002\u8fd9\u662f\u5168\u7247\u6700\u67d4\u8f6f\u7684\u65f6\u523b",
+          "narrative_role": "emotional_beat",
+          "information_role": "\u4ece\u5927\u623f\u5b50\u642c\u8fdb\u79df\u623f\uff0c\u4f46\u4e00\u5bb6\u4eba\u6bcf\u665a\u4ecd\u56f4\u7740\u540c\u4e00\u5f20\u684c\u5b50\u5403\u996d",
+          "hero_moment": false,
+          "texture_keywords": [
+            "warm",
+            "intimate",
+            "natural"
+          ],
+          "required_assets": [
+            {
+              "type": "video_clip",
+              "description": "\u4e2d\u56fd\u5bb6\u5ead\u56f4\u5750\u9910\u684c\u5403\u996d\u7684\u6e29\u6696\u753b\u9762",
+              "source": "source"
+            }
+          ]
+        },
+        {
+          "id": "scene_09",
+          "type": "text_card",
+          "description": "\u9ed1\u5e95\u767d\u5b57\uff0c\u4e00\u53e5\u8bdd\u5c45\u4e2d\u6d6e\u73b0\uff1a'\u90fd\u5230\u8fd9\u4efd\u4e0a\u4e86\uff0c\u56fe\u4ec0\u4e48\u5462\uff1f'\u2014\u2014\u7136\u540e\u505c\u7559\uff0c\u8ba9\u89c2\u4f17\u81ea\u5df1\u611f\u53d7\u8fd9\u53e5\u8bdd\u7684\u91cd\u91cf",
+          "start_seconds": 104.0,
+          "end_seconds": 113.0,
+          "framing": "full screen card, centered text, slow appear",
+          "transition_in": "cut",
+          "transition_out": "cut",
+          "shot_language": {
+            "shot_size": "insert",
+            "camera_movement": "static",
+            "lighting_key": "low_key"
+          },
+          "shot_intent": "\u7528\u7f51\u4e0a\u7684\u8d28\u7591\u58f0\u5236\u9020\u620f\u5267\u5f20\u529b\u2014\u2014\u628a\u89c2\u4f17\u7684\u7591\u8651\u6446\u5230\u53f0\u9762\u4e0a\uff0c\u7136\u540e\u4e0b\u4e00\u573a\u666f\u7ed9\u51fa\u7b54\u6848",
+          "narrative_role": "build_tension",
+          "information_role": "\u5916\u754c\u7684\u8d28\u7591\uff1a\u7f51\u4e0a\u6709\u4eba\u8bf4\u98ce\u51c9\u8bdd\uff0c\u7b11\u4ed6\u4eec\u843d\u9b44",
+          "hero_moment": false,
+          "texture_keywords": [
+            "minimal",
+            "clean"
+          ],
+          "required_assets": [
+            {
+              "type": "text_card",
+              "description": "callout: \u90fd\u5230\u8fd9\u4efd\u4e0a\u4e86\uff0c\u56fe\u4ec0\u4e48\u5462\uff1f",
+              "source": "generate"
+            }
+          ]
+        },
+        {
+          "id": "scene_10",
+          "type": "broll",
+          "description": "\u90b9\u5e02\u660e\u9762\u5bf9\u955c\u5934\u5e73\u9759\u800c\u575a\u5b9a\u5730\u8bf4\u8bdd\uff0c\u6216\u8005\u4ed6\u5728\u76f4\u64ad\u95f4\u8ba4\u771f\u8bb2\u89e3\u4ea7\u54c1\u7684\u753b\u9762\uff1b\u753b\u9762\u4e0a\u53e0\u52a0\u5173\u952e\u8bcd\uff1a\u4e0d\u8dd1 \u00b7 \u4e0d\u8d56 \u00b7 \u4e0d\u7529",
+          "start_seconds": 113.0,
+          "end_seconds": 125.0,
+          "framing": "medium close up, eye level",
+          "transition_in": "cut",
+          "transition_out": "dissolve",
+          "shot_language": {
+            "shot_size": "medium_close",
+            "camera_movement": "static",
+            "lighting_key": "natural",
+            "color_temperature": "neutral"
+          },
+          "shot_intent": "\u7528\u90b9\u5e02\u660e\u672c\u4eba\u7684\u753b\u9762\u6765\u56de\u5e94\u8d28\u7591\u2014\u2014\u4ed6\u6ca1\u6709\u8dd1\uff0c\u4ed6\u5728\u955c\u5934\u524d\u8ba4\u771f\u5730\u5de5\u4f5c",
+          "narrative_role": "evidence",
+          "information_role": "\u4ece\u59cb\u81f3\u7ec8\uff0c\u4ed6\u4eec\u6ca1\u6709\u8dd1\u3001\u6ca1\u6709\u8d56\u8d26\u3001\u6ca1\u6709\u7529\u624b\u63a8\u7ed9\u522b\u4eba",
+          "hero_moment": false,
+          "texture_keywords": [
+            "real",
+            "documentary",
+            "clean"
+          ],
+          "required_assets": [
+            {
+              "type": "video_clip",
+              "description": "\u90b9\u5e02\u660e\u91c7\u8bbf\u6216\u76f4\u64ad\u4e2d\u8ba4\u771f\u8bb2\u89e3\u7684\u753b\u9762",
+              "source": "source"
+            }
+          ]
+        },
+        {
+          "id": "scene_11",
+          "type": "broll",
+          "description": "\u8499\u592a\u5947\uff1a\u5965\u8fd0\u91d1\u724c\u7279\u5199 \u2192 \u90b9\u5e02\u660e\u8116\u5b50\u4e0a\u6302\u91d1\u724c\u7684\u8363\u8000\u77ac\u95f4 \u2192 \u5207\u5230\u76f4\u64ad\u95f4\u91cc\u4ed6\u7ad9\u5728\u955c\u5934\u524d\u8ba4\u771f\u5e26\u8d27 \u2192 \u65f6\u949f\u6307\u5411\u51cc\u6668",
+          "start_seconds": 125.0,
+          "end_seconds": 142.0,
+          "framing": "rapid cut montage, close up gold medal \u2192 medium shot podium \u2192 medium shot livestream",
+          "transition_in": "dissolve",
+          "transition_out": "dissolve",
+          "shot_language": {
+            "shot_size": "medium",
+            "camera_movement": "static",
+            "lighting_key": "natural"
+          },
+          "shot_intent": "\u5168\u7247\u7684\u6838\u5fc3\u5bf9\u6bd4\u753b\u9762\u2014\u2014\u91d1\u724c\u4e0e\u76f4\u64ad\u95f4\uff0c\u8363\u8000\u4e0e\u5e73\u51e1\uff0c\u7528\u753b\u9762\u56de\u7b54\u4ec0\u4e48\u53eb\u4f53\u9762",
+          "narrative_role": "deliver_payload",
+          "information_role": "\u4e00\u4e2a\u8116\u5b50\u4e0a\u6302\u8fc7\u4e24\u5757\u5965\u8fd0\u91d1\u724c\u7684\u4eba\uff0c\u7528\u6700\u7b28\u6700\u6162\u7684\u529e\u6cd5\u4e00\u5206\u4e00\u5206\u5f80\u56de\u6323\u2014\u2014\u8fd9\u53eb\u4f53\u9762",
+          "hero_moment": true,
+          "texture_keywords": [
+            "grain",
+            "archival",
+            "clean"
+          ],
+          "required_assets": [
+            {
+              "type": "video_clip",
+              "description": "\u90b9\u5e02\u660e\u5965\u8fd0\u593a\u91d1+\u76f4\u64ad\u95f4\u7684\u5bf9\u6bd4\u8499\u592a\u5947\u7d20\u6750",
+              "source": "source"
+            }
+          ]
+        },
+        {
+          "id": "scene_12",
+          "type": "generated",
+          "description": "\u4e00\u5bb6\u4eba\u624b\u7275\u7740\u624b\uff0c\u7ad9\u5728\u91d1\u8272\u6668\u5149\u4e2d\uff0c\u80cc\u5f71\u8f6e\u5ed3\u6e29\u6696\u800c\u575a\u5b9a\uff0c\u8fdc\u5904\u662f\u57ce\u5e02\u7684\u5929\u9645\u7ebf\u3002\u955c\u5934\u6781\u6162\u5730\u4ece\u8fd1\u666f\u62c9\u5230\u8fdc\u666f",
+          "start_seconds": 142.0,
+          "end_seconds": 162.0,
+          "framing": "extreme wide shot, family silhouettes foreground, golden sky background",
+          "transition_in": "dissolve",
+          "transition_out": "fade_out",
+          "shot_language": {
+            "shot_size": "extreme_wide",
+            "camera_movement": "dolly_out",
+            "lighting_key": "golden_hour",
+            "color_temperature": "warm"
+          },
+          "shot_intent": "\u5347\u534e\u5f0f\u7684\u7ed3\u5c3e\u753b\u9762\u2014\u2014\u4e00\u5bb6\u4eba\u7ad9\u5728\u4e00\u8d77\u9762\u5bf9\u672a\u6765\uff0c\u6e29\u6696\u3001\u6709\u529b\u91cf\u3001\u6709\u5e0c\u671b\u3002\u6bd4\u4efb\u4f55\u91d1\u724c\u90fd\u91cd\u3002",
+          "narrative_role": "resolution",
+          "information_role": "\u771f\u6b63\u7684\u4f53\u9762\u4e0d\u662f\u8d62\uff0c\u662f\u8dcc\u5012\u540e\u548c\u6700\u4eb2\u7684\u4eba\u4e00\u8d77\u7ad9\u8d77\u6765\u2014\u2014\u8fd9\u6bd4\u4efb\u4f55\u91d1\u724c\u90fd\u91cd",
+          "hero_moment": true,
+          "texture_keywords": [
+            "ethereal",
+            "cinematic",
+            "hopeful"
+          ],
+          "required_assets": [
+            {
+              "type": "image",
+              "description": "AI\u751f\u6210\uff1a\u4e00\u5bb6\u4eba\u5728\u91d1\u8272\u6668\u5149\u4e2d\u5e76\u80a9\u800c\u7acb\uff0c\u80cc\u5f71\u6e29\u6696\u575a\u5b9a",
+              "source": "generate"
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "pipeline": "news-narrative",
+        "slots": [
+          {
+            "id": "scene_01",
+            "source_type": "real_footage",
+            "voiceover_segment": "\u4e24\u5c4a\u5965\u8fd0\u91d1\u724c\u3001\u4e2d\u56fd\u62f3\u51fb\u7684\u95e8\u9762\uff0c\u90b9\u5e02\u660e\u8fd9\u4e2a\u540d\u5b57\uff0c\u66fe\u7ecf\u4ee3\u8868\u7684\u662f\u64c2\u53f0\u4e0a\u90a3\u4e2a\u600e\u4e48\u6253\u90fd\u6253\u4e0d\u5012\u7684\u7537\u4eba\u3002",
+            "target_hold_seconds": 14.0,
+            "hero": true,
+            "narrative_role": "introduce_subject",
+            "search_queries": [
+              "\u90b9\u5e02\u660e 2008 \u5965\u8fd0 \u62f3\u51fb \u51b3\u8d5b \u91d1\u724c",
+              "Zou Shiming Olympic gold medal boxing 2008 Beijing",
+              "\u90b9\u5e02\u660e \u5317\u4eac\u5965\u8fd0 \u62f3\u51fb 48\u516c\u65a4\u7ea7 \u593a\u51a0\u77ac\u95f4"
+            ],
+            "youtube_urls": [],
+            "era_hint": "2008-2012",
+            "preferred_sources": [
+              "youtube"
+            ]
+          },
+          {
+            "id": "scene_02",
+            "source_type": "real_footage",
+            "voiceover_segment": "\u53ef\u4f60\u73b0\u5728\u8981\u627e\u4ed6\uff0c\u5f97\u53bb\u76f4\u64ad\u95f4\u3002\u4ed6\u8981\u5728\u955c\u5934\u524d\u4e00\u76f4\u7ad9\u5230\u540e\u534a\u591c\uff0c\u4e00\u7b14\u4e00\u7b14\uff0c\u628a\u6b20\u4e0b\u7684\u4e24\u4e2a\u4ebf\uff0c\u6162\u6162\u5f80\u56de\u6323\u3002",
+            "target_hold_seconds": 14.0,
+            "hero": false,
+            "narrative_role": "transition",
+            "search_queries": [
+              "\u90b9\u5e02\u660e \u76f4\u64ad\u95f4 \u5e26\u8d27",
+              "Zou Shiming livestream selling",
+              "\u90b9\u5e02\u660e \u6296\u97f3\u76f4\u64ad \u6df1\u591c \u8fd8\u503a"
+            ],
+            "youtube_urls": [],
+            "era_hint": "2024-2026",
+            "preferred_sources": [
+              "youtube"
+            ]
+          },
+          {
+            "id": "scene_03",
+            "source_type": "stock",
+            "voiceover_segment": "\u9000\u5f79\u90a3\u5e74\uff0c\u4ed6\u5e26\u7740\u8001\u5a46\u5189\u83b9\u9896\u4e00\u5934\u624e\u8fdb\u521b\u4e1a\uff0c\u60f3\u7ed9\u4e2d\u56fd\u62f3\u51fb\u3001\u4e5f\u7ed9\u81ea\u5df1\uff0c\u6323\u4e00\u4e2a\u4f53\u9762\u7684\u4e0b\u534a\u573a\u3002",
+            "target_hold_seconds": 12.0,
+            "hero": false,
+            "narrative_role": "establish_context",
+            "search_queries": [
+              "boxer retiring hanging gloves on wall cinematic",
+              "entrepreneur small business startup office morning light",
+              "boxing gym empty morning sunlight wide shot"
+            ],
+            "youtube_urls": [],
+            "era_hint": "2017",
+            "preferred_sources": [
+              "pexels",
+              "pixabay"
+            ]
+          },
+          {
+            "id": "scene_04",
+            "source_type": "text_card",
+            "voiceover_segment": "\u6ca1\u60f3\u5230\u8fd9\u4e00\u62f3\uff0c\u5f7b\u5e95\u6253\u7a7a\u4e86\u3002\u6574\u6574\u4e03\u5e74\uff0c\u4e8f\u6389\u5c06\u8fd1\u4e24\u4e2a\u4ebf\uff0c\u4ece\u524d\u90a3\u4e9b\u91d1\u724c\u6362\u6765\u7684\u5168\u90e8\u98ce\u5149\uff0c\u5230\u5934\u6765\u53d8\u6210\u4e86\u538b\u5728\u5934\u9876\u7684\u503a\u3002",
+            "target_hold_seconds": 10.0,
+            "hero": false,
+            "narrative_role": "evidence",
+            "search_queries": [],
+            "youtube_urls": [],
+            "era_hint": "2017-2024",
+            "preferred_sources": [],
+            "card_spec": {
+              "type": "stat_card",
+              "text": "7\u5e74\u521b\u4e1a",
+              "stat_lines": [
+                "\u4e8f\u635f\u8fd1 2 \u4ebf",
+                "\u98ce\u5149\u53d8\u6210\u503a"
+              ],
+              "style": "clean-journalistic"
+            }
+          },
+          {
+            "id": "scene_05",
+            "source_type": "ai_generated",
+            "voiceover_segment": "\u6362\u6210\u5f88\u591a\u4eba\uff0c\u8d70\u5230\u8fd9\u4e00\u6b65\uff0c\u53ef\u80fd\u5c31\u6d88\u5931\u4e86\u3002\u8eb2\u8d77\u6765\u88c5\u6ca1\u4e8b\uff0c\u6216\u8005\u4e24\u624b\u4e00\u644a\uff0c\u628a\u4e00\u5806\u70c2\u8d26\u5f80\u522b\u4eba\u8eab\u4e0a\u4e00\u63a8\uff0c\u4ece\u6b64\u518d\u4e0d\u9732\u9762\u3002",
+            "target_hold_seconds": 12.0,
+            "hero": false,
+            "narrative_role": "build_tension",
+            "search_queries": [],
+            "youtube_urls": [],
+            "era_hint": "abstract",
+            "preferred_sources": [
+              "seedream"
+            ],
+            "generation_prompts": {
+              "cn": "\u4e00\u4e2a\u5b64\u72ec\u7684\u4eba\u5f71\u80cc\u5bf9\u955c\u5934\uff0c\u8d70\u5411\u6d53\u96fe\u6df1\u5904\uff0c\u8eab\u5f71\u9010\u6e10\u6a21\u7cca\u6d88\u5931\uff0c\u7535\u5f71\u611f\u6784\u56fe\uff0c\u51b7\u8272\u8c03\uff0c\u5fe7\u90c1\u6c1b\u56f4\uff0c\u8d85\u5199\u5b9e\u6444\u5f71\u98ce\u683c\uff0c8K",
+              "en": "A solitary figure walking away into deep fog, back turned to camera, silhouette fading into mist, cinematic wide shot, cool desaturated tones, melancholic atmosphere, hyperrealistic photography, 8K"
+            }
+          },
+          {
+            "id": "scene_06",
+            "source_type": "real_footage",
+            "voiceover_segment": "\u53ef\u8fd9\u4e24\u53e3\u5b50\uff0c\u8c01\u90fd\u6ca1\u6709\u8dd1\u3002\u5189\u83b9\u9896\u628a\u4e0a\u6d77\u3001\u7f8e\u56fd\uff0c\u4e00\u5904\u4e00\u5904\u7f6e\u529e\u4e0b\u6765\u7684\u623f\u5b50\uff0c\u4e00\u5957\u63a5\u4e00\u5957\uff0c\u6302\u51fa\u53bb\u5356\u4e86\u3002",
+            "target_hold_seconds": 13.0,
+            "hero": false,
+            "narrative_role": "emotional_beat",
+            "search_queries": [
+              "\u5189\u83b9\u9896 \u5356\u623f \u8fd8\u503a \u91c7\u8bbf",
+              "\u90b9\u5e02\u660e \u5189\u83b9\u9896 \u4e2d\u56fd\u4f01\u4e1a\u5bb6 \u91c7\u8bbf",
+              "Ran Yingying Zou Shiming interview debt"
+            ],
+            "youtube_urls": [],
+            "era_hint": "2024",
+            "preferred_sources": [
+              "youtube"
+            ]
+          },
+          {
+            "id": "scene_07",
+            "source_type": "stock",
+            "voiceover_segment": "\u67dc\u5b50\u91cc\u90a3\u4e9b\u540d\u724c\u5305\u4e5f\u638f\u51fa\u6765\u5356\u4e86\uff0c\u5bb6\u91cc\u80fd\u6362\u6210\u94b1\u7684\uff0c\u4e00\u6837\u4e00\u6837\u6e05\u6389\u3002\u5979\u81ea\u5df1\u6bcf\u5929\u5f00\u64ad\u5341\u51e0\u4e2a\u5c0f\u65f6\uff0c\u4e00\u76f4\u64ad\u5230\u51cc\u6668\uff0c\u55d3\u5b50\u54d1\u4e86\u8fd8\u5728\u558a\u3002",
+            "target_hold_seconds": 15.0,
+            "hero": false,
+            "narrative_role": "emotional_beat",
+            "search_queries": [
+              "woman livestreaming late night exhausted tired ring light",
+              "person streaming at desk\u6df1\u591c\u76f4\u64ad tired expression close up",
+              "hands packing luxury handbag selling items decluttering"
+            ],
+            "youtube_urls": [],
+            "era_hint": "2024-2025",
+            "preferred_sources": [
+              "pexels",
+              "pixabay"
+            ]
+          },
+          {
+            "id": "scene_08",
+            "source_type": "stock",
+            "voiceover_segment": "\u6362\u56de\u6765\u7684\u94b1\uff0c\u5148\u4e00\u7b14\u4e00\u7b14\uff0c\u53bb\u586b\u90a3\u4e2a\u5927\u7a9f\u7abf\u3002\u4e09\u4e2a\u5b69\u5b50\u7684\u5bb6\uff0c\u4ece\u5927\u623f\u5b50\u642c\u8fdb\u4e86\u79df\u6765\u7684\u623f\uff0c\u53ef\u6bcf\u5929\u665a\u4e0a\uff0c\u4e00\u5bb6\u4eba\u8fd8\u662f\u56f4\u7740\u540c\u4e00\u5f20\u684c\u5b50\u5403\u996d\u3002",
+            "target_hold_seconds": 14.0,
+            "hero": false,
+            "narrative_role": "emotional_beat",
+            "search_queries": [
+              "chinese family eating dinner together warm kitchen intimate",
+              "family dinner table warm lighting cozy home evening",
+              "moving boxes new apartment family settling in together"
+            ],
+            "youtube_urls": [],
+            "era_hint": "2024-2026",
+            "preferred_sources": [
+              "pexels",
+              "pixabay"
+            ]
+          },
+          {
+            "id": "scene_09",
+            "source_type": "text_card",
+            "voiceover_segment": "\u7f51\u4e0a\u6709\u4eba\u8bf4\u98ce\u51c9\u8bdd\uff0c\u7b11\u4ed6\u4eec\u843d\u9b44\uff0c\u770b\u4e0d\u4e0b\u53bb\uff0c\u90fd\u5230\u8fd9\u4efd\u4e0a\u4e86\uff0c\u56fe\u4ec0\u4e48\u5462\uff0c\u8fd8\u8fd9\u4e48\u6b7b\u625b\u7740\u3002",
+            "target_hold_seconds": 9.0,
+            "hero": false,
+            "narrative_role": "build_tension",
+            "search_queries": [],
+            "youtube_urls": [],
+            "era_hint": "present",
+            "preferred_sources": [],
+            "card_spec": {
+              "type": "callout",
+              "text": "\u90fd\u5230\u8fd9\u4efd\u4e0a\u4e86",
+              "subtitle": "\u56fe\u4ec0\u4e48\u5462\uff1f",
+              "style": "clean-journalistic"
+            }
+          },
+          {
+            "id": "scene_10",
+            "source_type": "real_footage",
+            "voiceover_segment": "\u53ef\u4f60\u522b\u5fd8\u4e86\uff0c\u4ece\u5f00\u5934\u5230\u7ed3\u5c3e\uff0c\u4ed6\u4eec\u6ca1\u6709\u8dd1\uff0c\u6ca1\u6709\u8d56\u8d26\uff0c\u6ca1\u6709\u628a\u8fd9\u4e00\u644a\u70c2\u4e8b\u7529\u624b\u6254\u7ed9\u4efb\u4f55\u522b\u7684\u4eba\u3002",
+            "target_hold_seconds": 12.0,
+            "hero": false,
+            "narrative_role": "evidence",
+            "search_queries": [
+              "\u90b9\u5e02\u660e \u56de\u5e94 \u503a\u52a1 \u4e0d\u8dd1\u8def \u91c7\u8bbf",
+              "Zou Shiming debt response interview",
+              "\u90b9\u5e02\u660e \u8fd8\u503a \u76f4\u64ad \u8ba4\u771f \u8fd1\u666f"
+            ],
+            "youtube_urls": [],
+            "era_hint": "2025-2026",
+            "preferred_sources": [
+              "youtube"
+            ]
+          },
+          {
+            "id": "scene_11",
+            "source_type": "real_footage",
+            "voiceover_segment": "\u4e00\u4e2a\u8116\u5b50\u4e0a\u6302\u8fc7\u4e24\u5757\u5965\u8fd0\u91d1\u724c\u7684\u7537\u4eba\uff0c\u613f\u610f\u6bcf\u5929\u5b88\u5728\u76f4\u64ad\u95f4\u91cc\u5230\u51cc\u6668\uff0c\u7528\u6700\u7b28\u6700\u6162\u7684\u529e\u6cd5\uff0c\u4e00\u5206\u4e00\u5206\u5f80\u56de\u6323\uff0c\u8fd9\u53eb\u4ec0\u4e48\uff0c\u8fd9\u53eb\u4f53\u9762\u3002",
+            "target_hold_seconds": 17.0,
+            "hero": true,
+            "narrative_role": "deliver_payload",
+            "search_queries": [
+              "\u90b9\u5e02\u660e \u5965\u8fd0\u91d1\u724c \u9886\u5956\u53f0 2008 2012",
+              "Zou Shiming gold medal podium Olympic ceremony",
+              "\u90b9\u5e02\u660e \u76f4\u64ad\u95f4 \u6df1\u591c \u8ba4\u771f\u5e26\u8d27 \u8fd1\u666f"
+            ],
+            "youtube_urls": [],
+            "era_hint": "2008-2026",
+            "preferred_sources": [
+              "youtube"
+            ]
+          },
+          {
+            "id": "scene_12",
+            "source_type": "ai_generated",
+            "voiceover_segment": "\u8dcc\u5012\u4e00\u70b9\u4e0d\u53ef\u6015\uff0c\u53ef\u6015\u7684\u662f\u8db4\u5728\u5730\u4e0a\u518d\u4e5f\u4e0d\u60f3\u8d77\u6765\u3002\u80fd\u8ddf\u81ea\u5df1\u6700\u4eb2\u7684\u4eba\uff0c\u54ac\u7740\u7259\uff0c\u628a\u4e00\u4e2a\u5dee\u70b9\u6563\u4e86\u67b6\u7684\u5bb6\uff0c\u91cd\u65b0\u4e00\u70b9\u70b9\u625b\u8d77\u6765\uff0c\u8fd9\u6bd4\u4efb\u4f55\u4e00\u5757\u91d1\u724c\uff0c\u90fd\u91cd\u5f97\u591a\u3002",
+            "target_hold_seconds": 20.0,
+            "hero": true,
+            "narrative_role": "resolution",
+            "search_queries": [],
+            "youtube_urls": [],
+            "era_hint": "timeless",
+            "preferred_sources": [
+              "seedream"
+            ],
+            "generation_prompts": {
+              "cn": "\u4e00\u5bb6\u4e94\u53e3\u624b\u7275\u624b\u7ad9\u5728\u91d1\u8272\u6668\u5149\u4e2d\uff0c\u80cc\u5f71\u8f6e\u5ed3\u6e29\u6696\u800c\u575a\u5b9a\uff0c\u8fdc\u5904\u662f\u57ce\u5e02\u5929\u9645\u7ebf\uff0c\u7535\u5f71\u611f\u6781\u5bbd\u955c\u5934\uff0c\u9ec4\u91d1\u65f6\u523b\u9006\u5149\uff0c\u5145\u6ee1\u5e0c\u671b\u548c\u529b\u91cf\uff0c\u8d85\u5199\u5b9e\u6444\u5f71\uff0c8K",
+              "en": "A family of five standing together hand in hand, silhouetted against warm golden sunrise, city skyline in distance, cinematic extreme wide shot, golden hour backlight, hopeful and resilient atmosphere, hyperrealistic photography, 8K"
+            }
+          }
+        ],
+        "source_mix_suggestion": {
+          "real_footage": 5,
+          "stock": 3,
+          "ai_generated": 2,
+          "text_card": 2
+        },
+        "source_mix_user_adjustments": [],
+        "source_mix_tally": {
+          "real_footage": 5,
+          "stock": 3,
+          "ai_generated": 2,
+          "text_card": 2
+        },
+        "total_target_seconds": 162.0,
+        "hero_scenes": [
+          "scene_01",
+          "scene_11",
+          "scene_12"
+        ],
+        "tone_register": "personal",
+        "format_mode": "16:9"
+      }
+    }
+  },
+  "style_playbook": "clean-journalistic",
+  "metadata": {
+    "scene_count": 12,
+    "total_duration_seconds": 162.0,
+    "source_tally": {
+      "real_footage": 5,
+      "stock": 3,
+      "ai_generated": 2,
+      "text_card": 2
+    },
+    "hero_count": 3
+  }
+}

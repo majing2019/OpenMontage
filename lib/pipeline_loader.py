@@ -206,3 +206,61 @@ def get_permitted_extensions(manifest: dict) -> dict[str, bool]:
     }
     extensions = manifest.get("extensions", {})
     return {k: extensions.get(k, v) for k, v in defaults.items()}
+
+
+# ---------------------------------------------------------------------------
+# Agent Skills — Layer 3 knowledge required for quality output
+# ---------------------------------------------------------------------------
+
+def get_agent_skills(manifest: dict) -> dict[str, list[str]]:
+    """Return the agent_skills declared by the pipeline manifest.
+
+    Returns a dict keyed by capability domain (e.g. 'prompt_craft', 'composition',
+    'animation', 'quality'), each value a list of skill names.
+
+    Returns an empty dict when the manifest does not declare agent_skills.
+    """
+    return dict(manifest.get("agent_skills", {}) or {})
+
+
+def get_all_agent_skill_names(manifest: dict) -> list[str]:
+    """Return a flat, deduplicated list of all agent skill names across all domains."""
+    seen: set[str] = set()
+    result: list[str] = []
+    for skills in get_agent_skills(manifest).values():
+        for name in skills:
+            if name not in seen:
+                seen.add(name)
+                result.append(name)
+    return result
+
+
+AGENT_SKILL_DIR = Path(__file__).resolve().parent.parent / ".agents" / "skills"
+
+
+def resolve_agent_skill_path(skill_name: str) -> Optional[Path]:
+    """Resolve an agent skill name to its SKILL.md path on disk.
+
+    Returns None when the skill directory or SKILL.md does not exist.
+    """
+    skill_dir = AGENT_SKILL_DIR / skill_name
+    skill_file = skill_dir / "SKILL.md"
+    if skill_file.is_file():
+        return skill_file
+    return None
+
+
+def validate_agent_skills(manifest: dict) -> dict[str, list[str]]:
+    """Check that all declared agent_skills exist on disk.
+
+    Returns ``{'found': [...], 'missing': [...]}`` so callers can surface
+    missing skills without failing the entire pipeline load.
+    """
+    found: list[str] = []
+    missing: list[str] = []
+    for name in get_all_agent_skill_names(manifest):
+        if resolve_agent_skill_path(name):
+            found.append(name)
+        else:
+            missing.append(name)
+    return {"found": found, "missing": missing}

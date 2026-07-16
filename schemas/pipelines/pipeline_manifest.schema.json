@@ -75,6 +75,14 @@
             "items": { "type": "string" },
             "description": "Tools that must be available (or their fallback) for this stage to succeed"
           },
+          "required_tools_by_mode": {
+            "type": "object",
+            "description": "Mode-conditional tool requirements. Keys are mode values; values are tool lists.",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
           "optional_tools": {
             "type": "array",
             "items": { "type": "string" },
@@ -145,6 +153,33 @@
       },
       "additionalProperties": false
     },
+    "agent_skills": {
+      "type": "object",
+      "description": "Layer 3 agent skills required for quality output in this pipeline. Grouped by capability domain.",
+      "properties": {
+        "prompt_craft": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skills for writing generation prompts (image, video, TTS)"
+        },
+        "composition": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skills for video composition, subtitle layout, typography"
+        },
+        "animation": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skills for motion design, transitions, visual effects"
+        },
+        "quality": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skills for quality review, anti-slop, aesthetic calibration"
+        }
+      },
+      "additionalProperties": false
+    },
     "extensions": {
       "type": "object",
       "description": "Capability extension permissions for this pipeline",
@@ -155,6 +190,45 @@
         "custom_tools": { "type": "boolean", "default": false }
       },
       "additionalProperties": false
+    },
+    "modes": {
+      "type": "object",
+      "description": "User-togglable mode options for this pipeline. Each key is a mode name with default value and option list.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "default": {},
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {},
+                "label": { "type": "string" },
+                "description": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "transition_defaults": {
+      "type": "object",
+      "description": "Default render parameters for transitions, text overlays, narration, and music."
+    },
+    "production_modes": {
+      "type": "array",
+      "description": "Production mode definitions for pipelines with multiple rendering paths (e.g., screen-demo).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "required_tools": { "type": "array", "items": { "type": "string" } },
+          "agent_skills": { "type": "array", "items": { "type": "string" } },
+          "best_for": { "type": "array", "items": { "type": "string" } }
+        }
+      }
     }
   },
   "additionalProperties": false

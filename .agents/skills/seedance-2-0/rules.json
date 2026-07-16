@@ -1,0 +1,37 @@
+{
+  "prompt_checks": {
+    "image": [],
+    "video": [
+      {
+        "type": "required_pattern",
+        "pattern": "One continuous shot",
+        "suggestion": "Higgsfield 方法论要求以 shot-structure 声明开头。这是 Seedance 最大的质量杠杆。"
+      },
+      {
+        "type": "required_pattern",
+        "pattern": "RAMPS TO SLOW MOTION",
+        "suggestion": "关键动作节点需要用 ALL CAPS 标记。例如：RAMPS TO SLOW MOTION、SNAPS OPEN、DRIFTS。"
+      },
+      {
+        "type": "required_pattern",
+        "pattern": "photorealistic textures",
+        "suggestion": "需要 realism enforcement phrase：no 3D, no cartoon, no VFX aesthetic — photorealistic textures..."
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "slow pan",
+        "suggestion": "治愈系视频避免 pan/tilt/dolly 等人工镜头运动。让自然元素（水、云、光）自己动。"
+      },
+      {
+        "type": "forbidden_pattern",
+        "pattern": "regex:(?<!no )handheld(?! movement)",
+        "suggestion": "治愈系禁止手持晃动。镜头必须锁定在三脚架上。如声明'no handheld'则不触发。"
+      },
+      {
+        "type": "min_length",
+        "min_chars": 400,
+        "suggestion": "Seedance Higgsfield prompt 至少需要 shot-structure 声明 + environment + beat-by-beat + visual quality + 负面约束。"
+      }
+    ]
+  }
+}

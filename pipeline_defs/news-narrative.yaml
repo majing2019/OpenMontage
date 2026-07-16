@@ -1,0 +1,363 @@
+name: news-narrative
+version: "1.0"
+description: >
+  News narrative pipeline — voice-driven video from a pre-written news script
+  and verified facts. Each script line becomes a scene, sourced from real
+  footage (YouTube/news clips), stock footage, AI-generated visuals, or
+  text cards. User controls the source mix per scene. TTS narration is
+  REQUIRED — the script IS the content. No background music by default.
+  Output is a Remotion-composed video with narration, subtitles, and
+  optional end-tag. Designed for news/mini-documentary storytelling.
+category: custom
+stability: beta
+default_checkpoint_policy: guided
+
+reference_input:
+  supported: false
+
+orchestration:
+  mode: executive-producer
+  skill: pipelines/news-narrative/executive-producer
+  budget_default_usd: 2.00
+  max_revisions_per_stage: 3
+  max_send_backs: 2
+  max_wall_time_minutes: 60
+
+extensions:
+  custom_scripts: true
+  custom_playbooks: true
+  custom_skills: true
+  custom_tools: false
+
+required_skills:
+  - pipelines/news-narrative/executive-producer
+  - pipelines/news-narrative/idea-director
+  - pipelines/news-narrative/scene-director
+  - pipelines/news-narrative/asset-director
+  - pipelines/news-narrative/edit-director
+  - pipelines/news-narrative/compose-director
+  - meta/reviewer
+  - meta/checkpoint-protocol
+
+agent_skills:
+  prompt_craft:
+    - seedream-prompt-patterns
+    - flux-best-practices
+  composition:
+    - remotion
+    - remotion-best-practices
+  quality:
+    - visual-taste
+
+compatible_playbooks:
+  recommended:
+    - clean-journalistic
+  also_works:
+    - clean-professional
+    - cinematic-drama
+  custom_allowed: true
+
+# ── Modes — User-togglable options ──────────────────────────
+
+modes:
+  format_mode:
+    description: >
+      Output aspect ratio and platform target.
+    default: "16:9"
+    options:
+      - value: "16:9"
+        label: "Horizontal (16:9)"
+        description: "YouTube / desktop news player. 1920x1080 canvas."
+      - value: "9:16"
+        label: "Vertical (9:16)"
+        description: "Social media (Douyin, Xiaohongshu, Reels). 1080x1920 canvas."
+      - value: "dual"
+        label: "Dual Export (Both)"
+        description: "Render both 16:9 and 9:16 versions."
+
+  end_tag_enabled:
+    description: >
+      Whether to append a closing context card with source attribution
+      or editorial note.
+    default: true
+    options:
+      - value: true
+        label: "End Tag (Default)"
+        description: "Closing card with source line + date. 4-6s at end."
+      - value: false
+        label: "No End Tag"
+        description: "Video ends on the final scene. No closing card."
+
+  subtitle_style:
+    description: >
+      How narration text is displayed as on-screen subtitles.
+    default: "sentence"
+    options:
+      - value: "sentence"
+        label: "Full Sentence (Default)"
+        description: "Display complete sentence, fade in/out with scene."
+      - value: "word-by-word"
+        label: "Word-by-Word"
+        description: "Karaoke-style word highlighting synced to TTS timing."
+      - value: "none"
+        label: "No Subtitles"
+        description: "Narration audio only, no on-screen text."
+
+# ── Transition & Layout Defaults ─────────────────────────────
+
+transition_defaults:
+  video:
+    crossfade_duration_seconds: 0.6
+    breathing_pause_seconds: 0.2
+    max_distinct_transitions: 3
+
+  text_overlay:
+    font_size_formula:
+      target_fill_ratio:
+        "16:9": 0.60
+        "9:16": 0.75
+      min_font:
+        "16:9": 28
+        "9:16": 40
+      max_font:
+        "16:9": 48
+        "9:16": 64
+    text_position:
+      "16:9":
+        alignment: "bottom-center"
+        margin_bottom_px: 60
+      "9:16":
+        alignment: "bottom-center"
+        margin_bottom_px: 80
+    text_color_formula:
+      light_threshold: 128
+      dark_text: "#1A1A1A"
+      light_text: "#FAFAFA"
+
+  narration:
+    volume_default: 0.85
+
+  music:
+    enabled_default: false
+    no_music_reason: "新闻叙事 — 人声驱动，不需要背景音乐"
+
+# ── Stages ───────────────────────────────────────────────────
+
+stages:
+  # STAGE 1: IDEA — Script intake and creative brief
+  - name: idea
+    skill: pipelines/news-narrative/idea-director
+    produces:
+      - brief
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - "User has provided a complete news script (narration text, 8-15 lines recommended)"
+      - "Verified facts are present and sourced for every factual claim"
+      - "TTS voice selected — user picked voice_id from voice-preview.html catalog"
+      - "Narration language detected (Chinese assumed; provider: doubao_tts)"
+      - "No music confirmed — music_plan.source = 'none' with explanation (DEFAULT, not opt-out)"
+      - "format_mode recorded (16:9, 9:16, or dual)"
+      - "subtitle_style recorded (sentence, word-by-word, or none)"
+      - "end_tag_enabled recorded in metadata"
+      - "Tone register is ONE value from: archival, urgent, reverent, journalistic, personal"
+      - "Target duration calculated from script line count (roughly 8-15s per line)"
+    success_criteria:
+      - Schema-valid brief artifact
+      - script_text present in metadata (full narration text)
+      - verified_facts array present in metadata with at least one entry per factual claim
+      - narration_config present in metadata with voice_id, provider, speech_rate
+      - music_plan present with source="none" and no_music_reason (DEFAULT)
+      - format_mode, subtitle_style, end_tag_enabled recorded in metadata
+
+  # STAGE 2: SCENE PLAN — Script lines → annotated scene slots
+  - name: scene_plan
+    skill: pipelines/news-narrative/scene-director
+    required_artifacts_in:
+      - brief
+    produces:
+      - scene_plan
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - "Every script line (or natural sentence group) maps to exactly one scene slot"
+      - "Each scene has a voiceover_segment field — the line(s) to narrate during this scene"
+      - "Scene count is appropriate (8-15 scenes for a 90-150s piece)"
+      - "EVERY scene has source_type explicitly annotated: real_footage | stock | ai_generated | text_card"
+      - "Source type is appropriate for the content (e.g., real people/events → real_footage)"
+      - "real_footage scenes have 2-3 search_queries for YouTube/news clip search"
+      - "real_footage scenes may have optional youtube_urls[] — user-provided links get priority"
+      - "stock scenes have 2-3 English search_queries for direct_clip_search"
+      - "ai_generated scenes have generation prompts (Chinese for Seedream, English fallback)"
+      - "text_card scenes have card_spec (type, text, style)"
+      - "At least 2 scenes marked hero: true (opener and closer)"
+      - "Sum of scene target_hold_seconds within 10% of brief.target_duration_seconds"
+    success_criteria:
+      - Schema-valid scene_plan artifact
+      - Every scene has source_type in metadata.slots[n].source_type
+      - Every real_footage scene has search_queries (2-3 entries)
+      - Every stock scene has search_queries (English, 2-3 entries)
+      - Every ai_generated scene has generation_prompts (2 entries)
+      - Every text_card scene has card_spec (type, text, style)
+      - At least 2 hero-moment scenes
+      - User adjustments recorded in metadata.source_mix_user_adjustments
+
+  # STAGE 3: ASSETS — Hybrid sourcing + TTS narration
+  - name: assets
+    skill: pipelines/news-narrative/asset-director
+    required_artifacts_in:
+      - scene_plan
+      - brief
+    produces:
+      - asset_manifest
+    required_tools:
+      - video_downloader
+      - direct_clip_search
+      - image_selector
+      - tts_selector
+      - color_grade
+    optional_tools:
+      - pexels_video
+      - pexels_image
+      - pixabay_video
+      - pixabay_image
+      - transcript_fetcher
+      - video_trimmer
+    tools_available:
+      - video_downloader
+      - direct_clip_search
+      - image_selector
+      - tts_selector
+      - color_grade
+      - pexels_video
+      - pexels_image
+      - pixabay_video
+      - pixabay_image
+      - transcript_fetcher
+      - video_trimmer
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - "real_footage: User-provided youtube_urls downloaded FIRST (priority)"
+      - "real_footage: Agent-searched clips fill gaps; provenance chain recorded"
+      - "real_footage: If WebSearch used to find YouTube URLs, search_query + selected_urls recorded"
+      - "stock: Clips sourced via direct_clip_search from Pexels/Pixabay/Coverr"
+      - "stock: Color grade applied — cinematic_warm profile for documentary look"
+      - "ai_generated: Images via image_selector (Seedream for Chinese prompts)"
+      - "ai_generated: Resolution 2560x1440 minimum for 16:9"
+      - "text_card: No asset file needed — card_spec recorded for compose stage"
+      - "TTS narration generated for EVERY scene via tts_selector (doubao_tts)"
+      - "Voice sample previewed and user-approved before batch generation"
+      - "voice_id matches brief.metadata.narration_config.voice_id"
+      - "All narration .mp3 files exist and durations match scene target_hold_seconds"
+      - "Every scene has exactly one visual asset (or card_spec) AND one narration clip"
+      - "No asset used for more than one scene (text_card exempt)"
+      - "All real_footage and stock assets have provider, license, original_url"
+      - "YouTube assets have video_id, channel name, download timestamp"
+      - "No music asset generated or sourced (DEFAULT)"
+    success_criteria:
+      - Schema-valid asset_manifest
+      - One visual asset per scene (file exists on disk, or card_spec for text_card)
+      - TTS narration .mp3 exists for every scene
+      - All narration files use the same voice_id
+      - User-approved voice preview recorded in metadata
+      - "real_footage scenes: user-provided youtube_urls all downloaded"
+      - "stock scenes: provider, license, original_url present on every asset"
+      - "ai_generated scenes: prompt + seed + model recorded"
+      - "No music asset in manifest (music_present=false in metadata)"
+
+  # STAGE 4: EDIT — Timeline + subtitles + narration sync
+  - name: edit
+    skill: pipelines/news-narrative/edit-director
+    required_artifacts_in:
+      - scene_plan
+      - asset_manifest
+    produces:
+      - edit_decisions
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - "renderer_family locked to 'documentary-montage' (Remotion CinematicRenderer)"
+      - "render_runtime locked to 'remotion'"
+      - "Scene order follows scene_plan — narration-driven, not clip-driven"
+      - "Hero scenes hold longest (1.5-2x base hold)"
+      - "text_card scenes hold shortest (card display + read time)"
+      - "Still images (ai_generated) get gentle Ken Burns motion (scale <= 1.06x)"
+      - "Transition vocabulary limited to 3 max: cut (default), dissolve (scene bridges), fade_in/fade_out"
+      - "No wipes, slides, glitch effects — news register"
+      - "Narration segments placed at scene start — audio.narration.segments[]"
+      - "Narration total duration within 5% of timeline total duration"
+      - "Subtitles configured per subtitle_style mode (sentence, word-by-word, or none)"
+      - "audio.music NOT present — confirmed as DEFAULT (not omission)"
+      - "edit_decisions.metadata.no_music_confirmed = true"
+      - "If end_tag_enabled: end_tag.offset_seconds computed in overlay mode"
+      - "No two adjacent scenes share visual subject AND source_type"
+      - "Every cut has a one-line reason"
+    success_criteria:
+      - Schema-valid edit_decisions artifact
+      - Timeline total_duration_seconds within 10% of brief.target_duration_seconds
+      - Every scene mapped to a cut entry
+      - "Narration sync — audio.narration.segments covers all scenes"
+      - Subtitles config present (or explicitly disabled)
+      - audio.music absent — no_music_confirmed=true in metadata
+      - transition_vocabulary size <= 3
+      - renderer_family="documentary-montage" and render_runtime="remotion" locked
+      - Every cut has a reason string
+
+  # STAGE 5: COMPOSE — Remotion render + audio mix
+  - name: compose
+    skill: pipelines/news-narrative/compose-director
+    required_artifacts_in:
+      - edit_decisions
+      - asset_manifest
+      - brief
+    produces:
+      - render_report
+    required_tools:
+      - video_compose
+    optional_tools:
+      - subtitle_gen
+      - audio_mixer
+      - color_grade
+      - video_trimmer
+      - video_stitch
+    tools_available:
+      - video_compose
+      - subtitle_gen
+      - audio_mixer
+      - color_grade
+      - video_trimmer
+      - video_stitch
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - "render_runtime is 'remotion' — FFmpeg silent swap is CRITICAL governance violation"
+      - "Output resolution matches format_mode canvas"
+      - "Output duration matches planned within 1s"
+      - "Narration audio mixed at volume ~0.85 — clear, voice-forward"
+      - "Narration synchronized with scene timing — no drift"
+      - "All narration segments present in audio track"
+      - "No music track mixed in (DEFAULT)"
+      - "Output audio track is narration-only (mono/stereo AAC)"
+      - "render_report.metadata.music_absent = true"
+      - "Subtitles burned into video (if subtitle_style != 'none')"
+      - "Subtitle timing syncs with narration audio"
+      - "TextCard overlays rendered via Remotion TextCard component"
+      - "If end_tag_enabled: end-tag rendered as Remotion EndTag component"
+      - "If end_tag_enabled: last frame verified — text visible against background"
+      - "If !end_tag_enabled: no end-tag, confirmed in metadata"
+      - "Uniform LUT applied — neutral_doc_20 or cinematic_warm across mixed sources"
+      - "Output file passes ffprobe validation"
+      - "Frame check: first frame is fade-in or opening scene, last frame is fade-out or end-tag"
+      - "Audio track verified: narration present, no music, no silent gaps"
+    success_criteria:
+      - Schema-valid render_report artifact
+      - Output file exists and passes ffprobe validation
+      - "render_report.metadata.narration_mixed = true"
+      - "render_report.metadata.music_absent = true (DEFAULT — not a failure)"
+      - "render_report.metadata.end_tag_rendered = true (or explicit disable recorded)"
+      - "Output duration within +/- 1s of edit_decisions total_duration_seconds"
+      - "Route check: render_runtime stayed 'remotion' from proposal through compose"

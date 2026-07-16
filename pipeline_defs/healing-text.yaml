@@ -98,6 +98,9 @@ transition_defaults:
     crossfade_duration_seconds: 1.0
     crossfade_peak_duration_seconds: 1.2
     breathing_pause_seconds: 0.4        # gap between segments (image-only, no text)
+    # MANDATORY: 0.3s black frame between EVERY segment. Prevents all segments
+    # from blending into one continuous blur. The viewer must feel the rhythm.
+    segment_gap_seconds: 0.3
   text:
     fade_in_seconds: 0.7
     fade_out_seconds: 0.5
@@ -118,31 +121,51 @@ transition_defaults:
     # Reference: 情感励志4 — top-center white text filling ~75-80% of screen width
     # on a 720×1280 vertical video, with noticeable character spacing.
     font_size_formula:
-      target_fill_ratio:
-        "16:9": 0.40             # text block fills 40% of video width on horizontal
-        "9:16": 0.72             # text block fills 72% of video width on vertical
+      # Two-tier system. Short text (≤10 chars, like "在雨中起舞") uses the
+      # aggressive magazine-cover fill ratio. Long text (>10 chars, typical
+      # healing prose with 15-25 char lines) uses a conservative readable
+      # subtitle ratio. The old 0.72 was calibrated for 情感励志4's 3-5 char
+      # lines — applying it to 20-char text blew the font off the screen.
+      long_char_threshold: 10
+      short_text:
+        target_fill_ratio:
+          "16:9": 0.40
+          "9:16": 0.72
+      long_text:
+        target_fill_ratio:
+          "16:9": 0.30
+          "9:16": 0.42
       min_font:
-        "16:9": 34
-        "9:16": 44
+        "16:9": 28
+        "9:16": 32
       max_font:
-        "16:9": 48
-        "9:16": 64
-    # Per-playbook overrides (optional):
-    # font_size_playbook_override:
-    #   warm-illustration: { "9:16": { target_fill_ratio: 0.70 } }
-    #   literary-illustration: { "9:16": { target_fill_ratio: 0.72 } }
+        "16:9": 42
+        "9:16": 52
     #
     # ── Text position ──
-    # Reference: 情感励志4 — text sits at Y=2%-5% from top (extremely high).
-    # Rationale: social-media vertical video text competes with platform UI at top;
-    # placing text very high creates the "杂志封面标题" feel.
+    # Script stage MUST ask the user. Two named slots:
+    #   "center" — text dead center of frame (literary, philosophical content)
+    #   "top_center" — text near top (short punchy social-media text)
+    # Default per playbook below. Record choice in metadata.text_overlay_position.
     text_position:
-      "16:9":
-        alignment: 5              # middle-center
-        margin_v: 0
-      "9:16":
-        alignment: 5              # middle-center
-        margin_v: 0
+      center:
+        "16:9":
+          alignment: 5              # middle-center
+          margin_v: 0
+        "9:16":
+          alignment: 5
+          margin_v: 0
+      top_center:
+        "16:9":
+          alignment: 8              # top-center
+          margin_v: 80
+        "9:16":
+          alignment: 8
+          margin_v: 60
+    text_position_default_by_playbook:
+      literary-illustration: "center"
+      warm-illustration: "top-center"
+      cinematic-drama: "center"
     #
     # ── Auto-adaptive text color ──
     text_color_formula:
@@ -194,11 +217,11 @@ stages:
       - Segment count is appropriate for the text length (roughly 3-8)
     success_criteria:
       - Schema-valid script artifact with at least 3 segments
-      - Every segment has `visual_keywords`, `mood`, and `motion_priority` in metadata
+      - Every segment has visual_keywords, mood, and motion_priority in metadata
       - At least 1 video-priority segment (emotional peak)
       - Font shortlist has 2+ options with rationale
-      - `selected_playbook` is recorded in metadata (warm-illustration or literary-illustration)
-      - `text_overlay_position` is set to "top-center" in metadata
+      - selected_playbook is recorded in metadata (warm-illustration or literary-illustration)
+      - text_overlay_position is recorded in metadata (user's explicit choice)
 
   # ── Assets: generate/source video clips + images per segment ────────
 
@@ -256,6 +279,10 @@ stages:
       - Still-priority segments are high-quality cinematic still images (2560×1440)
       - All video clips match their source image composition (image is first frame)
       - Photorealistic/cinematic aesthetic maintained throughout (no cartoon drift)
+      # === opening asset (MANDATORY) ===
+      - "opening: Background video for opening is searched and downloaded (NOT pure black card)"
+      - "opening: Opening hook line has TTS narration generated (same voice as body segments)"
+      - "opening: Opening title card text is burned onto the opening background video"
       - Color tone is warm and consistent across all assets
       - Asset generation matches the selected playbook's visual language
       - Background music sourced from pixabay_music (mood matches visual style)
@@ -274,6 +301,9 @@ stages:
       - ALL video clips verified silent (ffprobe: no audio stream)
       - Background music sourced from pixabay_music (fallback: music_gen or suno_music)
     success_criteria:
+      # === opening asset (all modes) ===
+      - "Opening background video asset exists on disk (NOT a generated black card)"
+      - "Opening hook TTS narration file exists on disk"
       # === ai-generated mode ===
       - Schema-valid asset_manifest with one asset per script segment
       - All asset file paths exist on disk
@@ -318,7 +348,13 @@ stages:
     review_focus:
       - Video clips play natively (no unnecessary Ken Burns on already-moving footage)
       - Still images use gentle Ken Burns motion (scale ≤ 1.08x)
-      - Text overlay positioned at TOP-CENTER (not lower-third)
+      - Text overlay follows user's position choice (center or top-center, from script metadata)
+      - "Opening: first 5.5s is the opening scene (hook + title) with TTS and background video"
+      - "Segment gaps: 0.3s black frame between every segment boundary"
+      - "Font size: use two-tier formula — long_text tier when longest line > 10 chars"
+      - "render_runtime: MUST be 'remotion'. FFmpeg path is FORBIDDEN in healing-text pipeline."
+      - "Each segment is one Remotion <Sequence>. Video + narration + subtitle are co-located."
+      - "Remotion <TransitionSeries> handles crossfade with spring easing, not FFmpeg concat."
       - Subtitle timing matches the approved segment pacing
       - Font choice matches the approved selection from script stage
       - "Transitions are smooth: crossfade for video clips, dissolve for video-to-image"

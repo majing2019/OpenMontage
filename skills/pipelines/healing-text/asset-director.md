@@ -426,6 +426,28 @@ This section is shared by both ai-generated and stock-footage workflows.
 Both workflows route here after completing their standard asset generation
 and music sourcing steps.
 
+**MANDATORY: Opening hook TTS comes FIRST.** Before generating narration
+for body segments, generate TTS for `script.opening.hook_line`. The hook
+narration plays during the opening scene (0-1.5s). Record it as a speech
+track starting at 0s in the audio_mixer.full_mix.
+
+```python
+# Generate opening hook narration FIRST
+tts = registry.get('tts_selector')
+hook_result = tts.execute({
+    "text": script.opening.hook_line,
+    "voice_id": script.metadata.tts_voice_id,
+    "preferred_provider": "doubao",
+    "speech_rate": script.metadata.tts_speech_rate,
+    "output_path": "projects/<proj>/assets/audio/opening_hook.mp3"
+})
+# Verify: duration should be ~1.5-2.5s for a 10-20 character hook line
+```
+
+Then proceed to body segment narration as usual. The opening hook TTS
+file must be passed to `audio_mixer.full_mix` as a speech track at
+`start_seconds: 0`.
+
 ### Prerequisites
 
 | Layer | Resource | Purpose |
@@ -514,14 +536,27 @@ For each script section in order:
 
 ### T.4 Record Narration Assets in Manifest
 
-Add narration entries to the asset_manifest `assets` array:
+Add narration entries to the asset_manifest `assets` array. Opening hook
+narration MUST come first:
 
 ```json
+{
+  "id": "narration_opening_hook",
+  "type": "audio",
+  "subtype": "narration",
+  "path": "assets/audio/opening_hook.mp3",
+  "source_tool": "tts_selector",
+  "scene_id": "opening",
+  "provider": "<doubao | elevenlabs>",
+  "model": "<seed-tts-2.0 | eleven_multilingual_v2>",
+  "duration_seconds": 2.1,
+  "format": "mp3"
+},
 {
   "id": "narration_seg_01",
   "type": "audio",
   "subtype": "narration",
-  "path": "assets/narration/seg_01.mp3",
+  "path": "assets/audio/seg_01.mp3",
   "source_tool": "tts_selector",
   "scene_id": "seg_01",
   "provider": "<doubao | elevenlabs>",
@@ -710,9 +745,56 @@ Read `script.metadata.visual_direction.<seg_id>.visual_keywords_image` for
 search query construction. The script director writes these as English
 concrete search terms for stock-footage mode (not Chinese AI prompts).
 
-### S.1 Phase 1: Stock Search (Dual Orientation)
+### S.1 Phase 1: Stock Search (Dual Orientation + Opening)
 
-For EACH script segment, search for video clips in BOTH orientations.
+#### S.1.0 Opening Background Video (MANDATORY — search FIRST)
+
+Before searching for segment clips, search for an opening background video.
+Read `script.opening.background_search_query` — the script director wrote
+this as an English concrete search term. The opening is NOT a black card;
+it needs a real atmospheric video that sets the emotional tone.
+
+```python
+direct_clip_search = registry.get('direct_clip_search')
+
+# Search horizontal opening background
+h_open = direct_clip_search.execute({
+    "output_dir": "projects/<proj>/assets/video/opening",
+    "queries": [
+        {"query": script.opening.background_search_query, "slot_id": "opening", "kind": "video"}
+    ],
+    "sources": ["pexels", "pixabay_video", "coverr"],
+    "clips_per_query": 2,
+    "filters": {
+        "orientation": "landscape",
+        "min_duration": script.opening.duration_seconds,
+        "min_width": 1920
+    }
+})
+
+# Search vertical opening background
+v_open = direct_clip_search.execute({
+    "output_dir": "projects/<proj>/assets/video/opening",
+    "queries": [
+        {"query": script.opening.background_search_query + " vertical portrait", "slot_id": "opening", "kind": "video"}
+    ],
+    "sources": ["pexels", "pixabay_video", "coverr"],
+    "clips_per_query": 2,
+    "filters": {
+        "orientation": "portrait",
+        "min_duration": script.opening.duration_seconds,
+        "min_width": 1080
+    }
+})
+```
+
+**After download:**
+1. Copy selected clip to `assets/video/opening/background_9x16.mp4` and `_16x9.mp4`
+2. Apply `cinematic_warm` color grade (same as body segments, intensity 0.8)
+3. Strip audio (opening background must be silent)
+4. The compose stage trims to `opening.duration_seconds` and burns hook+title text
+
+**For EACH script segment,** search for video clips in BOTH orientations.
 **Why separate searches:** The same stock clip rarely works for both
 16:9 and 9:16. Searching separately with orientation filters ensures
 each aspect ratio gets properly framed footage.
@@ -925,20 +1007,57 @@ Return here for the Section S.4 approval gate with narration assets included.
 ### S.4 USER APPROVAL GATE (MANDATORY — After Phase 2)
 
 Present ALL selected + graded clips to the user. Show:
-1. Thumbnail grid for each segment (horizontal + vertical side by side)
-2. Source attribution (Pexels/Pixabay/Coverr, creator name, license type)
-3. Duration check: each clip covers its segment duration
-4. Color grade confirmation (cinematic_warm, intensity 0.8)
-5. Music selection (or "no music — silent video" if degraded)
+1. **Opening background video** — is it atmospheric, tone-matching, and NOT a black card?
+2. Thumbnail grid for each segment (horizontal + vertical side by side)
+3. Source attribution (Pexels/Pixabay/Coverr, creator name, license type)
+4. Duration check: each clip covers its segment duration
+5. Color grade confirmation (cinematic_warm, intensity 0.8)
+6. Music selection (or "no music — silent video" if degraded)
+7. **Opening hook TTS** — is the narration file present and audible?
 
-**Do not proceed to compose until the user approves.**
+**Do not proceed to compose until all items are confirmed.**
 
 ### S.5 Write Asset Manifest
+
+Include opening assets FIRST, then body segments. The compose stage
+relies on these exact paths.
 
 ```json
 {
   "version": "1.0",
   "assets": [
+    {
+      "id": "opening_horizontal",
+      "type": "video",
+      "subtype": "opening_background",
+      "path": "assets/video/opening/background_16x9.mp4",
+      "source_tool": "direct_clip_search",
+      "scene_id": "opening",
+      "provider": "pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "resolution": "1920x1080",
+      "duration_seconds": 5.5,
+      "color_graded": true,
+      "grade_profile": "cinematic_warm",
+      "grade_intensity": 0.8,
+      "audio_stripped": true
+    },
+    {
+      "id": "opening_vertical",
+      "type": "video",
+      "subtype": "opening_background",
+      "path": "assets/video/opening/background_9x16.mp4",
+      "source_tool": "direct_clip_search",
+      "scene_id": "opening",
+      "provider": "pexels",
+      "license": "Pexels License (free, no attribution required)",
+      "resolution": "1080x1920",
+      "duration_seconds": 5.5,
+      "color_graded": true,
+      "grade_profile": "cinematic_warm",
+      "grade_intensity": 0.8,
+      "audio_stripped": true
+    },
     {
       "id": "seg_01_horizontal",
       "type": "video",

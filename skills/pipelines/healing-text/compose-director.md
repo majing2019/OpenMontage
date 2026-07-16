@@ -16,54 +16,64 @@ When `tts_enabled` is true, narration audio is mixed with the music bed using
 sidechain ducking. Music volume dips during speech (~0.08) and rises between
 segments (~0.12). Subtitles remain active regardless of narration state.
 
-## Runtime Routing (MANDATORY)
+## Runtime Routing (MANDATORY — Remotion ONLY)
 
-This pipeline **REQUIRES Remotion**. The healing aesthetic depends on:
-- Native video clip playback with smooth crossfade transitions
-- Gentle Ken Burns (slow zoom/pan) on still images only
-- Spring-animated text fades (top-center position)
-- Per-character text reveal for emphasis lines
-- Responsive layout for dual aspect ratio
-- Background music via `<Audio>` component
+This pipeline **REQUIRES Remotion. FFmpeg path is FORBIDDEN.**
 
-**For ai-generated mode:** `render_runtime` MUST be `"remotion"`. FFmpeg-only fallback = slideshow = not acceptable.
+The healing aesthetic depends on:
+- `<TransitionSeries>` with spring easing for smooth segment crossfade
+- `<Sequence>` for self-contained per-segment video + audio + subtitle
+- `<Audio>` component for per-segment narration playback (no external mixing needed)
+- Spring-animated text fades via `useCurrentFrame()` + `interpolate()`
 
-**For stock-footage mode (all video clips):** `render_runtime: "ffmpeg"` is ACCEPTABLE. When every segment is a video clip (no still images, no Ken Burns), FFmpeg concat with crossfade transitions produces identical visual quality to Remotion. Remotion is still PREFERRED if available (text animation, spring easing, audio mixing), but FFmpeg is a valid production path.
+**Why FFmpeg is forbidden:** FFmpeg concat (demuxer or filter_complex) has proven
+unreliable for healing-text: resolution/fps mismatches cause silent failures where
+all segments show the same clip; audio_mixer.full_mix silently drops tracks at
+non-zero start_seconds; SRT subtitles can't animate; crossfade has no easing.
+
+**Why Remotion solves all of this:**
+- Each segment is a `<Sequence>` — a self-contained bubble. Video + narration +
+  subtitle all live inside the same Sequence. When the Sequence ends, everything
+  stops. No alignment needed.
+- `<TransitionSeries>` handles crossfade with `spring()` or `easing.out(exp)` —
+  smooth and cinematic, not linear.
+- `<Audio>` per Sequence plays narration directly from the MP3 file. No external
+  mixing, no audio_mixer, no start_seconds bugs.
+- `useCurrentFrame()` + `interpolate()` gives per-frame control over subtitle
+  opacity — fade in 0.7s, hold, fade out 0.5s per pipeline spec.
 
 ### Asset Mode Pre-Check
 
-Read `script.metadata.asset_mode` (defaults to `"ai-generated"` if absent):
+Read `script.metadata.asset_mode` (defaults to `"ai-generated"` if absent).
+Read `script.metadata.tts_enabled` (defaults to `false` if absent).
 
-**If `asset_mode == "stock-footage"`:**
-- ALL assets are video clips (no still images). Ken Burns motion is NOT needed.
-- Color grade is pre-applied by asset director — do NOT re-grade in compose.
-- Music: if no music asset in manifest, produce silent video (graceful degradation, not a failure).
-- Subtitle burn via FFmpeg subtitles filter is acceptable (Remotion's per-character reveal is a nice-to-have, not required).
-- Crossfade transitions via FFmpeg `xfade` or fade-in/out at clip boundaries.
+Both ai-generated and stock-footage modes use the SAME Remotion composition.
+The only difference: ai-generated has still images (needs Ken Burns), stock-footage
+has all video clips (native playback). Remotion handles both identically via
+`<Img>` vs `<Video>` components.
 
-**If `asset_mode == "ai-generated"` (or not set — default):**
-- All existing Remotion requirements apply unchanged.
-- `render_runtime` MUST be `"remotion"`. FFmpeg-only fallback = slideshow = not acceptable.
+### Narration sync (when tts_enabled=true)
 
-### TTS Mode Pre-Check
+**No external audio mixing.** Each `<Sequence>` includes its own `<Audio>` component:
 
-Read `script.metadata.tts_enabled` (defaults to `false` if absent):
+```tsx
+<Sequence from={segStartFrame} durationInFrames={segDurationFrames}>
+  <Video src={segmentVideo} />
+  <Audio src={segmentNarration} />
+  <AnimatedSubtitle text={segmentText} font="Noto Serif SC" fontSize={bodyFont} />
+</Sequence>
+```
 
-**If `tts_enabled == true`:**
-- Narration audio assets exist in the asset_manifest (type: "audio", subtype: "narration")
-- Music ducking is REQUIRED during narration segments
-- Two compose paths for audio:
-  1. **Remotion path (preferred)**: Pre-mix narration + music via `audio_mixer.full_mix`,
-     then pass the mixed audio as `audio.music.src` to video_compose
-  2. **FFmpeg path (stock-footage fallback)**: Use `audio_mixer.full_mix` to produce
-     a mixed audio track, then mux into the final video
-- Segment durations should be influenced by narration duration (see Section 3a)
+The narration plays ONLY within its Sequence. When Remotion advances past
+`segStartFrame + segDurationFrames`, the `<Audio>` component unmounts and the
+sound stops. The next Sequence starts playing its own narration. No bleed.
 
-**If `tts_enabled == false` (or not set):**
-- All existing compose behavior applies unchanged
-- No narration assets expected in manifest
+**Segment duration formula (unchanged):**
+```
+segFrames = fps × (narration_duration_seconds + 0.7)  // padding for visual hold
+```
 
-**Renderer family routing (style-aware):**
+### Renderer family routing (style-aware):
 - `warm-illustration` and `literary-illustration` → `render_grammar: "healing-text-illustration"` (routes to `Explainer` composition)
 - `cinematic-drama` → `render_grammar: "healing-text-cinematic"` (routes to `CinematicRenderer` composition)
 
@@ -112,58 +122,132 @@ done
 
 ### 1a. Opening Template — Emotion-Guided 片头 (MANDATORY)
 
-Every healing-text video MUST start with a 5-7 second two-part opening:
-a hook line, then a title summary. Read `script.opening` for hook_line,
-title_line, and style. This scene is NOT part of any script section —
-it's a fixed prelude assembled in compose.
+Every healing-text video MUST start with a 5-7 second opening sequence.
+Read `script.opening` for hook_line, title_line, hook_style, and duration.
+
+**CRITICAL: The opening is NOT a black card.** The asset stage MUST search
+for a background video that matches the opening's emotional tone, generate
+TTS narration for the hook_line, and provide the video file. The compose
+stage overlays hook text + title text onto this video, synchronized with
+the hook TTS narration.
 
 **Reference:** `projects/examples/情感励志4.mp4`
 
-**Scene structure (Remotion):**
+**Asset requirements (checked at compose preflight):**
+- [ ] `assets/video/opening/background_9x16.mp4` exists (NOT a generated black frame)
+- [ ] `assets/audio/opening_hook.mp3` exists (TTS narration of hook_line)
+- [ ] Hook clip duration matches opening.duration_seconds (~5.5s)
+
+**Scene structure:**
 
 ```
 seg_opening (5.0-7.0s total):
-  0.0 – 1.5s: Hook Card
-    Background: solid black (#000000)
-    Text: opening.hook_line, small white sans-serif, center-lower
-    Font: Noto Sans SC Light, ~28px (720p vertical, scaled for target resolution)
+  0.0 – 1.5s: Hook Phase
+    Background: opening background video (searched from stock, color-graded)
+    Audio: opening_hook.mp3 (TTS of hook_line, same voice as body)
+    Text overlay: opening.hook_line, small white sans-serif, center-lower
+    Font: Noto Sans SC Light, font_size per two-tier formula (hook tier: 0.6× body size)
     Animation: fade in 0.5s, hold, fade out 0.5s
 
-  1.5 – 3.5s: Title Card
-    Background: solid black
-    Text: opening.title_line, large white serif, center
+  1.5 – 5.5s: Title Phase
+    Background: same opening video continues (or crossfade to seg_01)
+    Text overlay: opening.title_line, large serif, center
     Font: Noto Serif SC 600 (literary) or Noto Sans SC 500 (warm)
-    Font size: ~60px (720p vertical, scaled via font_size_formula)
-    Animation: spring fade-in from below (spring tension=80), hold, fade out at 4.5s
-
-  3.5 – 5.5s: Fade Transition
-    seg_01 background image fades in (opacity 0→1, 2s ease)
-    Title fades out (opacity 1→0 by 4.5s)
-    Music reaches full volume (fade 0→0.12, 3s)
+    Font size: 1.3× body font size (title is larger than segment text)
+    Animation: fade in 0.5s, hold until 4.5s, fade out by 5.5s
 
   5.5s+: Main Content
-    Title gone, seg_01 image and subtitle fully visible
+    Title gone, seg_01 video and subtitle fully visible
     Music at normal playback volume
 ```
 
-**For ffmpeg path (stock-footage only):** Render two short video segments
-with `drawtext` and concat:
+**FFmpeg implementation (stock-footage path):**
+
+Do NOT use `color=c=black` as the background. Do NOT use SRT for the opening
+— the hook line and title need DIFFERENT positions and font sizes, which SRT
+cannot express in a single style.
+
+**CRITICAL — Opening text uses TWO SEPARATE FFmpeg passes.** Chaining multiple
+`drawtext` filters with `enable` clauses in one `-vf` chain is fragile: when
+one filter's `enable` window expires, it can drop frames and break downstream
+filters. Two independent passes — one per text element — then overlay.
+
+**CRITICAL — Use `textfile=` NOT `text=` for Chinese text.** FFmpeg's `drawtext`
+filter reads the `text=` parameter as a C string. Chinese characters embedded
+directly in the argument can get mangled by shell escaping, locale settings,
+or FFmpeg's internal UTF-8 handling. ALWAYS write Chinese text to a temporary
+UTF-8 file and reference it via `textfile=`. The file MUST be UTF-8 encoded
+without BOM.
 
 ```bash
-# Hook card (1.5s black + hook text)
-ffmpeg -f lavfi -i "color=c=black:s=1080x1920:d=1.5" \
-  -vf "drawtext=text='最近的焦虑都被这段话治愈了':fontsize=28:\
-       fontcolor=white@0.9:x=(w-tw)/2:y=h*0.55" hook.mp4
-
-# Title card (2s black + title text)
-ffmpeg -f lavfi -i "color=c=black:s=1080x1920:d=2" \
-  -vf "drawtext=text='放下焦虑 与自己和解':fontsize=60:\
-       fontcolor=white:x=(w-tw)/2:y=(h-th)/2" title.mp4
-
-# Concat: hook + title + main video
-ffmpeg -i hook.mp4 -i title.mp4 -i main_video.mp4 \
-  -filter_complex "[0][1][2]concat=n=3:v=1:a=0" final.mp4
+# Write text to UTF-8 files (do this in Python or with printf, never echo)
+printf '%s' '幸福不在远方' > /tmp/title.txt
+printf '%s' '如果你也曾在追逐中感到疲惫，这段话送给你' > /tmp/hook.txt
 ```
+
+**MANDATORY: Test font CJK support before rendering.** Not all fonts work with
+FFmpeg's drawtext for Chinese glyphs — even when the font file contains CJK
+characters. PingFang.ttc is a known failure case on macOS. ALWAYS run a quick
+test before committing:
+
+```bash
+printf '测试' > /tmp/font_test.txt
+ffmpeg -f lavfi -i color=c=black:s=200x200:d=0.1 \
+  -vf "drawtext=textfile=/tmp/font_test.txt:fontfile=/path/to/font:fontsize=30:fontcolor=white:x=10:y=10" \
+  -vframes 1 /tmp/font_check.png
+# If font_check.png < 5KB, the font does NOT work — pick another.
+```
+
+**Known working fonts for Chinese drawtext on macOS:**
+| Font | Path | Style | Use for |
+|------|------|-------|---------|
+| Songti SC | `/System/Library/Fonts/Supplemental/Songti.ttc` | Serif | Title |
+| Heiti SC | `/System/Library/Fonts/STHeiti Medium.ttc` | Sans-serif | Hook, labels |
+| Arial Unicode | `/System/Library/Fonts/Supplemental/Arial Unicode.ttf` | Sans-serif | Hook fallback |
+| PingFang | DO NOT USE — FFmpeg drawtext cannot render CJK glyphs from PingFang.ttc |
+
+**Pass 1 — Title text (dead center, ENTIRE opening 0–5.5s, serif, white):**
+```bash
+BODY_FONT_SIZE=32
+TITLE_FONT_SIZE=$((BODY_FONT_SIZE * 13 / 10))
+
+ffmpeg -i background.mp4 -t 5.5 \
+  -vf "drawtext=textfile=/tmp/title.txt:\
+       fontfile=/System/Library/Fonts/Supplemental/Songti.ttc:\
+       fontsize=${TITLE_FONT_SIZE}:fontcolor=white:\
+       x=(w-tw)/2:y=(h-th)/2:enable='between(t,0,5.5)'" \
+  -c:v libx264 -crf 18 -an opening_title.mp4
+```
+
+**Pass 2 — Hook text (lower-center, FADE IN/OUT, sans-serif):**
+```bash
+HOOK_FONT_SIZE=$((BODY_FONT_SIZE * 6 / 10))
+if [ $HOOK_FONT_SIZE -lt 24 ]; then HOOK_FONT_SIZE=24; fi
+
+# Alpha fade expression:
+#   0.0–0.3s: invisible (alpha=0)
+#   0.3–1.1s: fade IN  (alpha 0 → 0.85)
+#   1.1–1.8s: hold     (alpha=0.85)
+#   1.8–2.0s: fade OUT (alpha 0.85 → 0)
+ALPHA_EXPR="if(lt(t,0.3), 0, if(lt(t,1.1), 0.85*(t-0.3)/0.8, if(lt(t,1.8), 0.85, if(lt(t,2.0), 0.85*(2.0-t)/0.2, 0))))"
+
+ffmpeg -i opening_title.mp4 \
+  -vf "drawtext=textfile=/tmp/hook.txt:\
+       fontfile=/System/Library/Fonts/STHeiti Medium.ttc:\
+       fontsize=${HOOK_FONT_SIZE}:fontcolor=white:\
+       alpha='${ALPHA_EXPR}':\
+       x=(w-tw)/2:y=h*0.65:enable='between(t,0,2.0)'" \
+  -c:v libx264 -crf 18 -an opening_final.mp4
+```
+
+**Key rules for opening text:**
+- `textfile=` (NOT `text=`) for ALL Chinese text — avoids encoding corruption
+- `fontfile=` with a CONFIRMED-WORKING CJK font path — test first
+- **Title stays visible for the ENTIRE opening** (0–5.5s). It is the visual anchor.
+- **Hook fades IN/OUT** with an alpha expression — cinematic layered text effect
+- Two separate FFmpeg passes — avoids `enable` window expiration breaking the chain
+- Hook minimum 24px — smaller Chinese text is illegible on mobile
+- Verify after rendering: extract frames at 0.5s (hook fading in), 1.5s (both visible), 3.0s (title only)
 
 **Timeline shift:** All script sections shift by `opening.duration_seconds`.
 seg_01 start_seconds = opening duration (not 0).
@@ -171,52 +255,107 @@ seg_01 start_seconds = opening duration (not 0).
 **Opening metadata in render_report:**
 ```json
 "opening": {
-    "hook_line": "最近所有的不安，都被这段话治愈了",
-    "title_line": "放下焦虑，与自己和解",
-    "duration_seconds": 5.5
+    "hook_line": "如果你也曾在追逐中感到疲惫，这段话送给你",
+    "title_line": "幸福不在远方",
+    "duration_seconds": 5.5,
+    "has_background_video": true,
+    "has_hook_tts": true
 }
 ```
 
-### 2. Prepare Subtitle Track
+### 2. Prepare Subtitle Track (`healing_subtitle` Remotion overlay — MANDATORY)
 
-Extract subtitle timing from the script artifact. Each section = one subtitle cue:
+**Subtitles MUST fade in and fade out.** Subtitles that appear/disappear
+instantly look amateur and clash with the healing aesthetic.
+
+Since this pipeline is Remotion-only (no FFmpeg, no SRT/ASS files), subtitles
+are rendered as **`healing_subtitle` overlays**. Each segment's subtitle is one
+overlay entry. The `HealingSubtitle` component
+(`remotion-composer/src/components/HealingSubtitle.tsx`) uses
+`useCurrentFrame()` + `interpolate()` to produce a smooth opacity curve:
 
 ```
-seg_01 (still):  "生活不是等待暴风雨过去"    00:00-00:05
-seg_02 (animate): "而是学会..."              00:05-00:10
-seg_03 (video):   "在雨中起舞"  ← peak       00:10-00:15  ← THE moment
-seg_04 (animate): "每一滴雨..."              00:15-00:20
-seg_05 (still):   "都是生命的礼物"            00:20-00:25
+opacity = interpolate(frame, [0, fadeIn, fadeOutStart, total], [0, 1, 1, 0])
 ```
 
-Subtitle styling:
-- Font: `script.metadata.selected_font`
-- **Position: top center** (approximately 15-20% from top edge)
-  - For 9:16: slightly higher (12-15% from top) to clear platform UI
-  - For 16:9: 18-20% from top for comfortable reading
-- **Color (style-aware):**
-  - `warm-illustration`: white text with warm shadow (`0 2px 8px rgba(74,55,40,0.4)`)
-  - `literary-illustration`: charcoal text (#3C3833) with optional band (`rgba(245,240,235,0.92)`)
-  - `cinematic-drama`: white text with dark shadow (`0 2px 8px rgba(0,0,0,0.6)`)
-- **Resolution-adaptive font sizing (MANDATORY):**
-  Font size is **auto-calculated** from video width + longest text line. Do not hardcode.
-  See `transition_defaults.text.font_size_formula` for canonical values.
-  All segments use the SAME font size — never vary between segments.
+- **Fade IN**: `transition_defaults.text.fade_in_seconds` (default 0.7s)
+- **Fade OUT**: `transition_defaults.text.fade_out_seconds` (default 0.5s)
+- A gentle 12px→0 upward drift accompanies the fade-in for a "breathing" feel
+
+**Overlay entry structure (per body segment):**
+```json
+{
+  "id": "sub_seg_01",
+  "type": "healing_subtitle",
+  "text": "你以为幸福在远方等你，其实幸福就在你身边等你发现。",
+  "in_seconds": 5.5,
+  "out_seconds": 14.0,
+  "fontSize": 32,
+  "color": "#3C3833",
+  "fadeInSeconds": 0.7,
+  "fadeOutSeconds": 0.5
+}
+```
+
+**Why `healing_subtitle` overlay (not SRT/ASS, not text_card cut):**
+- SRT/ASS are external subtitle files — incompatible with Remotion's React render
+- The generic `TextCard` cut has an opaque background + Inter font, wrong for healing
+- `healing_subtitle` is a transparent overlay: Chinese-serif text centered on the
+  video, no background box, with per-frame opacity control
+
+**Text fades are independent of segment boundaries.** Because each subtitle
+lives inside its own `<Sequence>` (bounded by `in_seconds`/`out_seconds`), the
+fade-out completes exactly as the Sequence ends — the next segment's subtitle
+fades in fresh. No overlap, no abrupt cut. This is the synchronization guarantee:
+**video, narration, and subtitle all share the same Sequence, so they start
+and stop together.**
+
+- **Resolution-adaptive font sizing (MANDATORY — TWO-TIER):**
+  Font size is **auto-calculated** from video width + longest text line.
+  See `transition_defaults.text.font_size_formula` in the pipeline manifest.
+  All body segments use the SAME font size — never vary between segments.
+  The opening title uses 1.3× body size; the opening hook uses 0.6× body size.
 
   ```
-  font_size = clamp(width × fill_ratio / longest_chars, min_font, max_font)
+  # Step 1: Determine tier from the longest text line across ALL body segments
+  longest_chars = max(len(seg.text) for seg in body_segments)
 
-  Fill ratios (from reference video 情感励志4):
-    9:16 → 0.72  (text fills ~72% of screen width — very wide)
-    16:9 → 0.40  (traditional subtitle width)
+  # Step 2: Select fill_ratio tier
+  if longest_chars <= font_size_formula.long_char_threshold:  # ≤ 10 chars
+      fill_ratio = font_size_formula.short_text.target_fill_ratio[orientation]
+  else:
+      fill_ratio = font_size_formula.long_text.target_fill_ratio[orientation]
 
-  Example (9:16, 1080×1920, longest line 13 chars):
-    font_size = clamp(1080 × 0.72 / 13, 44, 64) = clamp(59.8, 44, 64) = 60px
+  # Step 3: Compute and clamp
+  font_size = clamp(width × fill_ratio / longest_chars,
+                    font_size_formula.min_font[orientation],
+                    font_size_formula.max_font[orientation])
   ```
-- **Text position (MANDATORY):**
-  See `transition_defaults.text.text_position`:
-  - Both orientations: Alignment=5 (middle-center), MarginV=0
-  - Text is centered vertically and horizontally in the frame
+
+  **Why two tiers:** The reference video (情感励志4) has 3-5 character lines
+  like "在雨中起舞". Applying the same 0.72 fill_ratio to 20-character lines
+  like "幸福不是拥有更多，是感到自己被需要" produces ~39px → clamped to 44px
+  minimum — which overflows at 44×20=880px on a 1080px screen with character
+  spacing. The long_text tier (0.42 ratio) gives 1080×0.42/20≈23px → clamped
+  to 32px, leaving comfortable margins.
+
+  **Example (9:16, 1080×1920, longest line 20 chars):**
+    Tier: long_text (20 > 10)
+    font_size = clamp(1080 × 0.42 / 20, 32, 52) = clamp(22.7, 32, 52) = 32px ✅
+
+  **Example (9:16, 1080×1920, longest line 6 chars):**
+    Tier: short_text (6 ≤ 10)
+    font_size = clamp(1080 × 0.72 / 6, 32, 52) = clamp(129.6, 32, 52) = 52px ✅
+
+- **Text position (USER CHOICE — read from script metadata):**
+  Read `script.metadata.text_overlay_position`:
+  - `"center"` → text_position.center (alignment=5, margin_v=0). Best for
+    literary/philosophical content where the text IS the visual focus.
+  - `"top_center"` → text_position.top_center (alignment=8, margin_v=60).
+    Best for short punchy social-media text competing with platform UI.
+  - Default per playbook: literary-illustration → "center",
+    warm-illustration → "top_center".
+  - The script director MUST ask the user. Never assume.
 
 - **Character spacing**: For 9:16 vertical, increase Spacing from 2 to 4-6.
   Reference video has noticeably wider character spacing ("字间有呼吸感").
@@ -268,19 +407,31 @@ SEG_01 (still)        SEG_02 (animate)      SEG_03 (video)        SEG_04 (animat
 When every segment is a stock video clip, the timeline simplifies:
 
 ```
-SEG_01 (video)         SEG_02 (video)         SEG_03 (video)         ...
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│ Stock video     │  │ Stock video     │  │ Stock video     │
-│ (color graded)  │  │ (color graded)  │  │ (color graded)  │
-│ Native playback │  │ Native playback │  │ Native playback │
-│ Trim to seg dur │  │ Trim to seg dur │  │ Trim to seg dur │
-│ [subtitle]      │  │ [subtitle]      │  │ [subtitle]      │
-└─────────────────┘  └─────────────────┘  └─────────────────┘
+SEG_01 (video)    GAP   SEG_02 (video)    GAP   SEG_03 (video)    ...
+┌────────────┐    ██   ┌────────────┐    ██   ┌────────────┐
+│Stock video │    ██   │Stock video │    ██   │Stock video │
+│color graded│    ██   │color graded│    ██   │color graded│
+│Trim to dur │    ██   │Trim to dur │    ██   │Trim to dur │
+│[subtitle]  │    ██   │[subtitle]  │    ██   │[subtitle]  │
+└────────────┘    ██   └────────────┘    ██   └────────────┘
+                  0.3s                    0.3s
 ```
 
 No Ken Burns. No still images. Every clip plays natively. Trim each
-to exactly its segment duration. Fade-in/fade-out transitions between
-all segments. This is a pure video edit with text overlay.
+to exactly its segment duration. Crossfade transitions between segments.
+
+**Segment gap via Remotion `<TransitionSeries>`:**
+
+Read `transition_defaults.video.segment_gap_seconds` (default 0.3s).
+Remotion's `<TransitionSeries>` with `layout="none"` automatically inserts
+a brief hold between sequences. Combined with `spring()` easing on the
+crossfade transition, this creates the natural 0.3s breathing space
+between segments without manual black-frame insertion.
+
+**Why Remotion doesn't need concat normalization:** Remotion renders each
+frame independently from the source clips. There is no filter_complex
+that silently fails on resolution mismatches. Each `<Sequence>` plays
+its assigned video file; if the file exists, it renders. Period.
 
 **Peak segment treatment:**
 The `video` tier segment (emotional peak) gets special treatment:
@@ -289,29 +440,69 @@ The `video` tier segment (emotional peak) gets special treatment:
 - Longer hold before fade-out
 - Crossfade transition is slightly longer (1.2s instead of 1.0s) for impact
 
-### 3a. TTS-Aware Segment Timing (when tts_enabled)
+### 3a. TTS-Driven Segment Timing (when tts_enabled)
 
-When narration is enabled, segment durations should account for the actual
-narration audio duration rather than the script director's initial estimates.
+**TTS narration DRIVES video segment switching.** The viewer's experience is:
+hear the sentence → see the video → sentence ends → video switches. Video
+segments exist to accompany the spoken word, not the other way around.
 
-**Timing adjustment rules:**
+Each segment's video duration is determined by its narration, not by the
+script director's initial estimate:
 
-1. For each segment, check the narration asset's `duration_seconds`
-2. If narration duration differs from planned segment duration by >15%:
-   - **Narration longer**: Extend segment duration to fit narration + 1s padding
-   - **Narration shorter**: Keep planned segment duration (extra space is breathing room)
-3. Recalculate `start_seconds` / `end_seconds` for all subsequent segments
-4. Update `total_duration_seconds` in the timeline
-5. Music duration must cover the new total (if loop was already true, this is automatic)
-
-**Example:**
 ```
-Planned:  seg_01: 0-5s,  seg_02: 5-10s, seg_03: 10-15s
-Narration: seg_01: 4.2s, seg_02: 6.8s,  seg_03: 3.5s
-
-Adjusted: seg_01: 0-5.2s, seg_02: 5.2-12.0s, seg_03: 12.0-15s
-(seg_02 extended to fit 6.8s narration + 0.5s padding)
+video_duration = narration_duration + padding (0.5–1.0s)
 ```
+
+The padding gives a brief visual hold after the voice stops — the viewer
+absorbs the last words while the image lingers, then the next segment begins.
+
+**How to compute the timeline (MANDATORY when tts_enabled=true):**
+
+1. For each body segment, read `narration.duration_seconds` from the asset manifest
+2. Set segment video duration: `narration_duration + 0.7s` (default padding)
+3. Compute cumulative start times from these durations
+4. Include `segment_gap_seconds` (0.3s black) between segments
+5. The script's `start_seconds` / `end_seconds` are IGNORED — they were estimates
+   written before narration was generated
+
+**Example — script estimates vs TTS-driven reality:**
+
+```
+Segment    Script (estimate)    Narration actual    Video duration (narration + 0.7s)
+seg_01     7.0s                  7.8s                8.5s
+seg_02     7.0s                  6.8s                7.5s
+seg_03     8.0s                  7.3s                8.0s
+seg_04     7.0s                  8.8s                9.5s
+seg_05     7.0s                  7.8s                8.5s
+seg_06     9.0s                  6.0s                6.7s
+
+Timeline: 0 → 8.5 → 16.3 (8.5+7.5+0.3gap) → 24.6 → 34.4 → 43.2 → 50.2s
+(script estimated 50.5s — TTS-driven is 50.2s — close enough)
+```
+
+**Synchronization check before compose:**
+- [ ] Each body segment narration file exists and has a known duration
+- [ ] Video clip is at least as long as narration + padding (trim from start if longer)
+- [ ] If a video clip is too short, flag it — don't silently loop or stretch
+- [ ] Subtitles use `healing_subtitle` overlays on the TTS-driven timeline (not SRT/ASS)
+- [ ] Audio mixer timeline uses TTS-driven start times for speech tracks
+- [ ] **Narration NEVER bleeds into the next segment**: check that
+      `narration_end_time < segment_end_time` for every segment
+- [ ] **Audio resampled to 48kHz before AAC encoding**: audio_mixer may output
+      192kHz WAV — FFmpeg AAC encoder produces SILENCE at non-standard rates.
+      Always resample: `ffmpeg -i mixed.wav -ar 48000 -ac 2 mixed_48k.wav`
+
+**Why this matters:** Without TTS-driven switching, the video either cuts off
+mid-sentence or lingers awkwardly after the voice stops. With TTS-driven
+switching, the visual rhythm follows the spoken rhythm — the hallmark of
+a professionally edited healing-text video.
+
+**Audio resampling is MANDATORY:** The `audio_mixer` tool may output WAV at
+non-standard sample rates (192kHz has been observed). FFmpeg's AAC encoder
+silently produces near-silent output when fed 192kHz mono WAV — the only
+audible content is the loudest peaks (typically the opening hook). Always
+resample the mixed WAV to 48kHz stereo (`-ar 48000 -ac 2`) before muxing
+into the final MP4.
 
 ### 4. Transitions
 
@@ -391,179 +582,6 @@ The illustration aesthetic has its own texture from the hand-drawn style.
 For `literary-illustration`, skip film grain entirely — the paper texture is the grain.
 
 Use `color_grade` tool if available, or Remotion CSS filters.
-
-### 6.5. Background Music Integration
-
-Read the music asset from the asset_manifest (type: "music", id: "music_bg").
-If no music asset exists, skip this section (graceful degradation to silent).
-
-**Via Remotion `<Audio>` component (preferred):**
-The music is passed as a composition prop, not mixed externally. Remotion handles
-volume curves and fade in/out natively:
-
-```python
-video_compose.execute({
-    ...
-    "audio": {
-        "music": {
-            "src": "<music_asset_path from asset_manifest>",
-            "volume": 0.12,
-            "fadeInSeconds": 2,
-            "fadeOutSeconds": 3,
-            "loop": True   # if music shorter than video
-        }
-    }
-})
-```
-
-**Volume guidance by style** (from `transition_defaults.music.volume_by_playbook`):
-| Selected Playbook | Volume | Fade In | Fade Out |
-|-------------------|--------|---------|----------|
-| `warm-illustration` | 0.12 | 2s | 3s |
-| `literary-illustration` | 0.10 | 2.5s | 3s |
-| `cinematic-drama` | 0.12 | 2s | 3s |
-
-**Fallback via audio_mixer (if Remotion audio fails):**
-```python
-audio_mixer.execute({
-    "operation": "segmented_music",
-    "video_path": "renders/final_silent.mp4",
-    "music_path": "<music_asset_path>",
-    "music_volume": 0.12,
-    "segments": [{"start": 0, "end": <video_duration>}],
-    "fade_duration": 0.5,
-    "output_path": "renders/final_with_music.mp4"
-})
-```
-
-**Music must NOT be applied to source video clips** — only to the final composed video.
-
-### 6.6. Narration + Music Mixing (when tts_enabled)
-
-When `tts_enabled == true`, narration and music must be mixed with ducking.
-
-**Read narration assets from the asset_manifest** (type: "audio", subtype: "narration").
-Build the narration timeline from segment start_seconds and narration durations.
-
-**Step 1: Pre-mix via audio_mixer.full_mix (MANDATORY for both Remotion and FFmpeg paths)**
-
-The current Remotion Explainer component does NOT implement sidechain ducking
-in its `<Audio>` layers — it plays narration and music at independent static
-volumes. Therefore, narration + music must be pre-mixed externally:
-
-```python
-from tools.tool_registry import registry
-registry.discover()
-mixer = registry.get('audio_mixer')
-
-# Build tracks list: one narration per segment + one music track
-tracks = []
-for section in script.sections:
-    narration_asset = next(
-        a for a in asset_manifest.assets
-        if a.get("subtype") == "narration" and a.get("scene_id") == section.id
-    )
-    tracks.append({
-        "path": narration_asset["path"],
-        "role": "speech",
-        "start_seconds": section.start_seconds,
-    })
-
-music_asset = next(a for a in asset_manifest.assets if a.get("type") == "music")
-tracks.append({
-    "path": music_asset["path"],
-    "role": "music",
-    "volume": 0.12,     # base music volume (between speech segments)
-})
-
-result = mixer.execute({
-    "operation": "full_mix",
-    "tracks": tracks,
-    "ducking": {
-        "enabled": True,
-        "music_volume_during_speech": 0.08,   # from transition_defaults.music.ducking
-        "attack_ms": 200,
-        "release_ms": 500
-    },
-    "normalize": True,
-    "output_path": "projects/<proj>/assets/audio/mixed_narration_music.wav"
-})
-```
-
-**Step 2a: Remotion path — use pre-mixed audio as the sole music source**
-
-```python
-video_compose.execute({
-    ...
-    "audio": {
-        "music": {
-            "src": "projects/<proj>/assets/audio/mixed_narration_music.wav",
-            "volume": 1.0,              # already mixed at correct levels
-            "fadeInSeconds": 2,
-            "fadeOutSeconds": 3,
-            "loop": False               # pre-mixed, correct duration
-        }
-        # NOTE: NO narration prop — narration is already mixed into the music track
-    }
-})
-```
-
-**Step 2b: FFmpeg path — mux pre-mixed audio into the final video**
-
-```bash
-ffmpeg -i final_subtitled.mp4 -i mixed_narration_music.wav \
-  -c:v copy -c:a aac -b:a 192k -shortest \
-  final_16x9.mp4
-```
-
-**Ducking parameters reference (from transition_defaults.music.ducking):**
-
-| Parameter | Value | Notes |
-|-----------|-------|-------|
-| `music_volume_during_speech` | 0.08 | Audible but subdued during narration |
-| `music_volume_between_speech` | 0.12 | Recovery level (set via track volume) |
-| `attack_ms` | 200 | Fast duck on speech onset |
-| `release_ms` | 500 | Gradual recovery after speech ends |
-
-### 7b. FFmpeg Composition (stock-footage mode)
-
-When `render_runtime: "ffmpeg"` is selected (stock-footage only, all video clips):
-
-**Video assembly with crossfade transitions:**
-
-```bash
-# Build concat with fade-in/out at clip boundaries
-ffmpeg -i seg_01.mp4 -i seg_02.mp4 -i seg_03.mp4 ... \
-  -filter_complex "
-    [0:v]trim=duration=6,setpts=PTS-STARTPTS[v0];
-    [1:v]trim=duration=5,setpts=PTS-STARTPTS,fade=in:st=0:d=1,fade=out:st=4:d=1[v1];
-    [2:v]trim=duration=5,setpts=PTS-STARTPTS,fade=in:st=0:d=1,fade=out:st=4:d=1[v2];
-    # ... peak segment gets longer fade (1.2s)
-    [v0][v1][v2]...concat=n=6:v=1:a=0[outv]
-  " -map "[outv]" -r 24 -c:v libx264 -crf 20 final_silent.mp4
-```
-
-**Subtitle burn (resolution-adaptive, per playbook style):**
-
-```bash
-# 16:9 — horizontal (base font size)
-ffmpeg -i final_silent_16x9.mp4 -vf \
-  "subtitles=subtitles.srt:force_style='FontName=Noto Serif SC,FontSize=38,PrimaryColour=&HFF3C3833&,OutlineColour=&HFFF5F0EB&,Outline=3,BorderStyle=4,BackColour=&H80000000&,Alignment=2,MarginV=180'" \
-  -c:v libx264 -crf 20 final_16x9.mp4
-
-# 9:16 — vertical (scaled font: base × vertical_font_scale)
-ffmpeg -i final_silent_9x16.mp4 -vf \
-  "subtitles=subtitles.srt:force_style='FontName=Noto Serif SC,FontSize=61,PrimaryColour=&HFF3C3833&,OutlineColour=&HFFF5F0EB&,Outline=3,BorderStyle=4,BackColour=&H80000000&,Alignment=2,MarginV=250'" \
-  -c:v libx264 -crf 20 final_9x16.mp4
-```
-
-**Music mix (if music asset available):**
-
-```bash
-ffmpeg -i final_subtitled.mp4 -i bg_music.mp3 \
-  -filter_complex "[1:a]volume=0.12,afade=t=in:d=2,afade=t=out:st=<duration-3>:d=3[bg];[0:a][bg]amix=inputs=2:duration=first[out]" \
-  -map 0:v -map "[out]" -c:v copy -c:a aac -shortest final_with_music.mp4
-```
 
 ### 7. Render
 

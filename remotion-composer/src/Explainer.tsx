@@ -47,6 +47,7 @@ import type { TerminalStep } from "./components/TerminalScene";
 import { ScreenshotScene } from "./components/ScreenshotScene";
 import type { ScreenshotStep } from "./components/ScreenshotScene";
 import { ProviderChip } from "./components/ProviderChip";
+import { HealingSubtitle } from "./components/HealingSubtitle";
 import type { ParticleType } from "./components/ParticleOverlay";
 import { resolveTheme, type ThemeConfig, DEFAULT_THEME } from "./Root";
 
@@ -269,7 +270,12 @@ interface Cut {
 }
 
 interface Overlay {
-  type: "section_title" | "stat_reveal" | "hero_title" | "provider_chip";
+  type:
+    | "section_title"
+    | "stat_reveal"
+    | "hero_title"
+    | "provider_chip"
+    | "healing_subtitle";
   in_seconds: number;
   out_seconds: number;
   text?: string;
@@ -280,6 +286,11 @@ interface Overlay {
   providers?: string[];
   cycleSeconds?: number;
   label?: string;
+  // healing_subtitle
+  fontSize?: number;
+  color?: string;
+  fadeInSeconds?: number;
+  fadeOutSeconds?: number;
 }
 
 interface AudioLayer {
@@ -750,6 +761,18 @@ const OverlayRenderer: React.FC<{ overlay: Overlay }> = ({ overlay }) => {
   }
   if (overlay.type === "hero_title") {
     return <HeroTitle title={overlay.text} subtitle={overlay.subtitle} />;
+  }
+  if (overlay.type === "healing_subtitle") {
+    return (
+      <HealingSubtitle
+        text={overlay.text ?? overlay.subtitle ?? ""}
+        fontSize={overlay.fontSize}
+        color={overlay.color}
+        fadeInSeconds={overlay.fadeInSeconds}
+        fadeOutSeconds={overlay.fadeOutSeconds}
+        segmentDurationSeconds={overlay.out_seconds - overlay.in_seconds}
+      />
+    );
   }
   if (overlay.type === "provider_chip" && overlay.providers) {
     return (

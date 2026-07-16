@@ -224,9 +224,10 @@ are valid: (ai-generated + tts), (ai-generated + no-tts), (stock-footage + tts),
 
 **技术实现：**
 - compose 阶段：`seg_opening` 作为固定前奏，不关联脚本 segment
-- asset 阶段不需要为片头单独生成素材（纯色底 + 文字渲染）
+- asset 阶段：需要为片头搜索背景视频素材 + 生成 hook 的 TTS 旁白
+- 片头背景视频搜索词写入 `opening.background_search_query`
 - Remotion：两个 `<Sequence>` 嵌套，文字用 spring 动画
-- FFmpeg：两个 `drawtext` 帧序列 concat 拼接
+- FFmpeg：片头视频 trim + drawtext 烧录 hook 和 title 文字
 
 **脚本 artifact 新增 opening 字段：**
 ```json
@@ -234,9 +235,14 @@ are valid: (ai-generated + tts), (ai-generated + no-tts), (stock-footage + tts),
     "hook_line": "最近所有的不安，都被这段话治愈了",
     "title_line": "放下焦虑，与自己和解",
     "hook_style": "anxiety-relief",
-    "duration_seconds": 5.5
+    "duration_seconds": 5.5,
+    "background_search_query": "calm morning sunrise golden light peaceful nature",
+    "hook_tts_required": true
 }
 ```
+
+`background_search_query` 必须是英文具体场景词（stock API 用英文搜索）。
+`hook_tts_required` 在 `tts_enabled=true` 时强制为 true。片头引语必须被朗读。
 
 Record the opening object in script metadata.
 
@@ -420,20 +426,25 @@ Include:
 Before advancing, present to the user:
 
 1. **Style selection** — confirm the chosen visual style (warm-illustration or literary-illustration)
-2. **Segmentation + Motion Map** — show the emotional arc with motion priority labels
-3. **Visual mood board** — keywords per segment, highlighting which gets the video budget
-4. **Font shortlist** — 2-3 options with reasoning (matched to selected style)
-5. **TTS narration choice** — confirm whether the user wants spoken narration
+2. **Text position** — "center" (画面正中) or "top_center" (顶部居中). Default per playbook; ask explicitly.
+3. **Segmentation + Motion Map** — show the emotional arc with motion priority labels
+4. **Visual mood board** — keywords per segment, highlighting which gets the video budget
+5. **Font shortlist** — 2-3 options with reasoning (matched to selected style)
+6. **TTS narration choice** — confirm whether the user wants spoken narration
 
-Wait for explicit approval on all four. Record `selected_font` and `selected_playbook` in metadata.
+Wait for explicit approval on ALL items. Record `selected_font`, `selected_playbook`,
+and `text_overlay_position` in metadata.
 
 ## Quality Gate
 
 - Selected playbook is recorded in metadata (`selected_playbook`)
+- `text_overlay_position` is recorded in metadata — user's explicit choice, not assumed
 - `tts_enabled` is recorded in metadata (true or false)
-- Text overlay position is set to `top-center` in metadata
+- Text overlay position is explicitly asked and recorded (not hardcoded to "top-center")
+- `opening.background_search_query` is present (English, concrete, searchable)
+- `opening.hook_tts_required` is true when tts_enabled (hook must be spoken)
 - Font shortlist matches the selected playbook's typography recommendations
-- Motion priority is sparse — at most 30% of segments get `video`
+- Motion priority is sparse — at most 30% of segments get `video` (ai-generated mode)
 - The emotional peak IS the video segment
 - Video-priority segments have motion-rich prompt descriptions
 - Still segments still have beautiful, cinematic image prompts

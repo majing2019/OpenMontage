@@ -408,44 +408,48 @@ The `video` tier segment (emotional peak) gets special treatment:
 - Longer hold before fade-out
 - Crossfade transition is slightly longer (1.2s instead of 1.0s) for impact
 
-### 3a. TTS-Driven Segment Timing (when tts_enabled)
+### 3a. TTS-Driven Segment Timing (SINGLE source of truth)
 
-**TTS narration DRIVES video segment switching.** The viewer's experience is:
-hear the sentence → see the video → sentence ends → video switches. Video
-segments exist to accompany the spoken word, not the other way around.
-
-Each segment's video duration is determined by its narration, not by the
-script director's initial estimate:
+**Narration durations are the single source of truth.** The entire timeline —
+video, audio, and subtitles — flows from them. There is only ONE computation:
 
 ```
-video_duration = narration_duration + padding (0.5–1.0s)
+For each body segment:
+  video_start  = previous_video_end        (continuous, NO gaps)
+  video_dur    = narration_dur + PAUSE + CROSSFADE
+  video_end    = video_start + video_dur
+  tts_end      = video_start + narration_dur
+  subtitle_end = video_end                 (embedded in Sequence, auto-fades)
+
+For the last segment:
+  video_dur    = narration_dur + PAUSE + CROSSFADE + LINGER
+  subtitle_end = video_start + narration_dur + PAUSE + LINGER
+               (subtitle stays visible through the linger, fades at the end)
+
+PAUSE    = 0.5s   (silence between narration end and subtitle fade start)
+CROSSFADE = 0.8s  (from transition_defaults.video.crossfade_duration_seconds)
+LINGER   = 2.0s   (from transition_defaults.video.last_segment_linger_seconds)
 ```
 
-The padding gives a brief visual hold after the voice stops — the viewer
-absorbs the last words while the image lingers, then the next segment begins.
+**Why this guarantees alignment:** The audio mix (adelay+amix) places each
+narration at `video_start`. The subtitle is embedded in the Sequence at
+`video_start`. The video Sequence starts at `video_start`. They all share
+the same `video_start` — derived once from narration durations. There is
+no second computation that can drift.
 
-**How to compute the timeline (MANDATORY when tts_enabled=true):**
-
-1. For each body segment, read `narration.duration_seconds` from the asset manifest
-2. Set segment video duration: `narration_duration + 0.7s` (default padding)
-3. Compute cumulative start times from these durations
-4. Include `segment_gap_seconds` (0.3s black) between segments
-5. The script's `start_seconds` / `end_seconds` are IGNORED — they were estimates
-   written before narration was generated
-
-**Example — script estimates vs TTS-driven reality:**
-
+**Example — single-source timeline computation:**
 ```
-Segment    Script (estimate)    Narration actual    Video duration (narration + 0.7s)
-seg_01     7.0s                  7.8s                8.5s
-seg_02     7.0s                  6.8s                7.5s
-seg_03     8.0s                  7.3s                8.0s
-seg_04     7.0s                  8.8s                9.5s
-seg_05     7.0s                  7.8s                8.5s
-seg_06     9.0s                  6.0s                6.7s
+Narration: seg_01=7.8s, seg_02=6.8s, seg_03=7.3s, seg_04=8.8s, seg_05=7.8s, seg_06=6.0s
 
-Timeline: 0 → 8.5 → 16.3 (8.5+7.5+0.3gap) → 24.6 → 34.4 → 43.2 → 50.2s
-(script estimated 50.5s — TTS-driven is 50.2s — close enough)
+seg_01: video 5.5-14.6s (7.8+0.5+0.8=9.1s) | TTS 5.5-13.3s | subtitle 5.5-14.6s
+seg_02: video 14.6-22.7s (6.8+0.5+0.8=8.1s) | TTS 14.6-21.4s | subtitle 14.6-22.7s
+seg_03: video 22.7-31.3s (7.3+0.5+0.8=8.6s) | TTS 22.7-30.0s | subtitle 22.7-31.3s
+seg_04: video 31.3-41.4s (8.8+0.5+0.8=10.1s)| TTS 31.3-40.1s | subtitle 31.3-41.4s
+seg_05: video 41.4-50.5s (7.8+0.5+0.8=9.1s) | TTS 41.4-49.2s | subtitle 41.4-50.5s
+seg_06: video 50.5-59.8s (6.0+0.5+0.8+2.0=9.3s) | TTS 50.5-56.5s | subtitle 50.5-59.8s
+
+Check: TTS→fade_gap = 0.5s for EVERY segment. Audio adelay positions = video_start.
+All three timelines (video, audio, subtitle) derived from the same computation.
 ```
 
 **Synchronization check before compose:**

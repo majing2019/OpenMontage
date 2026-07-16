@@ -142,112 +142,67 @@ the hook TTS narration.
 
 ```
 seg_opening (5.0-7.0s total):
-  0.0 – 1.5s: Hook Phase
+  0.0 – 5.5s: Title — STATIC, NO ANIMATION
     Background: opening background video (searched from stock, color-graded)
+    Text overlay: opening.title_line, large white serif, DEAD CENTER
+    Font: Noto Serif SC 600 (literary) or "Songti SC" (system Song/Ming)
+    Font size: 1.3× body font size
+    Style: STATIC — no spring, no scale, no character-by-character reveal.
+           The title is a calm, permanent presence on the opening video.
+           It does NOT fade in, does NOT fade out, does NOT move.
+    Color: white (#FFFFFF) — opening backgrounds are selected for warm/golden
+           light, and white serif text on a warm sunrise reads as elegant
+           and cinematic (like a movie title card).
+
+  0.0 – 2.0s: Hook — FADE IN/OUT
     Audio: opening_hook.mp3 (TTS of hook_line, same voice as body)
     Text overlay: opening.hook_line, small white sans-serif, center-lower
-    Font: Noto Sans SC Light, font_size per two-tier formula (hook tier: 0.6× body size)
-    Animation: fade in 0.5s, hold, fade out 0.5s
+    Font: Heiti SC (STHeiti) or Noto Sans SC Light
+    Font size: max(0.6× body font, 24px)
+    Style: fade in 0.8s, hold, fade out 0.2s (alpha expression via HealingSubtitle)
+    Color: white at 85% opacity (less prominent than the title)
 
-  1.5 – 5.5s: Title Phase
-    Background: same opening video continues (or crossfade to seg_01)
-    Text overlay: opening.title_line, large serif, center
-    Font: Noto Serif SC 600 (literary) or Noto Sans SC 500 (warm)
-    Font size: 1.3× body font size (title is larger than segment text)
-    Animation: fade in 0.5s, hold until 4.5s, fade out by 5.5s
-
-  5.5s+: Main Content
-    Title gone, seg_01 video and subtitle fully visible
+  5.5s+: Transition to seg_01
+    Title gone (Sequence ends at 5.5s — see Remotion implementation below)
+    seg_01 video and subtitle fully visible via crossfade
     Music at normal playback volume
 ```
 
-**FFmpeg implementation (stock-footage path):**
+**Remotion implementation (mandatory — no FFmpeg):**
 
-Do NOT use `color=c=black` as the background. Do NOT use SRT for the opening
-— the hook line and title need DIFFERENT positions and font sizes, which SRT
-cannot express in a single style.
-
-**CRITICAL — Opening text uses TWO SEPARATE FFmpeg passes.** Chaining multiple
-`drawtext` filters with `enable` clauses in one `-vf` chain is fragile: when
-one filter's `enable` window expires, it can drop frames and break downstream
-filters. Two independent passes — one per text element — then overlay.
-
-**CRITICAL — Use `textfile=` NOT `text=` for Chinese text.** FFmpeg's `drawtext`
-filter reads the `text=` parameter as a C string. Chinese characters embedded
-directly in the argument can get mangled by shell escaping, locale settings,
-or FFmpeg's internal UTF-8 handling. ALWAYS write Chinese text to a temporary
-UTF-8 file and reference it via `textfile=`. The file MUST be UTF-8 encoded
-without BOM.
-
-```bash
-# Write text to UTF-8 files (do this in Python or with printf, never echo)
-printf '%s' '幸福不在远方' > /tmp/title.txt
-printf '%s' '如果你也曾在追逐中感到疲惫，这段话送给你' > /tmp/hook.txt
+The opening renders as a `<TransitionSeries.Sequence>`:
+```tsx
+<TransitionSeries.Sequence durationInFrames={openingFrames}>
+  {/* Background video */}
+  <OffthreadVideo src={openingVideo} muted style={cover} />
+  {/* STATIC title — no spring, no animate, just text */}
+  <div style={{ position: "absolute", inset: 0,
+    justifyContent: "center", alignItems: "center" }}>
+    <span style={{
+      fontFamily: "'Songti SC', 'Noto Serif SC', serif",
+      fontSize: titleFontSize,
+      color: "#FFFFFF",
+      fontWeight: 600,
+    }}>
+      {title_line}
+    </span>
+  </div>
+  {/* Hook subtitle with fade-in/out (healing_subtitle overlay) */}
+  <HealingSubtitle
+    text={hook_line}
+    fontSize={hookFontSize}
+    color="#FFFFFF"
+    fadeInSeconds={0.8} fadeOutSeconds={0.2}
+    segmentDurationSeconds={openingDuration}
+  />
+</TransitionSeries.Sequence>
 ```
 
-**MANDATORY: Test font CJK support before rendering.** Not all fonts work with
-FFmpeg's drawtext for Chinese glyphs — even when the font file contains CJK
-characters. PingFang.ttc is a known failure case on macOS. ALWAYS run a quick
-test before committing:
-
-```bash
-printf '测试' > /tmp/font_test.txt
-ffmpeg -f lavfi -i color=c=black:s=200x200:d=0.1 \
-  -vf "drawtext=textfile=/tmp/font_test.txt:fontfile=/path/to/font:fontsize=30:fontcolor=white:x=10:y=10" \
-  -vframes 1 /tmp/font_check.png
-# If font_check.png < 5KB, the font does NOT work — pick another.
-```
-
-**Known working fonts for Chinese drawtext on macOS:**
-| Font | Path | Style | Use for |
-|------|------|-------|---------|
-| Songti SC | `/System/Library/Fonts/Supplemental/Songti.ttc` | Serif | Title |
-| Heiti SC | `/System/Library/Fonts/STHeiti Medium.ttc` | Sans-serif | Hook, labels |
-| Arial Unicode | `/System/Library/Fonts/Supplemental/Arial Unicode.ttf` | Sans-serif | Hook fallback |
-| PingFang | DO NOT USE — FFmpeg drawtext cannot render CJK glyphs from PingFang.ttc |
-
-**Pass 1 — Title text (dead center, ENTIRE opening 0–5.5s, serif, white):**
-```bash
-BODY_FONT_SIZE=32
-TITLE_FONT_SIZE=$((BODY_FONT_SIZE * 13 / 10))
-
-ffmpeg -i background.mp4 -t 5.5 \
-  -vf "drawtext=textfile=/tmp/title.txt:\
-       fontfile=/System/Library/Fonts/Supplemental/Songti.ttc:\
-       fontsize=${TITLE_FONT_SIZE}:fontcolor=white:\
-       x=(w-tw)/2:y=(h-th)/2:enable='between(t,0,5.5)'" \
-  -c:v libx264 -crf 18 -an opening_title.mp4
-```
-
-**Pass 2 — Hook text (lower-center, FADE IN/OUT, sans-serif):**
-```bash
-HOOK_FONT_SIZE=$((BODY_FONT_SIZE * 6 / 10))
-if [ $HOOK_FONT_SIZE -lt 24 ]; then HOOK_FONT_SIZE=24; fi
-
-# Alpha fade expression:
-#   0.0–0.3s: invisible (alpha=0)
-#   0.3–1.1s: fade IN  (alpha 0 → 0.85)
-#   1.1–1.8s: hold     (alpha=0.85)
-#   1.8–2.0s: fade OUT (alpha 0.85 → 0)
-ALPHA_EXPR="if(lt(t,0.3), 0, if(lt(t,1.1), 0.85*(t-0.3)/0.8, if(lt(t,1.8), 0.85, if(lt(t,2.0), 0.85*(2.0-t)/0.2, 0))))"
-
-ffmpeg -i opening_title.mp4 \
-  -vf "drawtext=textfile=/tmp/hook.txt:\
-       fontfile=/System/Library/Fonts/STHeiti Medium.ttc:\
-       fontsize=${HOOK_FONT_SIZE}:fontcolor=white:\
-       alpha='${ALPHA_EXPR}':\
-       x=(w-tw)/2:y=h*0.65:enable='between(t,0,2.0)'" \
-  -c:v libx264 -crf 18 -an opening_final.mp4
-```
-
-**Key rules for opening text:**
-- `textfile=` (NOT `text=`) for ALL Chinese text — avoids encoding corruption
-- `fontfile=` with a CONFIRMED-WORKING CJK font path — test first
-- **Title stays visible for the ENTIRE opening** (0–5.5s). It is the visual anchor.
-- **Hook fades IN/OUT** with an alpha expression — cinematic layered text effect
-- Two separate FFmpeg passes — avoids `enable` window expiration breaking the chain
-- Hook minimum 24px — smaller Chinese text is illegible on mobile
-- Verify after rendering: extract frames at 0.5s (hook fading in), 1.5s (both visible), 3.0s (title only)
+**Why no animation on the title:** Healing-text is a quiet, meditative
+format. A spring-animated title that bounces in character-by-character
+reads as flashy and disrupts the contemplative mood. A static serif title
+on a beautiful video background is understated and elegant — it lets the
+image and the words do the work without drawing attention to the typography.
 
 **Timeline shift:** All script sections shift by `opening.duration_seconds`.
 seg_01 start_seconds = opening duration (not 0).
@@ -309,6 +264,27 @@ fade-out completes exactly as the Sequence ends — the next segment's subtitle
 fades in fresh. No overlap, no abrupt cut. This is the synchronization guarantee:
 **video, narration, and subtitle all share the same Sequence, so they start
 and stop together.**
+
+- **Adaptive text color for legibility (MANDATORY):**
+  Text that matches the background video's brightness is unreadable. The
+  pipeline manifest's `text_color_formula` defines the rule — the compose
+  stage MUST execute it:
+
+  1. For each body segment, analyze the video clip's average luma (FFprobe:
+     `ffprobe -f lavfi -i "movie=$VIDEO,signalstats" -show_entries
+     frame_tags=lavfi.signalstats.YAVG`)
+  2. Average luma > `light_threshold` (128) → use `dark_text` (#3C3833 charcoal)
+  3. Average luma ≤ 128 → use `light_text` (#F0F8FA cool white)
+  4. ONE consistent color for the entire video — the luma of the concatenated
+     silent timeline determines which side of the threshold the video falls on
+  5. Pass the resolved color to every `healing_subtitle` overlay's `color` field
+
+- **Text shadow for contrast (MANDATORY):**
+  Even with adaptive color, thin strokes against complex video backgrounds
+  need a subtle shadow for contrast. The `healing_subtitle` overlay's
+  `textShadow` field provides this:
+  - Light backgrounds (dark text #3C3833): `textShadow: "0 2px 12px rgba(245,240,235,0.7)"` (cream shadow — the playbook's paper color)
+  - Dark backgrounds (light text #F0F8FA): `textShadow: "0 2px 12px rgba(0,0,0,0.5)"` (black shadow)
 
 - **Resolution-adaptive font sizing (MANDATORY — TWO-TIER):**
   Font size is **auto-calculated** from video width + longest text line.
@@ -418,20 +394,15 @@ SEG_01 (video)    GAP   SEG_02 (video)    GAP   SEG_03 (video)    ...
 ```
 
 No Ken Burns. No still images. Every clip plays natively. Trim each
-to exactly its segment duration. Crossfade transitions between segments.
+to exactly its segment duration. Cross-dissolve transitions via
+`<TransitionSeries>` + `fade()` — outgoing fades out WHILE incoming
+fades in (see §4 Transitions for implementation).
 
-**Segment gap via Remotion `<TransitionSeries>`:**
-
-Read `transition_defaults.video.segment_gap_seconds` (default 0.3s).
-Remotion's `<TransitionSeries>` with `layout="none"` automatically inserts
-a brief hold between sequences. Combined with `spring()` easing on the
-crossfade transition, this creates the natural 0.3s breathing space
-between segments without manual black-frame insertion.
-
-**Why Remotion doesn't need concat normalization:** Remotion renders each
-frame independently from the source clips. There is no filter_complex
-that silently fails on resolution mismatches. Each `<Sequence>` plays
-its assigned video file; if the file exists, it renders. Period.
+**Video underflow:** If a stock clip is shorter than the segment duration,
+Remotion's `<OffthreadVideo>` freezes on the last frame. This is acceptable
+— the narration finishes over a held image. If the clip is < 60% of
+segment duration, pick a longer clip from the search candidates instead
+(see §4a Video Underflow).
 
 **Peak segment treatment:**
 The `video` tier segment (emotional peak) gets special treatment:
@@ -504,40 +475,73 @@ audible content is the loudest peaks (typically the opening hook). Always
 resample the mixed WAV to 48kHz stereo (`-ar 48000 -ac 2`) before muxing
 into the final MP4.
 
-### 4. Transitions
+### 4. Transitions (cross-dissolve — NO black frames)
 
-All transition timings come from the pipeline manifest's `transition_defaults` section.
-If the user or project overrides these in `edit_decisions.metadata`, use the override values.
+All transition timings come from `transition_defaults.video` in the manifest.
 
-**Between segments (video crossfade):**
-- Cross-dissolve: `transition_defaults.video.crossfade_duration_seconds` (1.0s)
-- Peak segment: `transition_defaults.video.crossfade_peak_duration_seconds` (1.2s)
-- Breathing pause: `transition_defaults.video.breathing_pause_seconds` (0.4s, image only, no text)
+**MANDATORY: Use cross-dissolve, never black-frame gaps.** Adjacent segments
+MUST overlap so the outgoing video fades out WHILE the incoming video fades
+in. A visible black frame between segments reads as a glitch, not a breath.
 
-**Text fade independence (CRITICAL):**
-Text subtitles fade IN and OUT on their own schedule, completely independent of the
-video crossfade between clips. This ensures clean readability — text never overlaps
-during a video blend.
+**Implementation — Remotion `<TransitionSeries>` + `fade()`:**
+```tsx
+import { TransitionSeries, fade } from "@remotion/transitions";
 
-- Outgoing subtitle: fades out BEFORE the video crossfade begins
-  (subtitle fade-out completes at least 0.3s before the video blend starts)
-- Incoming subtitle: fades in AFTER the video crossfade completes
-  (subtitle fade-in starts at least 0.3s after the video blend ends)
-- Text fade timings from `transition_defaults.text`:
-  - fade_in: 0.7s
-  - fade_out: 0.5s
+<TransitionSeries>
+  {segments.map((seg, i) => (
+    <>
+      <TransitionSeries.Sequence durationInFrames={seg.frames}>
+        <SegmentScene cut={seg} />
+      </TransitionSeries.Sequence>
+      {/* cross-dissolve: outgoing + incoming overlap and blend */}
+      <TransitionSeries.Transition
+        presentation={fade()}
+        timing={linearTiming({ durationInFrames: Math.round(CROSSFADE * fps) })}
+      />
+    </>
+  ))}
+</TransitionSeries>
+```
 
-This means the viewer always sees either:
-1. Pure video blend (no text) — during the crossfade overlap window, OR
-2. Clean text on a stable frame — before the blend starts or after it ends
+**Crossfade durations (from `transition_defaults.video`):**
+| Context | Duration |
+|---------|----------|
+| Standard segment → segment | `crossfade_duration_seconds` (0.8s) |
+| Into / out of peak segment | `crossfade_peak_duration_seconds` (1.2s) |
 
-**Video-to-video transition:**
-- Crossfade overlap: the two clips blend during the transition
-- Both clips play during the overlap (1.0s crossfade)
+**Why `<TransitionSeries>` and not plain `<Sequence>`:** plain Sequences placed
+back-to-back produce a hard cut at the boundary — the background color flashes
+for one frame (the "black frame" glitch). TransitionSeries overlaps adjacent
+sequences and blends them with `fade()`, producing a seamless cross-dissolve.
 
-**Video-to-image transition:**
-- Video fades out as image fades in
-- Image begins Ken Burns motion only after transition completes
+**Text fade independence:**
+Subtitles fade in/out on their own schedule (see §2 healing_subtitle). Because
+each subtitle lives in its own TransitionSeries.Sequence bounded by the segment
+duration, the subtitle's fade-out completes as the segment ends — naturally
+coordinated with the crossfade. No text appears during the blend window.
+
+### 4a. Video Underflow — narration must always finish
+
+**Problem:** A segment's duration is `narration + 0.7s padding`. The stock
+video clip may be SHORTER than this. If the video ends before the narration,
+the viewer sees text being read over a frozen/black frame.
+
+**Rule: Remotion `<OffthreadVideo>` freezes on the last frame by default.**
+When a video clip is shorter than its segment, it stops at its final frame
+and holds there until the segment ends. This is the desired behavior — the
+narration finishes over a held image, which reads as intentional (a
+deliberate pause on a key frame).
+
+**Do NOT:** loop the video, speed it up to fit, or truncate the narration.
+Both look broken.
+
+**Validation (per segment before render):**
+- [ ] `segment_duration >= narration_duration + 0.5s` (narration always fits)
+- [ ] If `video_clip_duration < segment_duration`, confirm OffthreadVideo
+      freeze behavior is acceptable (held last frame). If the clip is shorter
+      than ~60% of the segment, pick a longer clip from the search results.
+- [ ] After render: scrub to each segment's final 1s — narration must
+      complete before the crossfade to the next segment begins.
 
 ### 5. Dual Aspect Ratio
 

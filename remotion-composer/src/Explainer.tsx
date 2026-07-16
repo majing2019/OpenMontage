@@ -10,6 +10,13 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import {
+  TransitionSeries,
+  linearTiming,
+} from "@remotion/transitions";
+import type { TransitionPresentation } from "@remotion/transitions";
+// Fragment needed for TransitionSeries children
+import React, { Fragment } from "react";
 // Use system font stack for Chinese support (Google Fonts blocked in some regions)
 const FALLBACK_FONT = `'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', 'Hiragino Sans GB', -apple-system, sans-serif`;
 
@@ -50,6 +57,21 @@ import { ProviderChip } from "./components/ProviderChip";
 import { HealingSubtitle } from "./components/HealingSubtitle";
 import type { ParticleType } from "./components/ParticleOverlay";
 import { resolveTheme, type ThemeConfig, DEFAULT_THEME } from "./Root";
+
+// ---------------------------------------------------------------------------
+// Custom fade transition presentation for TransitionSeries (v4 API)
+// Replaces the removed `fade()` built-in from @remotion/transitions v3.
+// ---------------------------------------------------------------------------
+const crossfadePresentation = (): TransitionPresentation<Record<string, never>> => ({
+  component: ({ children, presentationDirection, presentationProgress }) => {
+    const opacity =
+      presentationDirection === "entering"
+        ? presentationProgress
+        : 1 - presentationProgress;
+    return <div style={{ opacity }}>{children}</div>;
+  },
+  props: {} as Record<string, never>,
+});
 
 // Load Space Grotesk font for cinematic typography
 const fontFamily = FALLBACK_FONT;
@@ -289,6 +311,7 @@ interface Overlay {
   // healing_subtitle
   fontSize?: number;
   color?: string;
+  textShadow?: string;
   fadeInSeconds?: number;
   fadeOutSeconds?: number;
 }
@@ -317,6 +340,14 @@ export interface ExplainerProps {
   overlays?: Overlay[];
   captions?: WordCaption[];
   audio?: AudioConfig;
+  /** Enable cross-dissolve transitions between cuts via TransitionSeries. */
+  enableCrossfade?: boolean;
+  /** Crossfade duration in seconds (default 0.8). Only used when enableCrossfade=true. */
+  crossfadeSeconds?: number;
+  /** Static opening title rendered on the first cut (no animation). */
+  openingTitle?: string;
+  /** Font size for the static opening title. */
+  openingTitleFontSize?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -768,6 +799,7 @@ const OverlayRenderer: React.FC<{ overlay: Overlay }> = ({ overlay }) => {
         text={overlay.text ?? overlay.subtitle ?? ""}
         fontSize={overlay.fontSize}
         color={overlay.color}
+        textShadow={overlay.textShadow}
         fadeInSeconds={overlay.fadeInSeconds}
         fadeOutSeconds={overlay.fadeOutSeconds}
         segmentDurationSeconds={overlay.out_seconds - overlay.in_seconds}
@@ -805,16 +837,57 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
       <AnimatedBackground theme={theme} />
 
       {/* Layer 1: Visual scenes */}
-      {cuts.map((cut) => {
-        const from = Math.round(cut.in_seconds * fps);
-        const duration = Math.round((cut.out_seconds - cut.in_seconds) * fps);
-
-        return (
-          <Sequence key={cut.id} from={from} durationInFrames={duration}>
-            <SceneRenderer cut={cut} theme={theme} />
-          </Sequence>
-        );
-      })}
+      {props.enableCrossfade
+        ? (() => {
+            const cf = props.crossfadeSeconds ?? 0.8;
+            const cfFrames = Math.round(cf * fps);
+            return (
+              <TransitionSeries>
+                {cuts.map((cut, i) => {
+                  const duration = Math.round((cut.out_seconds - cut.in_seconds) * fps);
+                  return (
+                    <Fragment key={cut.id}>
+                      <TransitionSeries.Sequence durationInFrames={duration}>
+                        <SceneRenderer cut={cut} theme={theme} />
+                        {/* Static opening title on the first cut */}
+                        {i === 0 && props.openingTitle && (
+                          <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
+                            <span style={{
+                              fontFamily: "'Songti SC', 'Noto Serif SC', 'Source Han Serif SC', serif",
+                              fontSize: props.openingTitleFontSize ?? 60,
+                              fontWeight: 600,
+                              color: "#FFFFFF",
+                              textAlign: "center",
+                              lineHeight: 1.2,
+                              textShadow: "0 2px 12px rgba(0,0,0,0.3)",
+                            }}>
+                              {props.openingTitle}
+                            </span>
+                          </AbsoluteFill>
+                        )}
+                      </TransitionSeries.Sequence>
+                      {i < cuts.length - 1 && (
+                        <TransitionSeries.Transition
+                          presentation={crossfadePresentation()}
+                          timing={linearTiming({ durationInFrames: cfFrames })}
+                        />
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </TransitionSeries>
+            );
+          })()
+        : cuts.map((cut) => {
+            const from = Math.round(cut.in_seconds * fps);
+            const duration = Math.round((cut.out_seconds - cut.in_seconds) * fps);
+            return (
+              <Sequence key={cut.id} from={from} durationInFrames={duration}>
+                <SceneRenderer cut={cut} theme={theme} />
+              </Sequence>
+            );
+          })
+      }
 
       {/* Layer 2: Overlays (section titles, stat reveals, hero titles) */}
       {overlays?.map((overlay, i) => {

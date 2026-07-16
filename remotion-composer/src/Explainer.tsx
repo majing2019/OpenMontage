@@ -289,6 +289,13 @@ interface Cut {
   screenshotSteps?: ScreenshotStep[];
   screenshotSize?: { width: number; height: number };
   cursorStartAt?: [number, number];
+  // Embedded healing-text subtitle (rendered inside this cut's Sequence)
+  subtitleText?: string;
+  subtitleFontSize?: number;
+  subtitleColor?: string;
+  subtitleShadow?: string;
+  subtitleVerticalPosition?: number;
+  subtitleEndSeconds?: number; // when subtitle should finish (for linger effect)
 }
 
 interface Overlay {
@@ -312,6 +319,7 @@ interface Overlay {
   fontSize?: number;
   color?: string;
   textShadow?: string;
+  verticalPosition?: number;
   fadeInSeconds?: number;
   fadeOutSeconds?: number;
 }
@@ -457,14 +465,17 @@ const ImageScene: React.FC<{ src: string; animation?: string }> = ({
 // Enhanced Video Scene
 // ---------------------------------------------------------------------------
 
-const VideoScene: React.FC<{ src: string; startFrom?: number }> = ({
-  src,
-  startFrom = 0,
-}) => {
+const VideoScene: React.FC<{
+  src: string;
+  startFrom?: number;
+  noIntroFade?: boolean;
+}> = ({ src, startFrom = 0, noIntroFade = false }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
 
-  const fadeIn = spring({ frame, fps, config: { damping: 20 } });
+  const fadeIn = noIntroFade
+    ? 1
+    : spring({ frame, fps, config: { damping: 20 } });
   const fadeOutStart = durationInFrames - 8;
   const fadeOut = interpolate(frame, [fadeOutStart, durationInFrames], [1, 0.3], {
     extrapolateLeft: "clamp",
@@ -568,7 +579,11 @@ const BackgroundVideoLayer: React.FC<{
   );
 };
 
-const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut, theme }) => {
+const SceneRenderer: React.FC<{
+  cut: Cut;
+  theme: ThemeConfig;
+  noIntroFade?: boolean;
+}> = ({ cut, theme, noIntroFade }) => {
   // Wrap component with background video or image if specified
   const maybeWrapWithBg = (element: React.ReactElement) => {
     if (cut.backgroundVideo) {
@@ -753,7 +768,11 @@ const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut, theme 
   }
 
   if (cut.source && isVideo(cut.source)) {
-    return maybeWrapWithBg(<VideoScene src={cut.source} startFrom={cut.source_in_seconds ?? 0} />);
+    return maybeWrapWithBg(<VideoScene
+          src={cut.source}
+          startFrom={cut.source_in_seconds ?? 0}
+          noIntroFade={noIntroFade}
+        />);
   }
 
   // Final fallback — try as image if source exists, otherwise show text_card
@@ -800,8 +819,9 @@ const OverlayRenderer: React.FC<{ overlay: Overlay }> = ({ overlay }) => {
         fontSize={overlay.fontSize}
         color={overlay.color}
         textShadow={overlay.textShadow}
-        fadeInSeconds={overlay.fadeInSeconds}
-        fadeOutSeconds={overlay.fadeOutSeconds}
+        verticalPosition={overlay.verticalPosition}
+        fadeInSeconds={overlay.fadeInSeconds ?? 0.8}
+        fadeOutSeconds={overlay.fadeOutSeconds ?? 0.8}
         segmentDurationSeconds={overlay.out_seconds - overlay.in_seconds}
       />
     );
@@ -836,7 +856,8 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
       {/* Layer 0: Animated gradient background — driven by theme */}
       <AnimatedBackground theme={theme} />
 
-      {/* Layer 1: Visual scenes */}
+      {/* Layer 1: Visual scenes — each cut's subtitle is EMBEDDED in its
+          Sequence so it syncs with the video crossfade automatically. */}
       {props.enableCrossfade
         ? (() => {
             const cf = props.crossfadeSeconds ?? 0.8;
@@ -845,10 +866,14 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
               <TransitionSeries>
                 {cuts.map((cut, i) => {
                   const duration = Math.round((cut.out_seconds - cut.in_seconds) * fps);
+                  // Embedded subtitle: lives INSIDE the Sequence.
+                  // For the last segment, subtitle ends earlier (linger) —
+                  // read cut.subtitleEndSeconds if present, else = full duration.
+                  const isLast = i === cuts.length - 1;
                   return (
                     <Fragment key={cut.id}>
                       <TransitionSeries.Sequence durationInFrames={duration}>
-                        <SceneRenderer cut={cut} theme={theme} />
+                        <SceneRenderer cut={cut} theme={theme} noIntroFade={i === 0} />
                         {/* Static opening title on the first cut */}
                         {i === 0 && props.openingTitle && (
                           <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
@@ -864,6 +889,23 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
                               {props.openingTitle}
                             </span>
                           </AbsoluteFill>
+                        )}
+                        {/* Embedded subtitle — synced with this Sequence's timeline */}
+                        {cut.subtitleText && (
+                          <HealingSubtitle
+                            text={cut.subtitleText}
+                            fontSize={cut.subtitleFontSize}
+                            color={cut.subtitleColor}
+                            textShadow={cut.subtitleShadow}
+                            verticalPosition={cut.subtitleVerticalPosition}
+                            fadeInSeconds={cf}
+                            fadeOutSeconds={cf}
+                            segmentDurationSeconds={
+                              cut.subtitleEndSeconds != null
+                                ? cut.subtitleEndSeconds - cut.in_seconds
+                                : cut.out_seconds - cut.in_seconds
+                            }
+                          />
                         )}
                       </TransitionSeries.Sequence>
                       {i < cuts.length - 1 && (

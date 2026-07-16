@@ -29,6 +29,8 @@ interface HealingSubtitleProps {
   segmentDurationSeconds?: number;
   /** Optional light text-shadow for readability on bright video frames. */
   textShadow?: string;
+  /** Vertical position: 0.5 = center (default), 0.65 = lower-center (hook). */
+  verticalPosition?: number;
 }
 
 export const HealingSubtitle: React.FC<HealingSubtitleProps> = ({
@@ -39,6 +41,7 @@ export const HealingSubtitle: React.FC<HealingSubtitleProps> = ({
   fadeOutSeconds = 0.5,
   segmentDurationSeconds,
   textShadow = "0 2px 12px rgba(245,240,235,0.7)",
+  verticalPosition,
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
@@ -67,9 +70,17 @@ export const HealingSubtitle: React.FC<HealingSubtitleProps> = ({
     extrapolateRight: "clamp",
   });
 
+  const vPos = verticalPosition ?? 0.5;
+  const justifyContent = vPos === 0.5 ? "center" : "flex-start";
+  const paddingTopPercent = vPos !== 0.5 ? `${(vPos - 0.15) * 100}%` : undefined;
+
   return (
     <AbsoluteFill
-      style={{ justifyContent: "center", alignItems: "center" }}
+      style={{
+        justifyContent,
+        alignItems: "center",
+        paddingTop: paddingTopPercent,
+      }}
     >
       <div
         style={{

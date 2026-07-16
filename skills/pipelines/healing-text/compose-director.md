@@ -154,9 +154,10 @@ seg_opening (5.0-7.0s total):
            light, and white serif text on a warm sunrise reads as elegant
            and cinematic (like a movie title card).
 
-  0.0 – 2.0s: Hook — FADE IN/OUT
+  0.0 – 2.0s: Hook — FADE IN/OUT, LOWER-CENTER
     Audio: opening_hook.mp3 (TTS of hook_line, same voice as body)
-    Text overlay: opening.hook_line, small white sans-serif, center-lower
+    Text overlay: opening.hook_line, small white sans-serif, LOWER-CENTER
+    Position: y=h*0.65 (NOT center — title sits at center, hook sits below)
     Font: Heiti SC (STHeiti) or Noto Sans SC Light
     Font size: max(0.6× body font, 24px)
     Style: fade in 0.8s, hold, fade out 0.2s (alpha expression via HealingSubtitle)
@@ -218,73 +219,69 @@ seg_01 start_seconds = opening duration (not 0).
 }
 ```
 
-### 2. Prepare Subtitle Track (`healing_subtitle` Remotion overlay — MANDATORY)
+### 2. Prepare Subtitle Track (EMBEDDED in each cut — MANDATORY)
 
-**Subtitles MUST fade in and fade out.** Subtitles that appear/disappear
-instantly look amateur and clash with the healing aesthetic.
+**Subtitles are NOT a separate overlay layer.** They are embedded inside each
+cut's `TransitionSeries.Sequence`, rendered as a sibling of the video. This is
+the only way to guarantee subtitle fade stays in sync with the video crossfade.
 
-Since this pipeline is Remotion-only (no FFmpeg, no SRT/ASS files), subtitles
-are rendered as **`healing_subtitle` overlays**. Each segment's subtitle is one
-overlay entry. The `HealingSubtitle` component
-(`remotion-composer/src/components/HealingSubtitle.tsx`) uses
-`useCurrentFrame()` + `interpolate()` to produce a smooth opacity curve:
+**Why embedded, not overlay:** If subtitles are a separate `<Sequence>` layer
+positioned by absolute time, they use a different timing model than the
+`<TransitionSeries>` video layer (which overlaps sequences for crossfade). The
+two drift apart — subtitle fades don't match the video blend. By embedding the
+subtitle inside the same Sequence as its video, both share the same local
+timeline (`useCurrentFrame()` starts at 0 when the Sequence begins) and the
+same lifecycle (mounted/unmounted together).
 
-```
-opacity = interpolate(frame, [0, fadeIn, fadeOutStart, total], [0, 1, 1, 0])
-```
-
-- **Fade IN**: `transition_defaults.text.fade_in_seconds` (default 0.7s)
-- **Fade OUT**: `transition_defaults.text.fade_out_seconds` (default 0.5s)
-- A gentle 12px→0 upward drift accompanies the fade-in for a "breathing" feel
-
-**Overlay entry structure (per body segment):**
+**Embed subtitle fields directly on each cut:**
 ```json
 {
-  "id": "sub_seg_01",
-  "type": "healing_subtitle",
-  "text": "你以为幸福在远方等你，其实幸福就在你身边等你发现。",
-  "in_seconds": 5.5,
-  "out_seconds": 14.0,
-  "fontSize": 32,
-  "color": "#3C3833",
-  "fadeInSeconds": 0.7,
-  "fadeOutSeconds": 0.5
+  "id": "seg_01", "type": "video",
+  "source": "path/to/seg_01.mp4",
+  "in_seconds": 5.5, "out_seconds": 14.0,
+  "subtitleText": "你以为幸福在远方等你，其实幸福就在你身边等你发现。",
+  "subtitleFontSize": 32,
+  "subtitleColor": "#1A1A1A",
+  "subtitleShadow": "0 2px 16px rgba(255,255,255,0.55)",
+  "subtitleEndSeconds": null
 }
 ```
 
-**Why `healing_subtitle` overlay (not SRT/ASS, not text_card cut):**
-- SRT/ASS are external subtitle files — incompatible with Remotion's React render
-- The generic `TextCard` cut has an opaque background + Inter font, wrong for healing
-- `healing_subtitle` is a transparent overlay: Chinese-serif text centered on the
-  video, no background box, with per-frame opacity control
+**Subtitle fade syncs with the video crossfade.** The `HealingSubtitle`
+component's `fadeInSeconds` and `fadeOutSeconds` are set to the SAME value as
+`crossfadeSeconds` (0.8s). Because the subtitle lives inside the Sequence, its
+fade-in begins exactly when the video crossfade-in begins, and its fade-out
+ends as the Sequence exits. No drift possible.
 
-**Text fades are independent of segment boundaries.** Because each subtitle
-lives inside its own `<Sequence>` (bounded by `in_seconds`/`out_seconds`), the
-fade-out completes exactly as the Sequence ends — the next segment's subtitle
-fades in fresh. No overlap, no abrupt cut. This is the synchronization guarantee:
-**video, narration, and subtitle all share the same Sequence, so they start
-and stop together.**
+**Special cases (controlled via cut fields):**
 
-- **Adaptive text color for legibility (MANDATORY):**
-  Text that matches the background video's brightness is unreadable. The
-  pipeline manifest's `text_color_formula` defines the rule — the compose
-  stage MUST execute it:
+| Case | Field | Behavior |
+|------|-------|----------|
+| Opening: video no fade-in, subtitle fades in | first cut gets `noIntroFade=true` (video) but subtitle still uses its own fade curve | Video snaps visible; subtitle fades in over 0.8s |
+| Last segment linger | `subtitleEndSeconds` set < `out_seconds` | Subtitle fades out at `subtitleEndSeconds`; video Sequence continues to `out_seconds` for the linger duration (pure image + music) |
+| Hook on opening | `subtitleVerticalPosition: 0.65` | Hook sits lower-center; title sits dead-center. No overlap. |
 
-  1. For each body segment, analyze the video clip's average luma (FFprobe:
-     `ffprobe -f lavfi -i "movie=$VIDEO,signalstats" -show_entries
-     frame_tags=lavfi.signalstats.YAVG`)
-  2. Average luma > `light_threshold` (128) → use `dark_text` (#3C3833 charcoal)
-  3. Average luma ≤ 128 → use `light_text` (#F0F8FA cool white)
-  4. ONE consistent color for the entire video — the luma of the concatenated
-     silent timeline determines which side of the threshold the video falls on
-  5. Pass the resolved color to every `healing_subtitle` overlay's `color` field
+**Do NOT use the `overlays[]` array for healing-text body subtitles.**
+Overlays are a separate timing layer and will drift from the TransitionSeries
+video crossfade. Body subtitles belong on cuts.
+
+- **Adaptive text color from CENTER-REGION luma (MANDATORY):**
+  Text sits in the center of the frame — analyzing the full frame's luma is
+  wrong when the edges are bright but the center is dark (or vice versa).
+  The pipeline manifest's `text_color_formula` defines the rule:
+
+  1. For each body segment, crop the video to the text region: center 60% width × 40% height
+  2. Analyze the cropped region's average luma:
+     `ffprobe -f lavfi "movie=$VIDEO,crop=iw*0.6:ih*0.4:(iw-ow)/2:(ih-oh)/2,signalstats" -show_entries frame_tags=lavfi.signalstats.YAVG`
+  3. Center luma > `light_threshold` (128) → use STRONG dark text: `#1A1A1A` (pure near-black,
+     stronger contrast than the old #3C3833 charcoal)
+  4. Center luma ≤ 128 → use PURE white: `#FFFFFF` (stronger contrast than the old #F0F8FA cool white)
+  5. ONE consistent color for the entire segment — recompute per segment
 
 - **Text shadow for contrast (MANDATORY):**
-  Even with adaptive color, thin strokes against complex video backgrounds
-  need a subtle shadow for contrast. The `healing_subtitle` overlay's
-  `textShadow` field provides this:
-  - Light backgrounds (dark text #3C3833): `textShadow: "0 2px 12px rgba(245,240,235,0.7)"` (cream shadow — the playbook's paper color)
-  - Dark backgrounds (light text #F0F8FA): `textShadow: "0 2px 12px rgba(0,0,0,0.5)"` (black shadow)
+  - Light center (dark text #1A1A1A): `textShadow: "0 2px 16px rgba(255,255,255,0.55)"` (white glow — makes dark letters pop on bright video)
+  - Dark center (white text #FFFFFF): `textShadow: "0 2px 16px rgba(0,0,0,0.65)"` (black glow — makes white letters pop on dark video)
+  - Shadow is stronger than before (0.55–0.65 vs old 0.5–0.7) to ensure legibility
 
 - **Resolution-adaptive font sizing (MANDATORY — TWO-TIER):**
   Font size is **auto-calculated** from video width + longest text line.

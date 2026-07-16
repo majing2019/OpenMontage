@@ -741,6 +741,18 @@ mv <video_file>_silent.mp4 <video_file>
 | Tools | `direct_clip_search`, `color_grade`, `pixabay_music`, `pexels_video`, `pixabay_video` | Stock search + color grading + music |
 | Stock adapters | `tools/video/stock_sources/` (15 sources) | Pexels, Pixabay Video, Coverr, Unsplash, etc. |
 
+**MANDATORY: TTS BEFORE video search.** The segment's minimum video duration
+depends on the actual narration duration (`narration + 0.7s padding`).
+Generating narration FIRST gives you a concrete `min_duration` for each
+segment's stock search. If you search video first, you may download a
+clip that's too short — and once downloaded, there's no graceful way to
+extend it. The ordering is:
+
+1. **Section T** (TTS Narration Generation) — produces narration durations
+2. **Then** §S.1 (Stock Search) — searches with `min_duration >= narration + 0.7s`
+3. If narration is longer than expected, the search filter catches it.
+   If narration is shorter, great — trim the video to narration + padding.
+
 Read `script.metadata.visual_direction.<seg_id>.visual_keywords_image` for
 search query construction. The script director writes these as English
 concrete search terms for stock-footage mode (not Chinese AI prompts).

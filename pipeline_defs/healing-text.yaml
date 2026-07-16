@@ -95,12 +95,11 @@ modes:
 # ---------------------------------------------------------------------------
 transition_defaults:
   video:
-    crossfade_duration_seconds: 1.0
-    crossfade_peak_duration_seconds: 1.2
-    breathing_pause_seconds: 0.4        # gap between segments (image-only, no text)
-    # MANDATORY: 0.3s black frame between EVERY segment. Prevents all segments
-    # from blending into one continuous blur. The viewer must feel the rhythm.
-    segment_gap_seconds: 0.3
+    crossfade_duration_seconds: 0.8         # cross-dissolve between standard segments
+    crossfade_peak_duration_seconds: 1.2    # longer crossfade for emotional peak
+    # Last segment: video continues for 2s after text fades out — creates
+    # a "lingering aftertaste" (回味感) so the viewer sits with the emotion.
+    last_segment_linger_seconds: 2.0
   text:
     fade_in_seconds: 0.7
     fade_out_seconds: 0.5
@@ -169,10 +168,14 @@ transition_defaults:
     #
     # ── Auto-adaptive text color ──
     text_color_formula:
-      # Analyzes average luma of concatenated silent video. ONE color for entire video.
-      light_threshold: 128           # luma > 128 → light video, use dark text
-      dark_text: "#3C3833"           # charcoal (literary-illustration default)
-      light_text: "#F0F8FA"          # cool near-white with subtle blue tint
+      # Analyzes the CENTER REGION (60% width × 40% height) of the concatenated
+      # silent video — NOT the full frame. Text sits in the center; edges don't matter.
+      # Per-segment analysis via: ffprobe crop=iw*0.6:ih*0.4:(iw-ow)/2:(ih-oh)/2,signalstats
+      light_threshold: 128           # center-region luma > 128 → light video, use dark text
+      dark_text: "#1A1A1A"           # pure near-black (stronger contrast than old #3C3833)
+      light_text: "#FFFFFF"          # pure white (stronger contrast than old #F0F8FA)
+      crop_width_ratio: 0.6          # analyze center 60% width
+      crop_height_ratio: 0.4         # analyze center 40% height
       # Reference: 情感励志4 uses a cool white slightly tinted blue/cyan
       # Background band: always fully transparent for 9:16 vertical
       # Outline: none for 9:16 vertical (clean look matching reference)
